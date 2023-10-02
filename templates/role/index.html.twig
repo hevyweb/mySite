@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+{% trans_default_domain 'role' %}
+
+{% block content %}
+{% set breadcrumbs = [
+    {title: 'Admin panel' | trans([], 'dashboard'), link: absolute_url(path('admin-dashboard'))},
+    {title: 'Roles' | trans }
+] %}
+{% include 'common/breadcrumbs.html.twig' with breadcrumbs %}
+<div class="admin-panel" id="roles">
+    <div class="container">
+        <div class="section-header text-center wow zoomIn" data-wow-delay="0.1s">
+            <h2>{{ title }}</h2>
+        </div>
+        <div class="row">
+            <div class="alert alert-danger" role="alert">
+                {% trans %}Roles can be removed or added only programmatically{% endtrans %}
+            </div>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th class="small-coll">{% trans from 'messages' %}Id{% endtrans %}</th>
+                        <th>{% trans %}Role{% endtrans %}</th>
+                        <th>{% trans %}Role code{% endtrans %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for role in roles %}
+                    <tr>
+                        <td>{{ role.id }}</td>
+                        <td>{{ role.label }}</td>
+                        <td>{{ role.code }}</td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="3" class="no-results">No role created yet</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

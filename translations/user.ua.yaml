@@ -1,0 +1,63 @@
+Please sign in: Ласкаво просимо
+Username: Логін
+Password: Пароль
+Remember me: Запам'ятати
+Sign in: Вхід
+Email: Імейл
+First name: Ім'я
+Last name: Прізвище
+Birthday: Дата народження
+Sex: Стать
+Male: Чоловіча
+Female: Жіноча
+Update user data: Дані користувача
+General: Загальні
+Roles: Ролі
+Username could not be found.: Неправильний логін або пароль.
+User not found.: Користувача не знайдено
+New password: Новий пароль
+Repeat new password: Підтвердіть новий пароль
+The password fields must match.: Паролі повинні збігатись.
+Change Password: Змінити пароль
+Set roles: Надати ролі
+User Roles: Ролі користувача
+You are viewing another user data.: Ви переглядаєте дані іншого користувача.
+Find users: Знайти користувачів
+Name: Ім'я
+No users found in the DB: Користувачів в базі не знайдено
+Users: Користувачі
+No roles added to the system.: Жодної ролі додоно в систему.
+Recover password: Відновити пароль
+or: або
+Recover password request: Запит на відновлення пароля
+Greetings: Вітаю,
+You or someone else may have created a request to change your password.: Ви або можливо хтось інший створив запит на відновнення пароля.
+If you haven't done so, please contact support or simply ignore this email.: Якщо ви цього не робили, зверніться в службу підтримки або просто проігноруйте цей лист.
+However, if you really want to change your password, click on the link below.: Проте, якщо ви дійсно бажаєте відновити пароль, натисніть на посилання нижче.
+We will send you newly generated password.: Ми надішлемо вам новий пароль.
+Have a nice day: Слава Україні!
+Either the username or email field must be set: Одне з двох полів (логін чи імейл) не повинно бути порожнім.
+We generated a new password for you.: Ми згенерували для вас новий пароль.
+If you want to change this password please follow the link bellow after sign in.: Якщо ви бажаєте змінити цей пароль, пройдіть за посиланням нижче після того як залогінитесь.
+Repeat password: Підтвердити пароль
+This is the final step of sign up.: Це останній крок реєстрації.
+Please follow the link bellow to confirm you email.: Перейдіть, будь ласка, за посиланням нижче, щоб підтвердити свій імейл.
+But hurry up Cinderella, the link is valid till midnight: Але поквапся, Попелюшко, це посилання буде дійсне до опівночі
+Username should contain only letters, numbers, minus sign or underscore.: Логін має містити лише літери, цифри, знак мінус або підкреслення.
+User data updated.: Дані користувача оновлено.
+User password changed: Пароль користувача змінено.
+Your email is confirmed. Enter your username "%username%" and password that you created during registration to login.: Ваш email підтверджено. Введіть свій логін "%username%" та пароль, який ви використали під час реєстрації, для входу.
+We have sent an email with a password reset request to the email address provided.: Ми надіслали емейл з запитом на відновлення пароля на вказану електронну адресу.
+'We also remind you that your username is:': 'Ми також нагадуємо, що ваш логін:'
+A new password has been sent to your email.: Новий пароль надіслано на ваш емейл.
+Confirm New Email: Підтвердіть новий імейл
+You requested email change.: Ви надіслали запит на зміну електронної адреси.
+'For the security reason to change the email you should confirm both emails: an old one and a new one.': 'З міркувань безпеки, щоб змінити адресу електронної пошти, необхідно підтвердити обидві адреси: стару та нову.'
+We sent you a confirmation link on both of them.: Ми надіслали вам посилання для підтвердження для них обох.
+To confirm your new email please click the link below.: Щоб підтвердити свою нову електронну адресу, клацніть посилання нижче.
+Confirm old email: Підтвердити старий імейл
+To confirm your old email please click the link below.: Щоб підтвердити свою стару електронну адресу, клацніть посилання нижче.
+Email has been successfully changed: Емейл успішно змінено
+Old email successfully confirmed.: Старий імейл вдало підтверджено.
+New email successfully confirmed.: Новий імейл вдало підтверджено.
+You are going to change your current email to: Ви збираєтеся змінити свій поточний імейл на

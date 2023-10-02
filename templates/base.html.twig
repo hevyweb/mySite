@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="{{ app.request.locale }}" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="content-type" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="refresh" content="no-cache">
+    <title>{{ title }}</title>
+    {% block stylesheets %}
+        {{ encore_entry_link_tags('css/app') }}
+        {{ encore_entry_link_tags('css/jquery-ui') }}
+        {{ encore_entry_link_tags('css/jquery-ui/datepicker') }}
+    {% endblock %}
+    {% block controllerHeaders %}{% endblock %}
+    {% block javascripts %}
+        <script src="/assets/plugin/tinymce/tinymce/tinymce.js"></script>
+        {{ encore_entry_script_tags('js/app') }}
+    {% endblock %}
+    <script type="application/javascript">
+        settings = {
+            language: "{{ app.request.getLocale()|locale }}",
+            date_format: "{{ app.request.server.get('DATEPICKER_DATE_FORMAT') }}"
+        }
+    </script>
+    <link rel="shortcut icon" type="image/icon" href="{{ absolute_url('/favicon.ico') }}"/>
+</head>
+
+<body>
+{% include 'common/pop_up_messages.html.twig' %}
+{% block html %}
+<header id="header" role="banner" class="mb-4">
+    <div class="navbar">
+        <div class="container-fluid">
+            <a href="{{ absolute_url(path('home')) }}" class="navbar-brand">
+                <img src="{{ absolute_url('/logo.png') }}" alt="{% trans %}Dmytro Dzyuba{% endtrans %}">
+                <span class="navbar-title">{% trans %}Dmytro Dzyuba{% endtrans %}</span>
+            </a>
+            {% block user %}
+                <div class="user-control align-top">
+                    {% include 'common/language_switch.html.twig' | raw %}
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <a class="bottom-btn" href="{{ absolute_url(path('admin-dashboard')) }}" title="{% trans from 'dashboard' %}Admin panel{% endtrans %}">
+                            <i class="fa-solid fa-shield-halved"></i>
+                        </a>
+                    {% endif %}
+                    <button class="navbar-toggler btn" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-expanded="false" aria-controls="navbarCollapse">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                </div>
+            {% endblock %}
+        </div>
+    </div>
+    <div class="main-menu navbar-light">
+        {% include 'common/menu.html.twig' %}
+    </div>
+</header>
+{% block main %}
+    <main role="main">
+        <section id="main">
+            <div class="container">
+                {% block content %}{% endblock %}
+            </div>
+        </section>
+    </main>
+{% endblock %}
+<div class="fake-footer" aria-hidden="true"></div>
+<footer id="footer" class="footer">
+    {% block footer %}
+    <div class="container copyright">
+        <p>{{ "now"|date("Y") }} &copy; {% trans %}Copyright. All right reserved.{% endtrans %}</p>
+    </div>
+    {% endblock %}
+</footer>
+<a href="#" class="btn back-to-top" aria-description="{% trans %}Back to Top{% endtrans %}"><i class="fa fa-chevron-up"></i></a>
+<div id="loader" class="show" aria-hidden="true">
+    <div class="loader"></div>
+</div>
+{% endblock %}
+</body>
+</html>

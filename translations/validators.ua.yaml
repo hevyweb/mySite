@@ -1,0 +1,7 @@
+This value is not a valid email address.: Імейл адреса має некоректне значення.
+This value should not be blank.: Це поле не повинно бути порожнім.
+This value is not valid.: Це значення не є дійсним.
+This value is too long. It should have {{ limit }} character or less.|This value is too long. It should have {{ limit }} characters or less.: Це значення задовге. Воно має містити не більше {{ limit }} символів.
+This email has been already registered.: Цей імейл вже використовується.
+Please enter a valid birthdate.: Введіть дійсну дату народження.
+The selected choice is invalid.: Обраний варіант не є дійсний.

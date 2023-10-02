@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+{% trans_default_domain 'article' %}
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('js/article') }}
+{% endblock %}
+{% block content %}
+{% set breadcrumbs = [
+    {title: 'Admin panel' | trans([], 'dashboard'), link: absolute_url(path('admin-dashboard'))},
+    {title: 'Articles' | trans, link: absolute_url(path('articles')) },
+    {title: title}
+] %}
+{% include 'common/breadcrumbs.html.twig' with breadcrumbs %}
+<div class="admin-panel" id="article">
+    <div class="container">
+        <div class="section-header text-center wow zoomIn" data-wow-delay="0.1s">
+            <h2>{%trans%}Create an article{% endtrans %}</h2>
+        </div>
+        {{ form_start(form, {attr: {'class': 'form-inline'}}) }}
+        <div class="row">
+            <div class="col-lg-8">
+                {{ form_row(form.title, {attr: {'class': 'form-control'}}) }}
+                {{ form_row(form.slug, {attr: {'class': 'form-control'}}) }}
+                {{ form_row(form.body, {attr: {'class': 'html-editor'}}) }}
+                {{ form_row(form.locale, {attr: {'class': 'form-control'}}) }}
+                {{ form_row(form.tags, {attr: {'class': 'form-control'}}) }}
+                <div class="custom-control custom-checkbox my-1 mr-sm-2">
+                    {{ form_row(form.draft, {attr: {'class': 'custom-control-input'}, label_attr: {'class': 'custom-control-input'}}) }}
+                </div>
+                <button type="submit" class="btn btn-primary">{{ submit }}</button>
+            </div>
+            <div class="col-lg-4">
+                {% if article.image is defined %}
+                    <img src="/blog/{{ article.image }}" alt="" class="img-fluid"  />
+                {% endif %}
+                {{ form_row(form.image, {attr: {'class': 'form-control'}}) }}
+                {{ form_row(form.preview, {attr: {'class': 'form-control'}}) }}
+            </div>
+        </div>
+        {{ form_end(form) }}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,7 @@
+{% trans_default_domain 'user' %}
+
+<div class="tabs">
+    {% for key, value in tabs %}
+        <a href="{{  path('user-edit-' ~ key) }}" class="{{ key == current_tab ? 'active' : '' }}">{{ value|trans }}</a>
+    {% endfor %}
+</div>

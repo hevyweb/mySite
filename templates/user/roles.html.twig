@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+{% trans_default_domain 'user' %}
+
+{% block content %}
+<div class="user">
+    <h1>{{ title }}</h1>
+    {% include '/user/__tabs.html.twig' with {current_tab: 'roles', 'id': user.id} %}
+    <div class="user-form-body user-roles">
+        <form method="post" action="">
+            {% include '/user/__username.html.twig' %}
+            <label for="user-roles">{% trans %}Roles{% endtrans %}</label>
+            <div class="user-roles-list">
+                {% for role in roles %}
+                    <div>
+                        <label>
+            <input type="checkbox" id="user-roles" name="roles[]"
+                    {{ user.hasRole(role.code) ? 'checked="checked"' : '' }} value="{{ role.id }}">
+                        {{ role.label }}
+                        </label>
+                    </div>
+                {% else %}
+                    <div>{% trans %}No roles added to the system{% endtrans %}</div>
+                {% endfor %}
+            </div>
+        <button type="submit">{% trans %}Set roles{% endtrans %}</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

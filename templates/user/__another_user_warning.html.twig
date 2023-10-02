@@ -1,0 +1,3 @@
+{% if app.user.username != user.username %}
+    {% include '/common/warning.html.twig' with {message: 'You are viewing another user data.'|trans({}, 'user')} %}
+{% endif %}

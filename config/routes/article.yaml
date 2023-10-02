@@ -1,0 +1,18 @@
+articles:
+  path: /administrator/articles
+  controller: App\Controller\ArticleController::index
+
+article-create:
+  path: /administrator/article
+  controller: App\Controller\ArticleController::create
+
+article-edit:
+  path: /administrator/article/{id}
+  controller: App\Controller\ArticleController::update
+  requirements:
+    id: '^\d+$'
+
+article-delete:
+  path: /administrator/article/delete
+  methods: [POST]
+  controller: App\Controller\ArticleController::delete

@@ -1,0 +1,78 @@
+@import "_colors";
+@import "_sizes";
+
+.contact {
+  position: relative;
+  width: 100%;
+  margin: 20px 0;
+  background: $darkCharcoal;
+
+  .contact-hero {
+    padding: 0;
+  }
+
+  .contact-form {
+    position: relative;
+    padding: 35px 0 29px 40px;
+    @media (max-width: $tablet) {
+      padding: 40px 0 0 0;
+    }
+
+    input {
+      color: $lightGray;
+      padding: 15px 0;
+      background: none !important;
+      border-radius: 0;
+      border: none;
+      border-bottom: 1px solid rgba(256, 256, 256, .5);
+    }
+
+    textarea {
+      color: $lightGray;
+      height: 90px;
+      padding: 15px 0;
+      background: none;
+      border-radius: 0;
+      border: none;
+      border-bottom: 1px solid rgba(256, 256, 256, .5);
+    }
+
+    .form-control::placeholder {
+      color: $lightGray;
+      opacity: 1;
+    }
+
+    .form-control:-ms-input-placeholder,
+    .form-control::-ms-input-placeholder {
+      color: $lightGray;
+    }
+
+    .btn {
+      margin-top: 35px;
+      color: $deepBlue;
+      background: $lightGray;
+      box-shadow: inset 0 0 0 50px $lightGray;
+    }
+
+    .btn:hover {
+      color: $lightGray;
+      background: transparent;
+      box-shadow: inset 0 0 0 0 $lightGray;
+      border-color: $lightGray;
+    }
+
+    .help-block ul {
+      margin: 0;
+      padding: 0;
+      list-style-type: none;
+      font-size: 14px;
+      font-style: italic;
+      color: $lightGray;
+    }
+  }
+
+  #contact-me-banner {
+    max-height: 100%;
+    max-width: 100%;
+  }
+}

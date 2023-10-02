@@ -1,0 +1,881 @@
+@import "~bootstrap/scss/bootstrap.scss";
+@import "_colors";
+@import "_sizes";
+@import "_navbar";
+@import "_basic";
+@import "_footer";
+@import "language_switch";
+
+.btn:focus,
+.form-control:focus {
+    box-shadow: none;
+}
+
+.container-fluid {
+    max-width: 1366px;
+}
+
+.btn {
+    padding: 12px 25px;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: $lightGray;
+    background: $cyan;
+    border: 2px solid transparent;
+    border-radius: 0;
+    box-shadow: inset 0 0 0 50px $cyan;
+    transition: ease-out 0.3s;
+    -webkit-transition: ease-out 0.3s;
+    -moz-transition: ease-out 0.3s;
+}
+
+.btn-danger {
+    background: $red;
+    box-shadow: inset 0 0 0 50px $red;
+}
+
+.btn:hover {
+    color: $cyan;
+    background: transparent;
+    box-shadow: inset 0 0 0 0 $cyan;
+    border-color: $cyan;
+}
+
+.btn-danger:hover {
+    color: $red;
+    box-shadow: inset 0 0 0 0 $red;
+    border-color: $red;
+    background: transparent;
+}
+
+#loader {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: $lightGray;
+    opacity: 0;
+    visibility: hidden;
+    -webkit-transition: opacity .3s ease-out, visibility 0s linear .3s;
+    -o-transition: opacity .3s ease-out, visibility 0s linear .3s;
+    transition: opacity .3s ease-out, visibility 0s linear .3s;
+    z-index: 999;
+}
+
+#loader.show {
+    -webkit-transition: opacity .6s ease-out, visibility 0s linear 0s;
+    -o-transition: opacity .6s ease-out, visibility 0s linear 0s;
+    transition: opacity .6s ease-out, visibility 0s linear 0s;
+    visibility: visible;
+    opacity: 1;
+}
+
+#loader .loader {
+    position: relative;
+    width: 45px;
+    height: 45px;
+    border: 5px solid $gray;
+    border-top: 5px solid $deepBlue;
+    border-radius: 50%;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+}
+
+@-webkit-keyframes spin {
+    0% { -webkit-transform: rotate(0deg); }
+    100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.back-to-top {
+    position: fixed;
+    display: none;
+    width: 44px;
+    height: 44px;
+    padding: 8px 0;
+    text-align: center;
+    line-height: 1;
+    font-size: 22px;
+    right: 15px;
+    bottom: 15px;
+    z-index: 9;
+}
+
+.back-to-top i {
+    color: $lightGray;
+}
+
+.back-to-top:hover i {
+    color: $darkCharcoal;
+}
+
+/*******************************/
+/******* Section Header ********/
+/*******************************/
+.section-header {
+    position: relative;
+    margin-bottom: 45px;
+}
+
+.section-header p {
+    display: inline-block;
+    margin: 0 30px;
+    margin-bottom: 10px;
+    padding-left: 15px;
+    position: relative;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    background: $lightGray;
+}
+
+.section-header p::before {
+    position: absolute;
+    content: "";
+    height: 3px;
+    top: 11px;
+    right: 0;
+    left: -30px;
+    background: $deepBlue;
+    z-index: -1;
+}
+
+.section-header p::after {
+    position: absolute;
+    content: "";
+    width: 3px;
+    height: 3px;
+    top: 11px;
+    left: 3px;
+    background: $deepBlue;
+    z-index: 1;
+}
+
+.section-header h2 {
+    margin: 0;
+    position: relative;
+    font-size: 45px;
+    font-weight: 700;
+}
+
+@media (max-width: 767.98px) {
+    .section-header h2 {
+        font-size: 30px;
+    }
+}
+
+
+/*******************************/
+/********** About CSS **********/
+/*******************************/
+.about {
+    position: relative;
+    width: 100%;
+    margin: -45px 0 45px 0;
+}
+
+.about .col-lg-6 {
+    padding: 0;
+}
+
+.about .section-header {
+    margin-bottom: 30px;
+}
+
+.about .about-img {
+    position: relative;
+    height: 100%;
+}
+
+.about .about-img img {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.about .about-content {
+    padding: 0 60px;
+}
+
+.about .about-text p {
+    font-size: 16px;
+}
+
+.about .skills {
+    margin-bottom: 30px;
+}
+
+.about .skill-name {
+    margin-top: 15px;
+}
+
+.about .skill-name p {
+    display: inline-block;
+    margin-bottom: 5px;
+    font-size: 16px;
+    font-weight: 400;
+}
+
+.about .skill-name p:last-child {
+    float: right;
+}
+
+.about .progress {
+    height: 10px;
+    border-radius: 10px;
+    background: $lightGray;
+}
+
+.about .progress .progress-bar {
+    width: 0;
+    background: $deepBlue;
+    border-radius: 10px;
+    transition: 2s;
+}
+
+.about .about-text a.btn {
+    margin-top: 15px;
+}
+
+@media (max-width: 991.98px) {
+    .about .about-content {
+        padding: 45px 15px 0 15px;
+    }
+}
+
+
+/*******************************/
+/********* Service CSS *********/
+/*******************************/
+.service {
+    position: relative;
+    width: 100%;
+    padding: 45px 0 15px 0;
+}
+
+.service .service-item {
+    position: relative;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    box-shadow: inset 0 0 0 0 transparent;
+    transition: ease-out 0.5s;
+}
+
+.service .service-item:hover {
+    box-shadow: inset 800px 0 0 0 $deepBlue;
+}
+
+.service .service-icon {
+    position: relative;
+    width: 150px;
+    min-height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid $deepBlue;
+    background: $lightGray;
+}
+
+.service .service-icon i {
+    position: relative;
+    font-size: 60px;
+    color: $deepBlue;
+    transition: .3s;
+}
+
+.service .service-item:hover i {
+    font-size: 75px;
+}
+
+.service .service-text {
+    position: relative;
+    width: calc(100% - 120px);
+    padding: 0 30px;
+}
+
+.service .service-text h3 {
+    margin-bottom: 10px;
+    font-size: 20px;
+    font-weight: 600;
+    transition: 1s;
+}
+
+.service .service-text p {
+    margin: 0;
+    font-size: 16px;
+    transition: 1s;
+}
+
+.service .service-item:hover .service-text h3,
+.service .service-item:hover .service-text p {
+    color: $lightGray;
+}
+
+@media (max-width: 575.98px) {
+    .service .service-text h3 {
+        font-size: 16px;
+        margin-bottom: 5px;
+    }
+    
+    .service .service-text p {
+        font-size: 14px;
+    }
+}
+
+
+/*******************************/
+/******** Portfolio CSS ********/
+/*******************************/
+.portfolio {
+    position: relative;
+    padding: 45px 0 15px 0;
+}
+
+.portfolio #portfolio-filter {
+    padding: 0;
+    margin: -15px 0 25px 0;
+    list-style: none;
+    font-size: 0;
+    text-align: center;
+}
+
+.portfolio #portfolio-filter li {
+    cursor: pointer;
+    display: inline-block;
+    margin: 5px;
+    padding: 6px 12px;
+    font-size: 14px;
+    font-weight: 600;
+    color: $lightGray;
+    background: $deepBlue;
+    border: 2px solid transparent;
+    border-radius: 0;
+    box-shadow: inset 0 0 0 50px $deepBlue;
+    transition: ease-out 0.3s;
+    -webkit-transition: ease-out 0.3s;
+    -moz-transition: ease-out 0.3s;
+}
+
+.portfolio #portfolio-filter li:hover,
+.portfolio #portfolio-filter li.filter-active {
+    color: $deepBlue;
+    background: transparent;
+    box-shadow: inset 0 0 0 0 $deepBlue;
+    border-color: $deepBlue;
+}
+
+.portfolio .portfolio-item {
+    position: relative;
+}
+
+.portfolio .portfolio-wrap {
+    position: relative;
+    width: 100%;
+}
+
+.portfolio .portfolio-img {
+    position: relative;
+    overflow: hidden;
+}
+
+.portfolio .portfolio-img img {
+    position: relative;
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover;
+    transform: scale(1.1);
+    transition: .5s;
+}
+
+.portfolio .portfolio-item:hover img {
+    margin-left: 15px;
+}
+
+.portfolio .portfolio-text {
+    position: relative;
+    height: 60px;
+    width: calc(100% - 30px);
+    margin: -30px 15px 30px 15px;
+    display: flex;
+    align-items: center;
+    background: $lightGray;
+    box-shadow: 0 0 15px rgba(0, 0, 0, .12);
+}
+
+.portfolio .portfolio-text h3 {
+    width: calc(100% - 70px);
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 0 15px;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.portfolio .portfolio-text a.btn {
+    width: 50px;
+    height: 50px;
+    padding: 0 0 2px 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 45px;
+    font-weight: 100;
+}
+
+.portfolio .portfolio-item:hover a.btn {
+    color: $deepBlue;
+    background: transparent;
+    box-shadow: inset 0 0 0 0 $deepBlue;
+    border-color: $deepBlue;
+}
+
+
+/*******************************/
+/********* Banner CSS **********/
+/*******************************/
+.banner {
+    position: relative;
+    width: 100%;
+    margin: 45px 0;
+    padding: 90px 0;
+    background: $deepBlue;
+}
+
+.banner .container {
+    max-width: 750px;
+    text-align: center;
+}
+
+.banner .section-header {
+    margin-bottom: 20px;
+}
+
+.banner .section-header p {
+    color: $darkCharcoal;
+    background: transparent;
+}
+
+.banner .section-header p::after {
+    display: none;
+}
+
+.banner .section-header h2 {
+    color: $lightGray;
+}
+
+.banner .section-header h2 span {
+    color: $darkCharcoal;
+    font-size: 50px;
+}
+
+.banner .banner-text p {
+    font-size: 18px;
+    color: $lightGray;
+}
+
+.banner .banner-text .btn {
+    margin-top: 15px;
+    color: $deepBlue;
+    background: $lightGray;
+    box-shadow: inset 0 0 0 50px $lightGray;
+}
+
+.banner .banner-text .btn:hover {
+    color: $lightGray;
+    background: transparent;
+    box-shadow: inset 0 0 0 0 $lightGray;
+    border-color: $lightGray;
+}
+
+
+/*******************************/
+/******* Testimonial CSS *******/
+/*******************************/
+.testimonial {
+    position: relative;
+    margin: 45px 0;
+    padding: 90px 0;
+    background: $deepBlue;
+}
+
+.testimonial .container {
+    max-width: 900px;
+}
+
+.testimonial .testimonial-icon {
+    margin-bottom: 45px;
+    text-align: center;
+}
+
+.testimonial .testimonial-icon i {
+    font-size: 60px;
+    color: rgba(256, 256, 256, .5);
+}
+
+.testimonial .testimonial-item {
+    position: relative;
+    margin: 0 15px;
+    text-align: center;
+}
+
+.testimonial .testimonial-img {
+    position: relative;
+    margin-bottom: 15px;
+    z-index: 1;
+}
+
+.testimonial .testimonial-item img {
+    margin: 0 auto;
+    width: 120px;
+    padding: 10px;
+    border: 5px dotted $lightGray;
+    border-radius: 100px;
+}
+
+.testimonial .testimonial-text {
+    position: relative;
+    margin-top: -70px;
+    padding: 65px 35px 30px 35px;
+    text-align: center;
+    background: $lightGray;
+    border-radius: 500px;
+}
+
+.testimonial .testimonial-item p {
+    font-size: 18px;
+    font-style: italic;
+}
+
+.testimonial .testimonial-text h3 {
+    color: $deepBlue;
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.testimonial .testimonial-text h4 {
+    color: $gray;
+    font-size: 14px;
+    margin-bottom: 0;
+}
+
+.testimonial .owl-dots {
+    margin-top: 15px;
+    text-align: center;
+}
+
+.testimonial .owl-dot {
+    display: inline-block;
+    margin: 0 5px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(256, 256, 256, .5);
+}
+
+.testimonial .owl-dot.active {
+    background: $lightGray;
+}
+
+/*******************************/
+/*********** Blog CSS **********/
+/*******************************/
+.blog {
+    position: relative;
+    width: 100%;
+    padding: 45px 0 15px 0;
+}
+
+.blog .blog-item {
+    position: relative;
+    margin-bottom: 30px;
+}
+
+.blog .blog-img {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+}
+
+.blog .blog-img img {
+    width: 100%;
+    transition: .5s;
+}
+
+.blog .blog-item:hover img {
+    transform: scale(1.1);
+}
+
+.blog .blog-text {
+    position: relative;
+    padding: 30px;
+    border-right: 1px solid rgba(0, 0, 0, .07);
+    border-bottom: 1px solid rgba(0, 0, 0, .07);
+    border-left: 1px solid rgba(0, 0, 0, .07);
+}
+
+.blog .blog-text h2 {
+    font-size: 25px;
+    font-weight: 600;
+}
+
+.blog .blog-text p {
+    margin-bottom: 10px;
+}
+
+.blog .blog-item a.btn {
+    margin-top: 10px;
+    padding: 8px 15px;
+}
+
+.blog .blog-item a.btn i {
+    margin-left: 5px;
+}
+
+.blog .blog-meta {
+    position: relative;
+    display: flex;
+    margin-bottom: 15px;
+    background: linear-gradient(45deg, transparent, $lightGray 20px, $deepBlue 40px, $lightGray 40px, $lightGray 45px, $deepBlue 45px, $deepBlue 55px, $lightGray 55px, $lightGray 60px, $deepBlue 60px, $deepBlue 70px, $lightGray 70px);
+    padding-left: 105px;
+}
+
+.blog .blog-meta span, .blog .tags span  {
+    padding: 0 10px;
+    font-size: 13px;
+    font-weight: bold;
+    color: $soft;
+}
+
+.blog .blog-meta-icon {
+    color: $cyan;
+    margin-right: 5px;
+}
+
+.blog .blog-meta p:last-child {
+    margin: 0;
+}
+
+
+
+.quick-search button, .btn-smaller {
+    padding: 0.375rem 0.75rem;
+}
+
+.quick-search {
+    margin: 1rem 0;
+}
+
+.tag {
+    border: 1px solid $gray;
+    padding: 5px 5px;
+    border-radius: 5px;
+    background: linear-gradient($lightGray, $gray);
+    margin: 3px 5px;
+    color: $darkCharcoal;
+    display: inline-block
+}
+
+.image-not-found {
+    width: 39rem;
+    height: 20rem;
+    background: $gray;
+}
+
+.company-thumbnail {
+    max-height: 200px !important;
+    max-width: 200px !important;
+}
+
+.dashboard .dashboard-content a {
+    width: 125px;
+    height: 125px;
+    display: inline-block;
+    border: 1px solid $gray;
+    border-radius: 7px;
+    box-shadow: 3px 3px 3px RGBA(189, 189, 189, 0.5);
+    font-size: 51px;
+    text-align: center;
+    vertical-align: middle;
+    padding: 20px 5px;
+    line-height: 28px;
+    background: linear-gradient($lightGray, $gray);
+
+    span {
+        font-size: 14px;
+        display: block;
+        padding: 7px;
+    }
+}
+.bottom-btn {
+    color: $deepBlue;
+    background: $lightGray;
+    border: 1px solid $gray;
+    border-radius: 5px;
+    padding: 8px 12px;
+    display: inline-block;
+}
+
+.breadcrumb-wrapper {
+    padding: 12px 20px;
+    background: $lightGray;
+    border-radius: 3px;
+    vertical-align: middle;
+
+    ol {
+        margin: 0;
+        list-style: none;
+        padding: 0;
+    }
+
+    a {
+        color: $deepBlue;
+    }
+}
+// login form
+.login_form {
+    width: 340px;
+    margin: 0 auto;
+    padding: 15px 15px 25px;
+    text-align: center;
+    background: $gray;
+    border-radius: 3px;
+    box-shadow: 2px 2px 8px 2px RGBA(0, 0, 0, 0.1);
+}
+
+.login_form h1{
+    font-size: 24px;
+    margin: 0 0 7px;
+}
+
+.underline {
+    border-bottom: 3px solid $tealGreen;
+    width: 25%;
+    display: block;
+    margin: 0 auto 14px;
+}
+
+.login_form input[type=text], .login_form input[type=password], .login_form input[type=email] {
+    height: 30px;
+    margin: 0;
+    padding: 5px;
+    border: 1px solid $gray;
+    background-color: $lightGray;
+}
+
+.login_form .input-group-text{
+    border: 1px solid $gray;
+    border-radius: 5px 0 0 5px;
+    height: 30px;
+}
+
+.login_form .remember_me {
+    margin: 5px 0 10px;
+}
+
+.login_form #remember_me {
+    display: inline-block;
+}
+
+.toast {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 100;
+    background: $lightGray;
+    opacity: 100%;
+    border-radius: 0;
+
+        .toast-header {
+            border-radius: 0;
+
+            .close{
+                padding: 11px 4px;
+                line-height: 0;
+                font-size: 17px;
+            }
+        }
+}
+
+.alert-success {
+    color: $deepBlue;
+    font-size: 18px;
+}
+
+.alert-danger {
+    color: $red;
+    font-size: 18px;
+}
+
+.was-validated .form-control:valid, .form-control.is-valid {
+    border: 0 none;
+    border-bottom: 1px solid $lightGray;
+}
+
+.control-group ul {
+    padding: 0;
+    li {
+        color: $red;
+        list-style: none;
+    }
+}
+
+.page-title {
+    background: linear-gradient(90deg, $lightGray, $cyan 5%, $deepBlue 10%, $cyan 40%, $lightGray);
+    .diam {
+        height: 56px;
+        margin: 10px 20px 10px 60px;
+        background: linear-gradient(45deg, $orange, $brightYellow);
+        border-radius: 100%;
+        padding: 5px;
+        box-shadow: 0 0 10px 2px RGBA(0, 0, 0, 0.5);
+        width: 56px;
+        float: left;
+
+        p {
+            background: $lightGray radial-gradient(circle at center, RGBA(0, 0, 0, 0.1), RGBA(0, 0, 0, 0.3) 30%, transparent 50% );
+            border-radius: 100%;
+            padding: 3px;
+            position: relative;
+            overflow: hidden;
+            max-width: 100%;
+            height: 100%;
+            margin: 0;
+        }
+
+        img {
+            max-height: 100%;
+            max-width: 100%;
+            position: absolute;
+            top: -6px;
+            right: -9px;
+        }
+    }
+
+    h1, h2{
+        line-height: 78px;
+        color: $lightGray;
+        text-transform: uppercase;
+        font-weight: bold;
+        font-family: sans-serif;
+        margin: 0;
+        padding: 0;
+        text-shadow: 0 0 2px $darkCharcoal;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+}

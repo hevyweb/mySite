@@ -1,0 +1,79 @@
+{% extends 'base.html.twig' %}
+{% trans_default_domain 'user' %}
+
+{% block content %}
+    {% set breadcrumbs = [
+        {title: 'Admin panel' | trans([], 'dashboard'), link: absolute_url(path('admin-dashboard'))},
+        {title: 'Users' | trans }
+    ] %}
+    {% include 'common/breadcrumbs.html.twig' with breadcrumbs %}
+    <div id="users" class="container admin-panel">
+        <div class="section-header text-center wow zoomIn" data-wow-delay="0.1s">
+            <h2>{% trans %}Users{% endtrans %}</h2>
+        </div>
+        <form method="get" action="{{ path('users') }}" class="quick-search">
+            <div class="input-group quick-search">
+                <input type="search" id="form1" class="form-control" aria-label="{% trans from 'messages' %}Search{% endtrans%}"  value="{{ filtervariables.q }}" name="q" />
+                <div class="input-group-append">
+                    <button type="button" class="btn btn-sm btn-primary" title="{% trans %}Find users{% endtrans %}">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
+        {% include 'common/pagination.html.twig' with {
+            currentFilters: filtervariables,
+            currentPage: page,
+            paginationPath: "users",
+            lastPage: totalPages,
+            showAlwaysFirstAndLast: true
+        } only %}
+        <div class="row">
+            <table class="datagrid table table-striped">
+                <thead>
+                    <tr>
+                        <th>{% trans from 'messages' %}Id{% endtrans %}</th>
+                        <th>{% trans %}Username{% endtrans %}</th>
+                        <th>{% trans %}Name{% endtrans %}</th>
+                        <th>{% trans %}Birthday{% endtrans %}</th>
+                        <th>{% trans %}Sex{% endtrans %}</th>
+                        <th>{% trans %}Email{% endtrans %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                        <tr>
+                            <td>{{ user.id }}</td>
+                            <td><a href="{{ path('user-edit-general', {id: user.id}) }}">{{ user.username }}</a></td>
+                            <td>{{ user.firstName }} {{ user.lastName }}</td>
+                            <td>
+                                {% if user.birthday is not empty %}
+                                    {{ user.birthday|date("d.m.Y") }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if user.sex %}
+                                    {% trans %}Female{% endtrans %}
+                                {% else %}
+                                    {% trans %}Male{% endtrans %}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {{ user.email }}
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr><td colspan="6" class="no-results">{% trans %}No users found in the DB{% endtrans %}</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% include 'common/pagination.html.twig' with {
+            currentFilters: filtervariables,
+            currentPage: page,
+            paginationPath: "users",
+            lastPage: totalPages,
+            showAlwaysFirstAndLast: true
+        } only %}
+    </div>
+{% endblock %}

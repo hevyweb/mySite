@@ -1,0 +1,24 @@
+experience-list:
+  controller: App\Controller\ExperienceController::index
+  path: administrator/experiences
+
+experience-create:
+  controller: App\Controller\ExperienceController::create
+  path: administrator/experience
+  methods: [ GET ]
+
+experience-update:
+  controller: App\Controller\ExperienceController::update
+  path: administrator/experience/{id}
+  methods: [GET]
+  requirements:
+    id: '^\d+$'
+
+experience-delete:
+  controller: App\Controller\ExperienceController::delete
+  path: administrator/experience
+  methods: [POST]
+
+experience-tree:
+  controller: App\Controller\ExperienceController::tree
+  path: /experience

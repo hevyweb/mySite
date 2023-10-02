@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+{% trans_default_domain 'security' %}
+
+{% block content %}
+<div id="access_denied">
+    <h2>{{ title }}</h2>
+    <div>
+        {% trans %}The page you are trying to reach doesn't exist, or you don't have enough rights to get to it.{% endtrans %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% trans_default_domain 'user' %}
+
+<div>
+    <h1>{% trans from 'messages' %}Sign up{% endtrans %}</h1>
+    <p>{% trans %}Greetings{% endtrans %} {{ user.firstName}} {{ user.lastName }}</p>
+    <p>
+        {% trans %}This is the final step of sign up.{% endtrans %}
+        {% trans %}Please follow the link bellow to confirm you email.{% endtrans %}
+    </p>
+    <p>
+        <a href="{{ absolute_url(path('user-confirm-email', {'token': user.getEmailConfirm()})) }}">
+            {{ absolute_url(path('user-confirm-email', {'token': user.getEmailConfirm()})) }}
+        </a>
+    </p>
+    <p>{% trans %}Have a nice day{% endtrans %}</p>
+</div>

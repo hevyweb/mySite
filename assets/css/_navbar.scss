@@ -1,0 +1,94 @@
+.navbar {
+  position: relative;
+  transition: .5s;
+  z-index: 999;
+
+  .navbar-toggler {
+    background: $lightGray;
+    box-shadow: none;
+    color: $darkCharcoal;
+    font-size: 24px;
+    padding: 8px 10px;
+    border: 1px solid $gray;
+    border-radius: 5px;
+  }
+
+  .navbar-brand {
+     margin: 0;
+     font-size: 45px;
+     line-height: 0;
+     font-weight: 700;
+     letter-spacing: 2px;
+     transition: .5s;
+
+    img {
+      max-width: 100%;
+      max-height: 40px;
+    }
+  }
+}
+
+.main-menu {
+  a:hover, .nav-active {
+    background: $brightYellow;
+    color: $deepBlue;
+    border: 2px solid $brightYellow;
+    box-shadow: none;
+  }
+}
+
+@media (max-width: $cellphone) {
+  .navbar {
+    .navbar-title {
+      display: none;
+    }
+  }
+}
+
+@media (max-width: $tablet) {
+  .navbar {
+    padding: 15px;
+
+    .navbar-brand {
+      color: $deepBlue;
+    }
+  }
+
+  .main-menu {
+    nav a{
+      display: block;
+      text-align: left;
+      border-top: 1px solid $lightGray;
+    }
+  }
+}
+
+@media (min-width: 992px) {
+  .navbar {
+    width: 100%;
+    padding: 30px 60px;
+    background: transparent !important;
+    border-bottom: 1px dashed rgba(256, 256, 256, .2);
+    z-index: 9;
+  }
+
+  .navbar.nav-sticky {
+    padding: 10px 60px;
+    background: $lightGray !important;
+  }
+
+  .navbar .navbar-brand {
+    color: $lightGray;
+  }
+
+  .navbar.nav-sticky .navbar-brand {
+    color: $deepBlue;
+  }
+
+  .main-menu {
+    .collapse {
+      display: block;
+      text-align: center;
+    }
+  }
+}

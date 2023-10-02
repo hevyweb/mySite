@@ -1,0 +1,26 @@
+{% trans_default_domain 'languages' %}
+{% set route = app.request.attributes.get('_route') %}
+{% set route_params = app.request.attributes.get('_route_params') %}
+{% set params = route_params|merge(app.request.query.all) %}
+
+<div class="language-switch-container" role="switch" aria-description="{% trans %}Language toggle{% endtrans %}">
+    <div class="language-toggle">
+        <img src="{{ absolute_url('/images/locales/'~ app.request.getLocale()) }}.png" alt="{{ app.request.locale|trans }}" />
+        <span class="current-language">{{ app.request.locale|trans }}</span>
+        <i class="fa-solid fa-caret-down" aria-hidden="true"></i>
+        <i class="fa-solid fa-caret-up" aria-hidden="true"></i>
+    </div>
+    <div class="language-switch">
+        <ul>
+            {% for locale in app_locales %}
+                <li>
+                    <a lang="{{ locale }}" href="{{ absolute_url(path(route, params|merge({ _locale: locale }))) }}" tabindex="-1">
+                        <img src="{{ absolute_url('/images/locales/'~ locale) }}.png"
+                             alt="{% trans %}Switch language to {% endtrans %} {{ locale|trans }}" />
+                        {{ locale | trans }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>

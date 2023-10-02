@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+{% block content %}
+{% set breadcrumbs = [{title: 'Admin panel' | trans([], 'dashboard')}] %}
+{% include 'common/breadcrumbs.html.twig' with breadcrumbs %}
+<div class="dashboard">
+    <div class="section-header text-center row">
+        <h2>{{ title }}</h2>
+    </div>
+    <div class="dashboard-content d-flex flex-row">
+        <div class="p-2">
+            <a href="{{ absolute_url(path('users')) }}">
+                <i class="fa-solid fa-users"></i>
+                <span>{% trans from 'user' %}Users{% endtrans %}</span>
+            </a>
+        </div>
+        <div class="p-2">
+            <a href="{{ absolute_url(path('roles')) }}">
+                <i class="fa-solid fa-shield-halved"></i>
+                <span>{% trans from 'role' %}Roles{% endtrans %}</span>
+            </a>
+        </div>
+        <div class="p-2">
+            <a href="{{ absolute_url(path('articles')) }}">
+                <i class="fa-regular fa-newspaper"></i>
+                <span>{% trans from 'article' %}Articles{% endtrans %}</span>
+            </a>
+        </div>
+        <div class="p-2">
+            <a href="{{ absolute_url(path('experience-list')) }}">
+                <i class="fa-regular fa-building"></i>
+                <span>{% trans from 'experience' %}Experiences{% endtrans %}</span>
+            </a>
+        </div>
+        <div class="p-2">
+            <a href="{{ absolute_url(path('user-logout')) }}">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>{% trans %}Logout{% endtrans %}</span>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

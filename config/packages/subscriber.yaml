@@ -1,0 +1,9 @@
+services:
+  App\EventSubscriber\RecoverPasswordSubscriber:
+    tags: [kernel.event_subscriber]
+
+  App\EventSubscriber\ResetPasswordSubscriber:
+    tags: [kernel.event_subscriber]
+
+  App\EventSubscriber\SignUpSubscriber:
+    tags: [kernel.event_subscriber]

@@ -1,0 +1,47 @@
+parameters:
+    registration_enabled: '%env(REGISTRATION_ENABLED)%'
+    locale: 'en'
+    app_locales:
+        - en
+        - ua
+    images_article: '%kernel.project_dir%/public/blog'
+    images_experience: '%kernel.project_dir%/public/company'
+
+services:
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+        bind:
+            $locales: '%app_locales%'
+            $defaultLocale: '%locale%'
+            $defaultDateFormat: '%env(DEFAULT_DATE_FORMAT)%'
+
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+            - '../src/Tests/'
+
+    App\Controller\:
+        resource: '../src/Controller/'
+        tags: ['controller.service_arguments']
+
+    App\Security\AppTokenProvider: ~
+
+    Symfony\Component\Mime\Address:
+        class: Symfony\Component\Mime\Address
+        arguments:
+            - '%env(EMAIL_FROM)%'
+            - '%env(EMAIL_NAME)%'
+
+    Symfony\Bridge\Twig\Mime\TemplatedEmail:
+        public: true
+
+    App\Controller\ArticleController:
+        calls:
+            - ['setLogger', ['@logger']]
+
+    App\Controller\ExperienceController:
+        calls:
+            - ['setLogger', ['@logger']]

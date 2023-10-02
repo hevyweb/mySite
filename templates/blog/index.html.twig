@@ -1,0 +1,8 @@
+{% extends 'base.html.twig' %}
+{% trans_default_domain 'article' %}
+{% block content %}
+    {% include 'common/title.html.twig' %}
+    <div id="blog" class="blog" class="pt-4">
+        {% include 'blog/items.html.twig' %}
+    </div>
+{% endblock %}

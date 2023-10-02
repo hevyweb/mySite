@@ -1,0 +1,8 @@
+Invalid CSRF token.: Форма застаріла. Оновіть сторінку і спробуйте ще раз.
+Invalid credentials.: Неправильний логін або пароль.
+The page you are trying to reach doesn't exist, or you don't have enough rights to get to it.: Сторінка, яку ви намагаєтеся відкрити, не існує, або у вас недостатньо прав, щоб перейти до неї.
+Access Denied.: В доступі відмовлено.
+Error occurred.: Сталася помилка
+Some unpredicted error occurred. Please try again later or contact administrator.: Сталася якась непередбачена помилка. Спробуйте пізніше або зверніться до адміністратора.
+Your user account is not active. Please confirm your email.: Ваш обліковий запис не активний. Будь ласка, підтвердьте вашу електронну пошту.
+User account is blocked due to site rules violation.: Обліковий запис заблоковано через порушення правил сайту.

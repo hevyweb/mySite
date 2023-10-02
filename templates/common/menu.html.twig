@@ -1,0 +1,10 @@
+{% trans_default_domain 'menu' %}
+
+{% block mainmenu %}
+    <nav class="collapse" id="navbarCollapse">
+        {% include '/common/menu_item.html.twig' with {route: 'home', title: 'Home'|trans, icon: 'fa-house'} %}
+        {% include '/common/menu_item.html.twig' with {route: 'blog', title: 'Blog'|trans, icon: 'fa-newspaper'} %}
+        {% include '/common/menu_item.html.twig' with {route: 'experience-tree', title: 'My experience'|trans, icon: 'fa-briefcase'} %}
+        {% include '/common/menu_item.html.twig' with {route: 'contact-me', title: 'Contact me'|trans, icon: 'fa-envelope'} %}
+    </nav>
+{%  endblock %}

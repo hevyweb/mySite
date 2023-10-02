@@ -1,0 +1,5 @@
+{% set currentRoute = app.request.attributes.get('_route') %}
+<a href="{{ absolute_url(path(route)) }}" class="btn {{ currentRoute == route ? ' nav-active': '' }}">
+    <i class="fa-solid {{ icon }}"></i>
+    {{ title }}
+</a>

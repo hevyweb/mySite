@@ -1,0 +1,6 @@
+{% trans_default_domain 'user' %}
+{% include '/user/__another_user_warning.html.twig' %}
+<div>
+    <label for="edit_user_username">{% trans %}Username{% endtrans %} <i class="fas fa-lock "></i></label>
+    <input type="text" id="edit_user_username" name="" class="readonly" required="required" value="{{ user.username }}" readonly>
+</div>

@@ -1,0 +1,76 @@
+version: '3.2'
+services:
+  db:
+    image: mysql:5.7
+    volumes:
+      - data.db:/var/lib/mysql:cached
+    ports:
+      - "3306:${MYSQL_PORT}"
+    command: mysqld --sql_mode=""
+    environment:
+      - "MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}"
+      - "MYSQL_DATABASE=${MYSQL_DATABASE}"
+      - "MYSQL_USER=${MYSQL_USER}"
+      - "MYSQL_PASSWORD=${MYSQL_PASSWORD}"
+    networks:
+      - net
+
+  fpm:
+    build: docker/php
+    volumes:
+      - './:/var/www/html'
+      - './docker/php/php.ini:/opt/bitnami/php/lib/php.ini'
+    ports:
+      - '9000:9000'
+    working_dir: '/var/www/html'
+    command: 'php-fpm -F'
+    networks:
+      - net
+
+  httpd:
+    image: 'httpd:2.4'
+    depends_on:
+      - 'fpm'
+    ports:
+      - '80:80'
+    volumes:
+      - './:/var/www/html:ro'
+      - './docker/httpd/httpd.conf:/usr/local/apache2/conf/httpd.conf:ro'
+      - './docker/httpd/host.conf:/usr/local/apache2/conf/vhost.conf:ro'
+    networks:
+      - net
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    hostname: mailhog
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - net
+
+###> doctrine/doctrine-bundle ###
+  database:
+    image: postgres:${POSTGRES_VERSION:-15}-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-app}
+      # You should definitely change the password in production
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-!ChangeMe!}
+      POSTGRES_USER: ${POSTGRES_USER:-app}
+    volumes:
+      - database_data:/var/lib/postgresql/data:rw
+      # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
+      # - ./docker/db/data:/var/lib/postgresql/data:rw
+###< doctrine/doctrine-bundle ###
+
+networks:
+  net:
+    driver: bridge
+
+volumes:
+  data.db:
+    driver: "local"
+
+###> doctrine/doctrine-bundle ###
+  database_data:
+###< doctrine/doctrine-bundle ###

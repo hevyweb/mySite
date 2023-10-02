@@ -1,0 +1,94 @@
+.language-switch-container {
+  position: relative;
+  display: inline-block;
+  float: left;
+  margin-right: 1em;
+  cursor: pointer;
+
+  .language-toggle {
+    display: inline-block;
+    padding: 0.5em 0.6em;
+    border: 1px solid $gray;
+    vertical-align: top;
+    border-radius: 5px;
+    background: $lightGray;
+    z-index: 2;
+
+    img {
+      float: left;
+      padding-right: 0.6em;
+    }
+
+    @media (max-width: $cellphone) {
+      .current-language {
+        display: none;
+      }
+    }
+
+    .fa-caret-up {
+      display: none;
+    }
+
+    .fa-caret-down {
+      display: inline-block;
+    }
+  }
+
+  .language-switch {
+    display: none;
+    position: absolute;
+    background: $lightGray;
+    color: $darkCharcoal;
+    border-radius: 5px;
+    width: 10rem;
+    box-shadow: 0 5px 5px 5px RGBA(0, 0, 0, 0.4);
+    z-index: 1;
+
+    ul {
+      width: 100%;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      overflow: hidden;
+
+      li {
+        a {
+          padding: 0.5rem 1rem;
+          display: block;
+          width: 100%;
+          white-space: nowrap;
+
+          :hover {
+            background: $cyan;
+            color: $lightGray;
+            cursor: pointer;
+          }
+        }
+
+        :first-child a {
+          border-radius: 5px 5px 0 0;
+        }
+
+        :last-child a {
+          border-radius: 0 0 5px 5px;
+        }
+      }
+    }
+  }
+}
+
+.language-switch-container:hover, .language-switch-container:active {
+  .language-toggle {
+    .fa-caret-up {
+      display: inline-block;
+    }
+
+    .fa-caret-down {
+      display: none;
+    }
+  }
+
+  .language-switch {
+    display: block;
+  }
+}

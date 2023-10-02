@@ -1,0 +1,62 @@
+
+users:
+  path: /administrator/users
+  controller: App\Controller\UserController::index
+
+user-edit-general:
+  path: /user/general/{id}
+  controller: App\Controller\UserController::edit
+  defaults:
+    id: null
+
+user-edit-password:
+  path: /user/password/{id}
+  controller: App\Controller\UserController::editUserPassword
+  defaults:
+    id: null
+
+user-edit-roles:
+  path: /user/roles/{id}
+  controller: App\Controller\UserController::editUserRoles
+  defaults:
+    id: null
+
+user-registration:
+  path: /register
+  controller: App\Controller\UserController::create
+
+user-confirm-email:
+  path: /confirm_email/{token}
+  controller: App\Controller\UserController::confirmEmail
+  requirements:
+    token: '[a-zA-Z0-9\-]{64}'
+
+user-login:
+  path: /login
+  controller: App\Controller\UserController::login
+
+user-recover-password:
+  path: /recover_password
+  controller: App\Controller\UserController::recoverPassword
+
+user-reset-password:
+  path: /change_password/{token}
+  controller: App\Controller\UserController::resetPassword
+  requirements:
+    token: '[a-zA-Z0-9\-]{64}'
+
+user-logout:
+  path: /logout
+  controller: App\Controller\UserController::logout
+
+user-new-email-confirm:
+  path: /user/confirm_new_email/{token}
+  controller: App\Controller\UserController::confirmNewEmail
+  requirements:
+    token: '[a-zA-Z0-9\-]{64}'
+
+user-old-email-confirm:
+  path: /user/confirm_old_email/{token}
+  controller: App\Controller\UserController::confirmOldEmail
+  requirements:
+    token: '[a-zA-Z0-9\-]{64}'

@@ -1,0 +1,6 @@
+{% for message in app.flashes('success') %}
+    {% include 'common/message.html.twig' with {type:'success'}%}
+{% endfor %}
+{% for message in app.flashes('error') %}
+    {% include 'common/message.html.twig' with {type:'error'}%}
+{% endfor %}

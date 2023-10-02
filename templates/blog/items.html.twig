@@ -1,0 +1,75 @@
+<div class="row" id="blog">
+    {% for article in articles %}
+        <div class="col-lg-6">
+            <div class="blog-item wow fadeInUp" data-wow-delay="0.1s">
+                <div class="figure-img img-fluid rounded placeholder-glow overflow-hidden">
+                    {% if article.image %}
+                        <a href="{{ path('blog-view', {'slug': article.slug}) }}">
+                            <img src="/blog/{{ article.image}}" alt="{{ article.title }}" class="col-12 h-100 overflow-hidden">
+                        </a>
+                    {% endif %}
+                </div>
+                <div class="blog-text">
+                    <h2>{{ article.title }}</h2>
+                    <div class="blog-meta">
+                        <span class="text-nowrap blog-meta-icon"><i class="far fa-user blog-meta-icon"></i> {{ article.createdBy.getFullName() }}</span>
+                        <span class="text-nowrap blog-meta-icon"><i class="far fa-calendar-alt blog-meta-icon"></i> {{ article.createdAt|date('d-m-Y') }}</span>
+                        <span class="text-nowrap blog-meta-icon"><i class="fa-solid fa-ghost blog-meta-icon"></i> {{ article.hit }}</span>
+                        <span class="text-nowrap blog-meta-icon"><i class="far fa-comments blog-meta-icon"></i>0</span>
+                    </div>
+                    <div class="tags mb-2">
+                        {% for tag in article.tags %}
+                            <span class="text-nowrap">
+                                <i class="fa-solid fa-tag blog-meta-icon"></i> {{ tag }}
+                            </span>
+                        {% endfor %}
+                    </div>
+                    <p>
+                        Lorem ipsum dolor sit amet elit. Nullam commodo mattis mi. Nullam eu erat lectus. Proin viverra risus vitae luctus. Proin ut ante, vitae sapien. Fusce sem ac erat rhoncus, ornare mattis nisl massa et eros vitae pulvin
+                    </p>
+                    <a class="btn" href="{{ path('blog-view', {'slug': article.slug}) }}">{% trans %}Read More{% endtrans %} <i class="fa fa-angle-right"></i></a>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+    {% if articles|length < 2 %}
+        {% for i in articles|length..1 %}
+            <div class="col-lg-6 blog-placeholder">
+                <div class="blog-item wow fadeInUp" data-wow-delay="0.1s">
+                    <div class="blog-img">
+                        <div class="figure-img img-fluid rounded placeholder-glow image-not-found">
+                        </div>
+                    </div>
+                    <div class="blog-text">
+                        <h2 class=" placeholder-glow">
+                            <span class="placeholder col-6"></span>
+                        </h2>
+                        <div class="blog-meta">
+                            <span class="text-nowrap blog-meta-icon"><i class="far fa-user"></i> {% trans %}John Doe{% endtrans %}</span>
+                            <span class="text-nowrap blog-meta-icon"><i class="far fa-calendar-alt"></i> 00-00-0000</span>
+                            <span class="text-nowrap blog-meta-icon"><i class="fa-solid fa-ghost"></i> 0</span>
+                            <span class="text-nowrap blog-meta-icon"><i class="far fa-comments"></i> 0</span>
+                        </div>
+                        <p class="card-text placeholder-glow">
+                            <span class="placeholder col-7"></span>
+                            <span class="placeholder col-4"></span>
+                            <span class="placeholder col-4"></span>
+                            <span class="placeholder col-6"></span>
+                            <span class="placeholder col-8"></span>
+                        </p>
+                        <a class="btn" href="#">{% trans %}Read More{% endtrans %} <i class="fa fa-angle-right"></i></a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+    <div class="pagination">
+        {% include 'common/pagination.html.twig' with {
+            currentFilters: [],
+            currentPage: currentPage,
+            paginationPath: "blog",
+            lastPage: lastPage,
+            showAlwaysFirstAndLast: true
+        } only %}
+    </div>
+</div>

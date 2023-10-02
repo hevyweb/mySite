@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+{% trans_default_domain 'user' %}
+
+{% block content %}
+    {% if 'ROLE_ADMIN' in app.user.roles %}
+        {% set breadcrumbs = [
+            {title: 'Admin panel' | trans([], 'dashboard'), link: absolute_url(path('admin-dashboard'))},
+            {title: 'Users' | trans, link: absolute_url(path('users')) },
+            {title: title}
+        ] %}
+        {% include 'common/breadcrumbs.html.twig' with breadcrumbs %}
+    {% endif %}
+<div class="user container" id="users">
+    <div class="section-header text-center wow zoomIn" data-wow-delay="0.1s">
+        <h2>{{ title }}</h2>
+    </div>
+    {% include '/user/__tabs.html.twig' with {current_tab: 'general'} %}
+    <div class="user-form-body">
+        {{ form_start(form) }}
+            {% include '/user/__username.html.twig' %}
+            {{ form_row(form.email) }}
+            {{ form_row(form.firstName) }}
+            {{ form_row(form.lastName) }}
+            {{ form_row(form.birthday) }}
+            {{ form_row(form.sex) }}
+        <button type="submit">{{ submit }}</button>
+        {{ form_end(form) }}
+    </div>
+</div>
+{% endblock %}

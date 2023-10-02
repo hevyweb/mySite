@@ -1,0 +1,18 @@
+{% trans_default_domain 'user' %}
+
+<div>
+    <h1>{% trans %}Confirm old email{% endtrans %}</h1>
+    <p>{% trans %}Greetings{% endtrans %} {{ user.firstName}} {{ user.lastName }}</p>
+    <p>{% trans %}You requested email change.{% endtrans %}
+        {% trans %}For the security reason to change the email you should confirm both emails: an old one and a new one.{% endtrans %}
+        {% trans %}We sent you a confirmation link on both of them.{% endtrans %}
+        {% trans %}You are going to change your current email to:{% endtrans %} <b>{{ newEmail }}</b>
+    </p>
+    <p>{% trans %}To confirm your old email please click the link below.{% endtrans %}</p>
+    <p>
+        <a href="{{ absolute_url(path('user-old-email-confirm', {'token': token})) }}">
+            {{ absolute_url(path('user-old-email-confirm', {'token': token})) }}
+        </a>
+    </p>
+    <p>{% trans %}Have a nice day{% endtrans %}</p>
+</div>

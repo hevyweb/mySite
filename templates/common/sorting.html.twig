@@ -1,0 +1,15 @@
+<a href="{{ absolute_url(path(alias, {
+    'search': currentFilters.search,
+    'sorting': sorting,
+    'dir': sorting == currentFilters.sorting ? (currentFilters.dir == 'ASC' ? 'DESC' : 'ASC') : 'DESC'
+}
+)) }}" class="text-nowrap">
+    {{ label }}
+    {% if sorting == currentFilters.sorting %}
+        {% if currentFilters.dir == 'ASC' %}
+            <i class="fa-solid fa-caret-down"></i>
+        {% else %}
+            <i class="fa-solid fa-caret-up"></i>
+        {% endif %}
+    {% endif %}
+</a>

@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+{% trans_default_domain 'security' %}
+
+{% block content %}
+    <div id="access_denied">
+        <h2>{% trans %}Error occurred.{% endtrans %}</h2>
+        <div>
+            {% trans %}Some unpredicted error occurred. Please try again later or contact administrator.{% endtrans %}
+        </div>
+        <div><a href="mailto:{{ get_env('EMAIL_FROM') }}">{{ get_env('EMAIL_FROM') }}</a></div>
+    </div>
+{% endblock %}

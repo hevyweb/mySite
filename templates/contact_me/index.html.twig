@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+{% trans_default_domain 'contactme' %}
+{% form_theme form "bootstrap_3_layout.html.twig" %}
+
+{% block controllerHeaders %}
+    {{ encore_entry_link_tags('css/contactme') }}
+{% endblock %}
+
+{% block content %}
+    {% include 'common/title.html.twig' %}
+
+<div class="contact row p-4" id="contact">
+    <div class="col-lg-4 contact-hero" aria-hidden="true">
+        <img src="{{ absolute_url('/images/contactme.jpg') }}" alt="" id="contact-me-banner">
+    </div>
+    <div class="col-lg-8 contact-form">
+        {{ form_start(form, {attr: {'class': 'form-inline needs-validation', 'name': 'sentMessage', 'id':'contactForm', 'novalidate': 'novalidate'}}) }}
+        {{ form(form) }}
+        {{ form_end(form) }}
+    </div>
+</div>
+{% endblock %}

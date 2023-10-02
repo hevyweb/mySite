@@ -1,0 +1,9 @@
+blog:
+  controller: App\Controller\BlogController::index
+  path: blog
+
+blog-view:
+  controller: App\Controller\BlogController::view
+  path: blog/{slug}
+  requirements:
+    slug: '^[\w-]+$'

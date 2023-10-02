@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+{% trans_default_domain 'experience' %}
+
+{% block controllerHeaders %}
+    {{ encore_entry_link_tags('css/experience') }}
+{% endblock %}
+
+{% block content %}
+{% include 'common/title.html.twig' %}
+
+<div class="experience" id="experience">
+    <div class="container">
+        <div class="timeline">
+            {% if experiences|length %}
+                {% for n, experience in experiences %}
+                <div class="timeline-item {{ n%2 ? 'left slideInLeft' : 'right slideInRight'}} wow" data-wow-delay="0.1s">
+                    <div class="timeline-text">
+                        <div class="timeline-date">
+                            {{ experience.fromDate|date('F') }} {{ experience.fromDate|date('Y') }} -
+                            {{ experience.fromDate|date('F') }} {{ experience.fromDate|date('Y') }}
+                        </div>
+                        <h2>{{ experience.name }}</h2>
+                        <h4>{{ experience.company }}, {{ experience.location }}</h4>
+                        <p>
+                            {% if experience.image is defined %}
+                                <img src="{{ absolute_url('/company/'~ experience.image) }}" class="img-thumbnail company-thumbnail float-start"
+                                     alt="{{ experience.company }}" />
+                            {% endif %}
+                            {{ experience.description }}
+                        </p>
+                    </div>
+                </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
