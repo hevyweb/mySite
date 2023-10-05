@@ -7,7 +7,7 @@ if (!Encore.isRuntimeEnvironmentConfigured()) {
 Encore.enableSassLoader();
 
 Encore
-    .setOutputPath('public_html/assets/')
+    .setOutputPath('public/assets/')
     .setPublicPath('/assets')
     .setManifestKeyPrefix('bundles/easyadmin')
     .addEntry('js/app', './assets/js/app.js')
