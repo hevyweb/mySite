@@ -5,7 +5,7 @@ experience-list:
 experience-create:
   controller: App\Controller\ExperienceController::create
   path: administrator/experience
-  methods: [ GET ]
+  methods: [ GET, POST ]
 
 experience-update:
   controller: App\Controller\ExperienceController::update
@@ -16,7 +16,7 @@ experience-update:
 
 experience-delete:
   controller: App\Controller\ExperienceController::delete
-  path: administrator/experience
+  path: administrator/experience/delete
   methods: [POST]
 
 experience-tree:
