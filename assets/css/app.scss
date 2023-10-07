@@ -695,8 +695,9 @@
 }
 
 .company-thumbnail {
-    max-height: 200px !important;
-    max-width: 200px !important;
+    max-height: 255px !important;
+    max-width: 255px !important;
+    margin: 0 12px 12px 0;
 }
 
 .dashboard .dashboard-content a {
