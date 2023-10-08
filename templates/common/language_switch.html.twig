@@ -1,6 +1,8 @@
 {% trans_default_domain 'languages' %}
 {% set route = app.current_route|default('home') %}
-{% set params = app.request.query.all %}
+{% set params = app.request.query|default([]) %}
+{% set route_params = app.current_route_parameters|default([]) %}
+{% set params = params|merge(route_params) %}
 
 <div class="language-switch-container" role="switch" aria-description="{% trans %}Language toggle{% endtrans %}">
     <div class="language-toggle">
