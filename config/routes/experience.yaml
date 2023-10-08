@@ -10,7 +10,7 @@ experience-create:
 experience-update:
   controller: App\Controller\ExperienceController::update
   path: administrator/experience/{id}
-  methods: [GET]
+  methods: [GET, POST]
   requirements:
     id: '^\d+$'
 
