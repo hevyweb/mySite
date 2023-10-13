@@ -16,8 +16,8 @@
                 <div class="timeline-item {{ n%2 ? 'left slideInLeft' : 'right slideInRight'}} wow" data-wow-delay="0.1s">
                     <div class="timeline-text">
                         <div class="timeline-date">
-                            {{ experience.fromDate|date('F') }} {{ experience.fromDate|date('Y') }} -
-                            {{ experience.fromDate|date('F') }} {{ experience.fromDate|date('Y') }}
+                            {{ experience.fromDate|date('F')|trans }} {{ experience.fromDate|date('Y') }} -
+                            {{ experience.toDate|date('F')|trans }} {{ experience.toDate|date('Y') }}
                         </div>
                         <h2>{{ experience.name }}</h2>
                         <h4>{{ experience.company }}, {{ experience.location }}</h4>
