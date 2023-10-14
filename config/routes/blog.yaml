@@ -1,4 +1,4 @@
-blog:
+blog-list:
   controller: App\Controller\BlogController::index
   path: blog
 

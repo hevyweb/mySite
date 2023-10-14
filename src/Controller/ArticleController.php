@@ -39,7 +39,7 @@ class ArticleController extends AbstractController
         $abstractForm = $this->createForm(ArticleListType::class, $request);
         $abstractForm->handleRequest($request);
         if ($abstractForm->isSubmitted() && !$abstractForm->isValid()) {
-            return $this->redirectToRoute('articles');
+            return $this->redirectToRoute('article-list');
         }
         /**
          * @var ArticleRepository $repository
@@ -77,7 +77,7 @@ class ArticleController extends AbstractController
                     ->setCreatedAt(new \DateTimeImmutable());
                 $this->entityManager->persist($article);
                 $this->entityManager->flush();
-                return $this->redirectToRoute('articles');
+                return $this->redirectToRoute('article-list');
             } catch (FileException $fileException) {
                 $error = new FormError($fileException->getMessage());
                 $form->get('image')->addError($error);
@@ -113,7 +113,7 @@ class ArticleController extends AbstractController
                     ->setUpdatedBy($this->getUser())
                     ->setUpdatedAt(new \DateTime());
                 $this->entityManager->flush();
-                return $this->redirectToRoute('articles');
+                return $this->redirectToRoute('article-list');
             } catch (FileException $fileException) {
                 $error = new FormError($fileException->getMessage());
                 $form->get('image')->addError($error);
@@ -143,13 +143,13 @@ class ArticleController extends AbstractController
                     } catch (FileNotFoundException $exception) {
                         $this->logger->error($exception->getMessage());
                         $this->addFlash(self::$success, $this->translator->trans('Can not remove image of the article.', [], 'article'));
-                        return $this->redirectToRoute('articles');
+                        return $this->redirectToRoute('article-list');
                     }
                 }
                 $this->entityManager->flush();
             }
         }
 
-        return $this->redirectToRoute('articles');
+        return $this->redirectToRoute('article-list');
     }
 }

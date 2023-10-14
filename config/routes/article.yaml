@@ -1,4 +1,4 @@
-articles:
+article-list:
   path: /administrator/articles
   controller: App\Controller\ArticleController::index
 

@@ -1,5 +1,4 @@
-
-users:
+user-list:
   path: /administrator/users
   controller: App\Controller\UserController::index
 

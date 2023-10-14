@@ -7,7 +7,7 @@
 {% block content %}
 {% set breadcrumbs = [
     {title: 'Admin panel' | trans([], 'dashboard'), link: absolute_url(path('admin-dashboard'))},
-    {title: 'Articles' | trans, link: absolute_url(path('articles')) },
+    {title: 'Articles' | trans, link: absolute_url(path('article-list')) },
     {title: title}
 ] %}
 {% include 'common/breadcrumbs.html.twig' with breadcrumbs %}

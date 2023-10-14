@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+{% trans_default_domain 'page' %}
+{% form_theme form "bootstrap_3_layout.html.twig" %}
+
+{% block content %}
+{% set breadcrumbs = [
+    {title: 'Admin panel' | trans([], 'dashboard'), link: absolute_url(path('admin-dashboard'))},
+    {title: 'Page content' | trans, link: absolute_url(path('page-list')) },
+    {title: title}
+] %}
+{% include 'common/breadcrumbs.html.twig' with breadcrumbs %}
+<div class="admin-panel" id="page">
+    <div class="container">
+        <div class="section-header text-center wow zoomIn" data-wow-delay="0.1s">
+            <h2>{{ title }}</h2>
+        </div>
+        {{ form_start(form, {attr: {'class': 'form-inline'}}) }}
+        {{ form(form) }}
+        {{ form_end(form) }}
+    </div>
+</div>
+{% endblock %}

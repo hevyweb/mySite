@@ -33,13 +33,13 @@
                 {% include 'common/pagination.html.twig' with {
                     currentFilters: currentFilters,
                     currentPage: currentPage,
-                    paginationPath: "articles",
+                    paginationPath: "article-list",
                     lastPage: lastPage,
                     showAlwaysFirstAndLast: true
                 } only %}
             </div>
         </div>
-        <form action="{{ absolute_url(path('articles')) }}">
+        <form action="{{ absolute_url(path('article-list')) }}">
             <div class="input-group quick-search">
                 <input type="search" name="search" value="{{ currentFilters.search }}" id="form1" class="form-control" placeholder="{% trans from 'messages' %}Search{% endtrans%}" />
                 <div class="input-group-append">
@@ -59,21 +59,21 @@
                             </th>
                             <th>{% trans %}Image{% endtrans %}</th>
                             <th>
-                                {{ include('common/sorting.html.twig', {alias: 'articles', label: 'Title'|trans, sorting: 'title'}) }}
+                                {{ include('common/sorting.html.twig', {alias: 'article-list', label: 'Title'|trans, sorting: 'title'}) }}
                             </th>
                             <th>
-                                {{ include('common/sorting.html.twig', {alias: 'articles', label: 'Locale'|trans, sorting: 'locale'}) }}
+                                {{ include('common/sorting.html.twig', {alias: 'article-list', label: 'Locale'|trans, sorting: 'locale'}) }}
                             </th>
                             <th>
-                                {{ include('common/sorting.html.twig', {alias: 'articles', label: 'Created'|trans, sorting: 'createdAt'}) }}
+                                {{ include('common/sorting.html.twig', {alias: 'article-list', label: 'Created'|trans, sorting: 'createdAt'}) }}
                             </th>
                             <th>{% trans %}Tags{% endtrans %}</th>
                             <th>{% trans %}Link{% endtrans %}</th>
                             <th>
-                                {{ include('common/sorting.html.twig', {alias: 'articles', label: 'Draft'|trans, sorting: 'draft'}) }}
+                                {{ include('common/sorting.html.twig', {alias: 'article-list', label: 'Draft'|trans, sorting: 'draft'}) }}
                             </th>
                             <th>
-                                {{ include('common/sorting.html.twig', {alias: 'articles', label: 'Hits'|trans, sorting: 'hit'}) }}
+                                {{ include('common/sorting.html.twig', {alias: 'article-list', label: 'Hits'|trans, sorting: 'hit'}) }}
                             </th>
                         </tr>
                     </thead>
@@ -96,7 +96,7 @@
                                 <td>
                                 {% if article.tags %}
                                     {% for tag in article.tags %}
-                                        <a href="{{ absolute_url(path('articles', {'tag': tag })) }}" class="tag text-nowrap">
+                                        <a href="{{ absolute_url(path('article-list', {'tag': tag })) }}" class="tag text-nowrap">
                                             <i class="fa-solid fa-tag "></i> {{ tag }}
                                         </a>
                                     {% endfor %}
@@ -127,7 +127,7 @@
             {% include 'common/pagination.html.twig' with {
                 currentFilters: currentFilters,
                 currentPage: currentPage,
-                paginationPath: "articles",
+                paginationPath: "article-list",
                 lastPage: lastPage,
                 showAlwaysFirstAndLast: true
             } only %}

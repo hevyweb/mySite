@@ -1,0 +1,64 @@
+{% extends 'base.html.twig' %}
+{% trans_default_domain 'page' %}
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('js/admin') }}
+{% endblock %}
+{% block content %}
+    {% set breadcrumbs = [
+        {title: 'Admin panel' | trans([], 'dashboard'), link: absolute_url(path('admin-dashboard'))},
+        {title: 'Page content' | trans }
+    ] %}
+    {% include 'common/breadcrumbs.html.twig' with breadcrumbs %}
+    <div class="admin-panel" id="article">
+        <div class="container">
+            <div class="section-header text-center wow zoomIn" data-wow-delay="0.1s">
+                <h2>{%trans%}Page content{% endtrans %}</h2>
+            </div>
+            <div class="pb-3">
+                <a href="{{ path('page-create') }}" class="btn btn-lg btn-success text-right">
+                    <i class="fa-regular fa-file-lines"></i>
+                    {% trans from 'messages'  %}Create{% endtrans %}
+                </a>
+                <button class="btn btn-lg btn-danger delete" id="remove-experience" data-confirm="{% trans %}Are you sure that you want to remove this content?{% endtrans %}">
+                    <i class="fa-solid fa-trash-can"></i>
+                    {% trans from 'messages'  %}Delete{% endtrans %}
+                </button>
+            </div>
+            <div class="row">
+                <form action="{{ absolute_url(path('page-delete')) }}" method="post" class="datagrid-form">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>
+                                <input type="checkbox" class="check-all" />
+                            </th>
+                            <th>{% trans %}Title{% endtrans %}</th>
+                            <th>{% trans from 'messages' %}Locale{% endtrans %}</th>
+                            <th>{% trans %}Link{% endtrans %}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for page in pages %}
+                            <tr>
+                                <td>
+                                    <input type="checkbox" name="id[{{ page.id }}]" />
+                                </td>
+                                <td><a href="{{ path('page-update', {'id': page.id}) }}">{{ page.title }}</a></td>
+                                <td><img src="{{ absolute_url('/images/locales/' ~ page.locale) }}.png" alt="{{ page.locale|trans([], 'languages') }}" /></td>
+                                <td>
+                                    <a href="{{ path(page.route) }}">{{ page.route }}</a>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="4" class="not-found">{% trans from 'messages' %}Nothing found{% endtrans %}</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

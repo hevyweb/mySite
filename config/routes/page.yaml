@@ -1,0 +1,20 @@
+page-list:
+  controller: App\Controller\PageController::index
+  path: administrator/pages
+
+page-create:
+  controller: App\Controller\PageController::create
+  path: administrator/page
+  methods: [ GET, POST ]
+
+page-update:
+  controller: App\Controller\PageController::update
+  path: administrator/page/{id}
+  methods: [GET, POST]
+  requirements:
+    id: '^\d+$'
+
+page-delete:
+  controller: App\Controller\PageController::delete
+  path: administrator/page/delete
+  methods: [POST]

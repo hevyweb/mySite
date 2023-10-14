@@ -1,0 +1,10 @@
+{% for page in pages %}
+<div class="container">
+    {{ include('common/title.html.twig', {
+        'title': page.title
+    }) }}
+    <div class="page-body pt-4 pb-4">
+        {{ page.body|raw }}
+    </div>
+</div>
+{% endfor %}
