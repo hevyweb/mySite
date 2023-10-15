@@ -885,3 +885,21 @@
     padding: 50px 0 !important;
     text-align: center;
 }
+
+.dashboard a {
+    position: relative;
+}
+
+.dashboard .count-items {
+    font-size: 14px;
+    background: $red;
+    display: inline;
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 3px 8px;
+    border-radius: 6px;
+    color: $lightGray;
+    font-weight: bold;
+    box-shadow: 2px 2px 6px RGBA(0, 0, 0, 0.5);
+}

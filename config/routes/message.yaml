@@ -1,0 +1,17 @@
+message-list:
+  controller: App\Controller\MessageController::index
+  path: administrator/messages
+
+message-view:
+  controller: App\Controller\MessageController::view
+  path: administrator/message/{id}
+  requirements:
+    id: '^\d+$'
+
+message-delete:
+  controller: App\Controller\MessageController::delete
+  path: administrator/message/delete
+
+message-seen:
+  controller: App\Controller\MessageController::seen
+  path: administrator/message/seen

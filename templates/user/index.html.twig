@@ -11,7 +11,7 @@
         <div class="section-header text-center wow zoomIn" data-wow-delay="0.1s">
             <h2>{% trans %}Users{% endtrans %}</h2>
         </div>
-        <form method="get" action="{{ path('users') }}" class="quick-search">
+        <form method="get" action="{{ path('user-list') }}" class="quick-search">
             <div class="input-group quick-search">
                 <input type="search" id="form1" class="form-control" aria-label="{% trans from 'messages' %}Search{% endtrans%}"  value="{{ filtervariables.q }}" name="q" />
                 <div class="input-group-append">
@@ -24,7 +24,7 @@
         {% include 'common/pagination.html.twig' with {
             currentFilters: filtervariables,
             currentPage: page,
-            paginationPath: "users",
+            paginationPath: "user-list",
             lastPage: totalPages,
             showAlwaysFirstAndLast: true
         } only %}
@@ -71,7 +71,7 @@
         {% include 'common/pagination.html.twig' with {
             currentFilters: filtervariables,
             currentPage: page,
-            paginationPath: "users",
+            paginationPath: "user-list",
             lastPage: totalPages,
             showAlwaysFirstAndLast: true
         } only %}

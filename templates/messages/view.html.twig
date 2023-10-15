@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+{% trans_default_domain 'contactme' %}
+{% block content %}
+    {% set breadcrumbs = [
+        {title: 'Admin panel' | trans([], 'dashboard'), link: absolute_url(path('admin-dashboard'))},
+        {title: 'Messages' | trans, link: absolute_url(path('message-list'))},
+        {title: 'Message view' | trans }
+    ] %}
+    {% include 'common/breadcrumbs.html.twig' with breadcrumbs %}
+    <div class="admin-panel" id="article">
+        <div class="container">
+            <div class="section-header text-center wow zoomIn" data-wow-delay="0.1s">
+                <h2>{{ message.subject }}</h2>
+            </div>
+            <div class="message-meta d-flex justify-content-start">
+                <div class="pe-3">
+                    <i class="fa-solid fa-calendar-days"></i>
+                    {{ message.createdAt | date('d.m.Y H:i:s') }}
+                </div>
+                <div class="pe-3">
+                    <i class="fa-solid fa-user"></i>
+                    {{ message.name }}
+                </div>
+                <div class="pe-3">
+                    <i class="fa-solid fa-envelope"></i>
+                    {{ message.email }}
+                </div>
+            </div>
+            <div class="pb-4 pt-4">
+                {{ message.message }}
+            </div>
+            <div>
+                <a href="mailto:{{ message.email }}" class="btn btn-success">
+                    <i class="fa-solid fa-envelope"></i> {% trans %}Reply{% endtrans %}
+                </a>
+                <a href="{{ path('message-delete', {'id': message.id}) }}" class="btn btn-danger">
+                    <i class="fa-solid fa-trash-can"></i> {% trans %}Delete{% endtrans %}
+                </a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

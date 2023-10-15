@@ -14,6 +14,15 @@
             </a>
         </div>
         <div class="p-2">
+            <a href="{{ absolute_url(path('message-list')) }}">
+                <i class="fa-solid fa-inbox"></i>
+                <span>{% trans from 'contactme' %}Messages{% endtrans %}</span>
+                {% if messages %}
+                    <div class="count-items">{{ messages }}</div>
+                {% endif %}
+            </a>
+        </div>
+        <div class="p-2">
             <a href="{{ absolute_url(path('role-list')) }}">
                 <i class="fa-solid fa-shield-halved"></i>
                 <span>{% trans from 'role' %}Roles{% endtrans %}</span>

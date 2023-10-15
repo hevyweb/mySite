@@ -1,0 +1,83 @@
+{% extends 'base.html.twig' %}
+{% trans_default_domain 'contactme' %}
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('js/admin') }}
+{% endblock %}
+{% block content %}
+    {% set breadcrumbs = [
+        {title: 'Admin panel' | trans([], 'dashboard'), link: absolute_url(path('admin-dashboard'))},
+        {title: 'Messages' | trans }
+    ] %}
+    {% include 'common/breadcrumbs.html.twig' with breadcrumbs %}
+    <div class="admin-panel" id="article">
+        <div class="container">
+            <div class="section-header text-center wow zoomIn" data-wow-delay="0.1s">
+                <h2>{%trans%}Messages{% endtrans %}</h2>
+            </div>
+            <div class="pb-4">
+                <button class="btn btn-lg btn-danger delete" id="remove-message" data-confirm="{% trans %}Are you sure that you want to delete selected messages?{% endtrans %}">
+                    <i class="fa-solid fa-trash-can"></i>
+                    {% trans from 'messages'  %}Delete{% endtrans %}
+                </button>
+                <button class="btn btn-lg btn-success" id="mark-read" data-href="{{ absolute_url(path('message-seen')) }}"  data-confirm="{% trans %}Are you sure that you want to mark as read selected messages?{% endtrans %}">
+                    <i class="fa-solid fa-envelope-open-text"></i>
+                    {% trans %}Mark as read{% endtrans %}
+                </button>
+            </div>
+            <div class="row">
+                <form action="{{ absolute_url(path('message-delete')) }}" method="post" class="datagrid-form" id="message-form">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>
+                                <input type="checkbox" class="check-all" />
+                            </th>
+                            <th>{% trans %}Subject{% endtrans %}</th>
+                            <th>{% trans from 'messages' %}Date{% endtrans %}</th>
+                            <th>{% trans from 'messages' %}Name{% endtrans %}</th>
+                            <th>{% trans from 'messages' %}Email{% endtrans %}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for message in messages %}
+                            <tr>
+                                <td>
+                                    <input type="checkbox" name="id[{{ message.id }}]" />
+                                </td>
+                                <td><a href="{{ path('message-view', {'id': message.id}) }}">
+                                        {% if message.seen %}
+                                            <i class="fa-solid fa-envelope-open-text soft"></i>
+                                            {{ message.subject }}
+                                        {% else %}
+                                            <i class="fa-solid fa-envelope green"></i>
+                                            <b>{{ message.subject }}</b>
+                                        {% endif %}
+                                    </a></td>
+                                <td>
+                                    {{ message.getcreatedAt|date('d.m.Y H:i:s') }}
+                                </td>
+                                <td>
+                                    {{ message.name }}
+                                </td>
+                                <td>
+                                    {{ message.email }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </form>
+                <div class="d-flex justify-content-center">
+                    {% include 'common/pagination.html.twig' with {
+                        currentFilters: [],
+                        currentPage: page,
+                        paginationPath: "message-list",
+                        lastPage: totalPages,
+                        showAlwaysFirstAndLast: true
+                    } only %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
