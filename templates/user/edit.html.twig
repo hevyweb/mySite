@@ -5,7 +5,7 @@
     {% if 'ROLE_ADMIN' in app.user.roles %}
         {% set breadcrumbs = [
             {title: 'Admin panel' | trans([], 'dashboard'), link: absolute_url(path('admin-dashboard'))},
-            {title: 'Users' | trans, link: absolute_url(path('users')) },
+            {title: 'Users' | trans, link: absolute_url(path('user-list')) },
             {title: title}
         ] %}
         {% include 'common/breadcrumbs.html.twig' with breadcrumbs %}

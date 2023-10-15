@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Role;
 use App\Entity\User;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
@@ -23,5 +24,15 @@ class UserRepository extends AbstractDataGridRepository implements UserLoaderInt
     public function loadUserByIdentifier(string $identifier): ?UserInterface
     {
         return $this->find($identifier);
+    }
+
+    public function getAdmins(): array
+    {
+        return $this->createQueryBuilder('u')
+            ->innerJoin(Role::class, 'r')
+            ->where('r.code = :admin_role')
+            ->setParameter('admin_role', Role::ROLE_ADMIN)
+            ->getQuery()
+            ->getResult();
     }
 }
