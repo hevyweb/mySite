@@ -837,14 +837,19 @@
 .page-title {
     background: linear-gradient(90deg, $lightGray, $cyan 5%, $deepBlue 10%, $cyan 40%, $lightGray);
     .diam {
-        height: 56px;
-        margin: 10px 20px 10px 60px;
+        height: 5.6rem;
+        margin: 1rem 2rem 1rem 6rem;
         background: linear-gradient(45deg, $orange, $brightYellow);
         border-radius: 100%;
-        padding: 5px;
-        box-shadow: 0 0 10px 2px RGBA(0, 0, 0, 0.5);
-        width: 56px;
+        padding: 0.5rem;
+        box-shadow: 0 0 1rem 0.2rem RGBA(0, 0, 0, 0.5);
+        width: 5.6rem;
         float: left;
+        @media (max-width: $cellphone) {
+            width: 2rem;
+            height: 2rem;
+            margin: 1rem;
+        }
 
         p {
             background: $lightGray radial-gradient(circle at center, RGBA(0, 0, 0, 0.1), RGBA(0, 0, 0, 0.3) 30%, transparent 50% );

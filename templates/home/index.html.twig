@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 {% block content %}
-    <div class="container" id="blog">
+    <div id="blog">
         {% include 'common/title.html.twig' with {title: 'Top Articles'|trans} %}
         <div class="blog">
             {% include 'blog/items.html.twig' with {currentPage: 1, lastPage: 1} %}
