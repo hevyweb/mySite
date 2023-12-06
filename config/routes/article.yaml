@@ -12,6 +12,14 @@ article-edit:
   requirements:
     id: '^\d+$'
 
+article-translate:
+  path: /administrator/article/translate/{id}/{locale}
+  controller: App\Controller\ArticleController::translate
+  requirements:
+    id: '^\d+$'
+    locale: 'en|ua'
+
+
 article-delete:
   path: /administrator/article/delete
   methods: [POST]

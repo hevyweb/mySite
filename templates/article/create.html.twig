@@ -14,30 +14,58 @@
 <div class="admin-panel" id="article">
     <div class="container">
         <div class="section-header text-center wow zoomIn" data-wow-delay="0.1s">
-            <h2>{%trans%}Create an article{% endtrans %}</h2>
+            <h2>{{ title|trans }}</h2>
         </div>
-        {{ form_start(form, {attr: {'class': 'form-inline'}}) }}
-        <div class="row">
-            <div class="col-lg-8">
-                {{ form_row(form.title, {attr: {'class': 'form-control'}}) }}
-                {{ form_row(form.slug, {attr: {'class': 'form-control'}}) }}
-                {{ form_row(form.body, {attr: {'class': 'html-editor'}}) }}
-                {{ form_row(form.locale, {attr: {'class': 'form-control'}}) }}
-                {{ form_row(form.tags, {attr: {'class': 'form-control'}}) }}
-                <div class="custom-control custom-checkbox my-1 mr-sm-2">
-                    {{ form_row(form.draft, {attr: {'class': 'custom-control-input'}, label_attr: {'class': 'custom-control-input'}}) }}
+        <div class="tabs">
+            <ul class="nav nav-tabs">
+                {% for locale in app_locales %}
+                    <li class="nav-item d-flex {{ form.vars.value.locale == locale ? "nav-item-active" : "" }}">
+                        {% set article = translations|filter(a => a.locale == locale)|first %}
+                        {% set url =
+                            (form.vars.value.locale == locale)
+                                ? '#'
+                                : (
+                                    article and article.locale == locale
+                                        ? url('article-edit', {'id': article.id})
+                                        : '#'
+                                ) %}
+                        <a class="nav-link {{ form.vars.value.locale == locale ? "active" : (url == '#' ? 'disabled' : '') }}" aria-current="page" href="{{ url }}">
+                            <img src="{{ absolute_url('/images/locales/' ~ locale) }}.png" alt="{{ locale|trans([], 'languages') }}" class="{{ form.vars.value.locale != locale and url == '#' ? 'monochrome' : '' }}" />
+                            {{ locale|trans([], 'languages') }}
+                        </a>
+                        {% if form.vars.value.locale != locale and url == '#' and form.vars.value.id %}
+                        <a href="{{ url('article-translate', {'id': form.vars.value.id, 'locale': locale}) }}" class="ms-1">
+                            <i class="fa-solid fa-square-plus green"></i>
+                        </a>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="box-container">
+            {{ form_start(form, {attr: {'class': 'form-inline'}}) }}
+            <div class="row">
+                <div class="col-lg-8">
+                    {{ form_row(form.title, {attr: {'class': 'form-control'}}) }}
+                    {{ form_row(form.slug, {attr: {'class': 'form-control'}}) }}
+                    {{ form_row(form.body, {attr: {'class': 'html-editor'}}) }}
+                    {{ form_row(form.locale, {attr: {'class': 'form-control'}}) }}
+                    {{ form_row(form.tags, {attr: {'class': 'form-control'}}) }}
+                    <div class="custom-control custom-checkbox my-1 mr-sm-2">
+                        {{ form_row(form.draft, {attr: {'class': 'custom-control-input'}, label_attr: {'class': 'custom-control-input'}}) }}
+                    </div>
+                    <button type="submit" class="btn btn-primary">{{ submit }}</button>
                 </div>
-                <button type="submit" class="btn btn-primary">{{ submit }}</button>
+                <div class="col-lg-4">
+                    {% if article.image is defined %}
+                        <img src="/blog/{{ article.image }}" alt="" class="img-fluid"  />
+                    {% endif %}
+                    {{ form_row(form.image, {attr: {'class': 'form-control'}}) }}
+                    {{ form_row(form.preview, {attr: {'class': 'form-control'}}) }}
+                </div>
             </div>
-            <div class="col-lg-4">
-                {% if article.image is defined %}
-                    <img src="/blog/{{ article.image }}" alt="" class="img-fluid"  />
-                {% endif %}
-                {{ form_row(form.image, {attr: {'class': 'form-control'}}) }}
-                {{ form_row(form.preview, {attr: {'class': 'form-control'}}) }}
-            </div>
+            {{ form_end(form) }}
         </div>
-        {{ form_end(form) }}
     </div>
 </div>
 {% endblock %}

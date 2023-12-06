@@ -5,12 +5,9 @@ namespace App\Repository;
 use App\Entity\Article;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Collections\Criteria;
-use Doctrine\ORM\AbstractQuery;
-use Doctrine\ORM\Query\Expr\OrderBy;
-use Doctrine\ORM\QueryBuilder;
+use Doctrine\DBAL\Query\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @extends ServiceEntityRepository<Article>
@@ -32,32 +29,42 @@ class ArticleRepository extends ServiceEntityRepository
     public function search(Request $request)
     {
         $query = $this->createBasicSearchQuery($request);
-
         $query->setMaxResults($request->get('limit', self::PER_PAGE));
         $query->setFirstResult(((int) $request->get('page', 1) - 1) * self::PER_PAGE);
+        $query->groupBy('a.slug');
 
-        $query->orderBy('a.'.$request->get('sorting', 'createdAt'), $request->get('dir', Criteria::DESC));
+        $query->orderBy('a.'.$request->get('sorting', 'created_at'), $request->get('dir', Criteria::DESC));
 
-        return $query->getQuery()->getResult();
+        return $query->executeQuery()->fetchAllAssociative();
     }
 
     public function getCount(Request $request): int
     {
         $query = $this->createBasicSearchQuery($request);
-        $query->select('count(a)');
+        $query->select('count(a.slug)');
 
         $query->setMaxResults(1);
 
-        return (int) $query->getQuery()->getSingleScalarResult();
+        return (int) $query->executeQuery()->fetchFirstColumn();
     }
 
+    /**
+     * Unfortunately I have to use Doctrine DBAL because I need MySQL function GROUP_CONCAT, which does not exist out
+     * of the box in Doctrine ORM, and I'm too lazy to implement it via lexer:)
+     *
+     * @param Request $request
+     * @return QueryBuilder
+     */
     protected function createBasicSearchQuery(Request $request): QueryBuilder
     {
-        $query = $this->createQueryBuilder('a');
+        $query = $this->getEntityManager()->getConnection()->createQueryBuilder();
+        $query->from($this->getEntityManager()->getClassMetadata(Article::class)->getTableName(), 'a');
+        $query->select('a.*');
+        $query->addSelect('GROUP_CONCAT(a.locale SEPARATOR \',\') as locale');
 
         if ($request->query->has('search')) {
             $query->andWhere(
-                $query->expr()->orX(
+                $query->expr()->or(
                     $query->expr()->like('a.title', ':search'),
                     $query->expr()->like('a.body', ':search')
                 )
@@ -97,7 +104,7 @@ class ArticleRepository extends ServiceEntityRepository
             ->getSingleScalarResult();
     }
 
-    protected function createBasicBlogQuery($locale): QueryBuilder
+    protected function createBasicBlogQuery($locale): \Doctrine\ORM\QueryBuilder
     {
         return $this->createQueryBuilder('a')
             ->where('a.draft != :not_draft')
@@ -119,6 +126,16 @@ class ArticleRepository extends ServiceEntityRepository
             ->setMaxResults(1)
             ->getQuery()
             ->getSingleResult();
+    }
+
+    public function getTranslatedLocales(string $slug): array
+    {
+        return $this->createQueryBuilder('a')
+            ->select('a.locale')
+            ->where('a.slug = :slug')
+            ->setParameter('slug', $slug)
+            ->getQuery()
+            ->getArrayResult();
     }
 
 }

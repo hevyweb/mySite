@@ -1,2 +1,3 @@
 ua: Українська
 en: English
+Locale {{ locale }} not found: Locale {{ locale }} not found

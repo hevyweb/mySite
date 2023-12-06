@@ -34,6 +34,10 @@ Encore
         from: './vendor/tinymce',
         to: 'plugin/tinymce/[path][name].[ext]'
     })
+    .copyFiles({
+        from: './assets/js/localization/tinymce',
+        to: 'plugin/tinymce/tinymce/langs/[path][name].[ext]'
+    })
     .autoProvidejQuery()
 ;
 

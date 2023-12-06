@@ -40,11 +40,25 @@ jQuery(function($){
     window.wow.init();
     tinymce.init({
         selector: '.html-editor',
+        images_upload_url: '/administrator/images/upload',
+        automatic_uploads: true,
         setup: function (editor) {
             editor.on('change', function () {
                 editor.save();
             });
-        }
+        },
+        language: settings.language,
+        plugins: 'image table code',
+        toolbar_mode: 'wrap',
+        toolbar:
+            'undo redo ' +
+            '| backcolor forecolor blocks fontfamily fontsize ' +
+            '| bold italic underline ' +
+            '| alignleft aligncenter alignjustify alignright' +
+            '| allignment removeformat ' +
+            '| table image ' +
+            '| code ',
+
     });
 
 

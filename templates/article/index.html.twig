@@ -89,9 +89,13 @@
                                     {% endif %}
                                 </td>
                                 <td><a href="{{ path('article-edit', {'id': article.id}) }}">{{ article.title }}</a></td>
-                                <td><img src="{{ absolute_url('/images/locales/' ~ article.locale) }}.png" alt="{{ article.locale|trans([], 'languages') }}" /></td>
                                 <td>
-                                    {{ article.createdAt|date('d.m.Y H:i') }}
+                                    {% for locale in article.locale|split(',') %}
+                                        <img src="{{ absolute_url('/images/locales/' ~ locale) }}.png" alt="{{ locale|trans([], 'languages') }}" />
+                                    {% endfor %}
+                                </td>
+                                <td>
+                                    {{ article.created_at|date('d.m.Y H:i') }}
                                 </td>
                                 <td>
                                 {% if article.tags %}

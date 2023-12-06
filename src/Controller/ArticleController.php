@@ -19,6 +19,8 @@ use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Validator\Constraints\Date;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ArticleController extends AbstractController
@@ -62,6 +64,7 @@ class ArticleController extends AbstractController
     public function create(Request $request): Response
     {
         $article = new Article();
+
         $article->setLocale($request->getLocale());
         $form = $this->createForm(ArticleType::class, $article);
         $form->handleRequest($request);
@@ -87,8 +90,49 @@ class ArticleController extends AbstractController
         return $this->render('article/create.html.twig', [
             'title' => $this->translator->trans('Create an article', [], 'article'),
             'form' => $form->createView(),
+            'translations' => [],
             'submit' => $this->translator->trans('Save'),
         ]);
+    }
+
+    public function translate(Request $request): Response
+    {
+        $originArticleId = $request->get('id');
+
+        $articleRepository = $this->entityManager->getRepository(Article::class);
+
+        $originArticle = $articleRepository->find($originArticleId);
+
+        if (!$originArticle) {
+            throw new NotFoundHttpException($this->translator->trans('Article with id {{ id }} not found.', ['id'=> $originArticleId], 'article'));
+        }
+
+        $locale = $request->get('locale');
+
+        if (!in_array($locale, $this->getParameter('app_locales'))){
+            throw new NotFoundHttpException($this->translator->trans('Locale {{ locale }} not found', ['locale' => $locale], 'languages'));
+        }
+
+        if ($existingArticle = $articleRepository->findOneBy(['slug' => $originArticle->getSlug(), 'locale' => $locale])) {
+            return $this->redirectToRoute('article-edit', ['id' => $existingArticle->getId()]);
+        }
+
+        $article = new Article();
+        $article->setLocale($locale)
+            ->setImage($originArticle->getImage())
+            ->setCreatedAt(new \DateTimeImmutable())
+            ->setBody($originArticle->getBody())
+            ->setDraft(true)
+            ->setPreview($originArticle->getPreview())
+            ->setSlug($originArticle->getSlug())
+            ->setTags($originArticle->getTags())
+            ->setTitle($originArticle->getTitle())
+            ->setCreatedBy($this->getUser());
+
+        $this->entityManager->persist($article);
+        $this->entityManager->flush();
+
+        return $this->redirectToRoute('article-edit', ['id' => $article->getId()]);
     }
 
     public function update(Request $request): Response
@@ -123,6 +167,7 @@ class ArticleController extends AbstractController
             'title' => $this->translator->trans('Update an article', [], 'article'),
             'article' => $article,
             'form' => $form->createView(),
+            'translations' => $this->entityManager->getRepository(Article::class)->findBy(['slug' => $article->getSlug()]),
             'submit' => $this->translator->trans('Update'),
         ]);
     }

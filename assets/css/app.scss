@@ -908,3 +908,48 @@
     font-weight: bold;
     box-shadow: 2px 2px 6px RGBA(0, 0, 0, 0.5);
 }
+
+.box-container {
+    border: 1px solid $gray;
+    border-radius: 0 5px 5px 5px;
+    background: $lightGray;
+    padding: 20px;
+    box-shadow: 5px 5px 7px RGBA(0, 0, 0, 0.2);
+}
+
+.nav-item {
+    border-top: 1px solid $gray;
+    border-left: 1px solid $gray;
+    border-right: 1px solid $gray;
+    border-radius: 5px 5px 0 0;
+    margin: 0 10px 0 0;
+}
+
+.nav-item-active {
+    background: $cyan;
+    color: $lightGray;
+}
+
+.monochrome{
+    -webkit-filter: grayscale(100%);
+    filter: grayscale(100%);
+}
+
+#article {
+    .nav-tabs {
+        border: 0 none;
+        .nav-item {
+            padding: 10px 20px;
+
+            .nav-link {
+                margin: 0;
+                padding: 0;
+                background: none;
+                border: 0 none;
+            }
+            .active {
+                color: $lightGray;
+            }
+        }
+    }
+}
