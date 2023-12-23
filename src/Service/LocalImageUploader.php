@@ -2,20 +2,26 @@
 
 namespace App\Service;
 
+use App\Service\File as FileService;
 use Symfony\Component\HttpFoundation\File\Exception\UploadException;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\FileBag;
 
 class LocalImageUploader implements ImageUploader
 {
-    public function __construct(private \App\Service\File $fileService)
+    public function __construct(
+        private FileService $fileService,
+        private ImageService $imageService,
+    )
     {
     }
 
     public function save(FileBag $fileBag, string $destination): File
     {
         if ($fileBag->count()) {
-            return $this->fileService->saveFileTo($fileBag->getIterator()->current(), $destination);
+            $file = $this->fileService->saveFileTo($fileBag->getIterator()->current(), $destination);
+            $this->imageService->sanitize($file);
+            return $file;
         } else {
             throw new UploadException('File is not uploaded.');
         }
