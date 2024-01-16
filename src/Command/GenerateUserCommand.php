@@ -8,6 +8,7 @@ use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use RuntimeException;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -15,10 +16,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
+#[AsCommand(
+    name: 'app:generate:user',
+    description: 'This command generates admin user.',
+)]
 class GenerateUserCommand extends Command
 {
-    protected static $defaultName = 'app:generate:user';
-
     /**
      * @var EntityManagerInterface
      */
@@ -39,7 +42,6 @@ class GenerateUserCommand extends Command
     protected function configure(): void
     {
         $this
-            ->setDescription('Generates admin user')
             ->addOption(
                 'username',
                 'u',

@@ -46,7 +46,7 @@ class AppTokenProvider implements TokenProviderInterface
     /**
      * {@inheritdoc}
      */
-    public function updateToken(string $series, string $tokenValue, \DateTime $lastUsed): void
+    public function updateToken(string $series, string $tokenValue, \DateTimeInterface $lastUsed): void
     {
         $rememberMeToken = $this->loadTokenBySeries($series);
         $rememberMeToken->setLastUsed($lastUsed);

@@ -2,16 +2,14 @@
 
 namespace App\Traits;
 
+use Symfony\Contracts\Service\Attribute\Required;
+
 trait LocaleBuilderTrait
 {
     private array $locales;
 
-    /**
-     * @param array $locales
-     * @return void
-     * @required
-     */
-    public function setLocales(array $locales)
+    #[Required]
+    public function setLocales(array $locales): void
     {
         $this->locales = $locales;
     }

@@ -15,6 +15,7 @@ services:
             $locales: '%app_locales%'
             $defaultLocale: '%locale%'
             $defaultDateFormat: '%env(DEFAULT_DATE_FORMAT)%'
+            $googlePublicKey: '%env(GOOGLE_RECAPTCHA_SITE_KEY)%'
 
     App\:
         resource: '../src/'
@@ -45,3 +46,10 @@ services:
     App\Controller\ExperienceController:
         calls:
             - ['setLogger', ['@logger']]
+
+    ReCaptcha\ReCaptcha:
+        arguments:
+            - '%env(GOOGLE_RECAPTCHA_SECRET_KEY)%'
+
+    Symfony\Component\HttpFoundation\Request:
+        public: true

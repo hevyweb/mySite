@@ -11,6 +11,7 @@ Encore
     .setPublicPath('/assets')
     .setManifestKeyPrefix('bundles/easyadmin')
     .addEntry('js/app', './assets/js/app.js')
+    .addEntry('js/recaptcha', './assets/js/recaptcha.js')
     .addEntry('js/article', './assets/js/article.js')
     .addEntry('js/datagrid', './assets/js/datagrid.js')
     .addEntry('js/admin', './assets/js/admin.js')

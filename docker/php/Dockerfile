@@ -6,4 +6,3 @@ RUN curl -sL https://deb.nodesource.com/setup_14.x | bash -
 RUN apt-get update && \
     apt-get install -qq -y nodejs yarn imagemagick libmagickwand-dev --no-install-recommends php-dev build-essential
 RUN pecl install imagick
-#RUN docker-php-ext-enable imagick

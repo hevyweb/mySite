@@ -1,0 +1,8 @@
+{% use 'form_div_layout.html.twig' %}
+
+{% block recaptcha_row %}
+    <div class="pt-3">
+        <div id="{{ name }}" data-control="{{ id }}" class="g-recaptcha" data-toggle="recaptcha" data-sitekey="{{ gg_recaptcha_site_key }}"></div>
+    </div>
+    {{ block('form_row') }}
+{% endblock %}

@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Message;
+use App\Form\Constraint\ReCaptcha;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -109,6 +110,21 @@ class ContactMeType extends AbstractType {
                     new NotBlank(),
                 ],
                 'help' => $this->translator->trans('Please enter your message', [], 'contactme'),
+                'help_attr' => [
+                    'class' => 'invalid-feedback'
+                ],
+            ])->add('recaptcha', ReCaptchaType::class, [
+                'mapped' => false,
+                'required' => true,
+                'label' => $this->translator->trans('Captcha'),
+                'label_attr' => [
+                    'class' => 'sr-only',
+                ],
+                'invalid_message' => $this->translator->trans('Captcha validation error.'),
+                'constraints' => [
+                    new ReCaptcha(),
+                ],
+                'help' => $this->translator->trans('Please confirm that you are not a robot.'),
                 'help_attr' => [
                     'class' => 'invalid-feedback'
                 ],

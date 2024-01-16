@@ -39,3 +39,6 @@ Route: Роутінг
 Date: Дата
 Name: Ім'я
 Email: Імейл
+Captcha: Капча
+Captcha validation error.: Капча не пройшла валідацію.
+Please confirm that you are not a robot.: Підтвердьте, що ви не робот.

@@ -64,7 +64,6 @@ class EditUserType extends AbstractType
                 ],
             ])
             ->add('birthday', BirthdayType::class, [
-                'widget' => 'single_text',
                 'html5' => false,
                 'attr' => [
                     'class' => 'js-datepicker',

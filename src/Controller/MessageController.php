@@ -87,17 +87,19 @@ class MessageController extends AbstractController
     public function seen(Request $request): Response
     {
         $id = $request->get('id');
-        if (is_array($id)) {
-            $id = array_unique(array_map('intval', array_keys($id)));
-        } else {
-            throw new NotFoundHttpException('message id is not valid');
-        }
-        $messages = $this->entityManager->getRepository(Message::class)->findBy(['id' => $id]);
+        if (!empty($id)) {
+            if (is_array($id)) {
+                $id = array_unique(array_map('intval', array_keys($id)));
+            } else {
+                throw new NotFoundHttpException('message id is not valid');
+            }
+            $messages = $this->entityManager->getRepository(Message::class)->findBy(['id' => $id]);
 
-        foreach ($messages as $message) {
-            $message->setSeen(true);
+            foreach ($messages as $message) {
+                $message->setSeen(true);
+            }
+            $this->entityManager->flush();
         }
-        $this->entityManager->flush();
 
         return $this->redirectToRoute('message-list');
     }

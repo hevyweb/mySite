@@ -2,10 +2,10 @@
 
 namespace App\Repository;
 
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Bundle\DoctrineBundle\Repository\LazyServiceEntityRepository;
 use Doctrine\Common\Collections\Criteria;
 
-abstract class AbstractDataGridRepository extends ServiceEntityRepository
+abstract class AbstractDataGridRepository extends LazyServiceEntityRepository
 {
     /**
      * There is an issue in symfony. It doesn't allow to get total number of items, if search criteria is not empty.

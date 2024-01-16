@@ -18,7 +18,6 @@ class UniqueSlugValidator extends ConstraintValidator
 
     public function validate(mixed $value, Constraint $constraint)
     {
-        print_r($this->context->getRoot());exit;
         $this->entityManager->getRepository(Article::class)
             ->findDuplicates($value, $this->context->getRoot());
     }

@@ -6,8 +6,15 @@
     {{ encore_entry_link_tags('css/contactme') }}
 {% endblock %}
 
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://www.google.com/recaptcha/api.js?onload=reCaptchaRender&render=explicit&hl={{ app.request.getLocale()|locale }}"></script>
+    {{ encore_entry_script_tags('js/recaptcha') }}
+{% endblock %}
+
 {% block content %}
     {% include 'common/title.html.twig' %}
+
 
 <div class="contact row p-4" id="contact">
     <div class="col-lg-4 contact-hero" aria-hidden="true">
