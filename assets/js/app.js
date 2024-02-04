@@ -1,43 +1,21 @@
 require('@fortawesome/fontawesome-free/js/all.js');
-require('jquery-ui/ui/widgets/datepicker');
-require('jquery-ui/ui/i18n/datepicker-uk');
 require('bootstrap');
-
 const WOW = require('wowjs');
 
-jQuery(function($){
-    /*$('.js-datepicker').datepicker({
-        changeMonth: true,
-        changeYear: true,
-        yearRange: "1930:2021",
-        dateFormat: settings.date_format,
-        firstDay: 1,
-    })
-        .datepicker( $.datepicker.regional[ settings.language ] );
-*/
+$(function($){
     let message = $('.toast');
     if (message.length) {
-        $(message).toast({
+        message.toast({
             'autohide': false
         }).toast('show');
-        $(message).find('.flash-close').click(function(){
-            $(message).toast('dispose');
+        message.find('.flash-close').click(function(){
+            message.toast('dispose');
         });
     }
 
-    // loader
-    var loader = function () {
-        setTimeout(function () {
-            if ($('#loader').length > 0) {
-                $('#loader').removeClass('show');
-            }
-        }, 1);
-    };
-    loader();
-
-
     window.wow = new WOW.WOW({ live: false });
     window.wow.init();
+
     tinymce.init({
         selector: '.html-editor',
         images_upload_url: '/administrator/images/upload',
@@ -70,6 +48,7 @@ jQuery(function($){
             $('.back-to-top').fadeOut('slow');
         }
     });
+
     $('.back-to-top').click(function () {
         $('html, body').animate({scrollTop: 0}, 1500, 'easeInOutExpo');
         return false;

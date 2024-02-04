@@ -15,33 +15,34 @@
         {{ form_start(form, {attr: {'class': 'form-inline'}}) }}
         <div class="row">
             <div class="col-lg-8">
-                {{ form_row(form.name, {attr: {'class': 'form-control'}}) }}
-                {{ form_row(form.description, {attr: {'class': 'form-control'}}) }}
+                {{ form_row(form.name) }}
+                {{ form_row(form.description) }}
                 <div class="row">
                     <div class="col-lg-6">
-                        {{ form_row(form.fromDate, {attr: {'class': 'form-control'}}) }}
+                        {{ form_row(form.fromDate) }}
                     </div>
                     <div class="col-lg-6">
-                        {{ form_row(form.toDate, {attr: {'class': 'form-control'}}) }}
+                        {{ form_row(form.toDate) }}
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-lg-6">
-                        {{ form_row(form.company, {attr: {'class': 'form-control'}}) }}
+                        {{ form_row(form.company) }}
                     </div>
                     <div class="col-lg-6">
-                        {{ form_row(form.locale, {attr: {'class': 'form-control'}}) }}
+                        {{ form_row(form.locale) }}
                     </div>
                 </div>
-                {{ form_row(form.location, {attr: {'class': 'form-control'}}) }}
-                <hr />
-                <button type="submit" class="btn btn-primary">{{ submit }}</button>
+                <div class="row">{{ form_row(form.location) }}</div>
+                <div class="row pt-4">
+                    <button type="submit" class="btn btn-primary">{{ submit }}</button>
+                </div>
             </div>
             <div class="col-lg-4">
                 {% if experience.image is defined %}
                     <img src="/company/{{ experience.image }}" alt="" class="img-fluid"  />
                 {% endif %}
-                {{ form_row(form.image, {attr: {'class': 'form-control'}}) }}
+                {{ form_row(form.image) }}
             </div>
         </div>
         {{ form_end(form) }}

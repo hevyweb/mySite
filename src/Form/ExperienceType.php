@@ -10,32 +10,34 @@ use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Context\ExecutionContext;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ExperienceType extends AbstractType
 {
     use LocaleBuilderTrait;
 
-    const START_YEAR = 2008;
-
     public function __construct(
         private readonly TranslatorInterface $translator,
-        private string $defaultDateFormat,
     )
     {
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $experience = $builder->getData();
         $builder
             ->add('name', TextType::class, [
                 'label' => $this->translator->trans('Title', [], 'experience'),
                 'attr' => [
                     'maxlength' => 255,
+                    'class' => 'form-control',
                 ],
                 'constraints' => [
                     new Length([
@@ -46,28 +48,42 @@ class ExperienceType extends AbstractType
             ->add('locale', ChoiceType::class, [
                 'choices' => $this->buildLanguages(),
                 'label' => $this->translator->trans('Locale'),
+                'attr' => [
+                    'class' => 'form-control',
+                ],
             ])
             ->add('description', TextareaType::class, [
                 'attr' => [
-                    'rows' => 10
+                    'rows' => 10,
+                    'class' => 'form-control',
                 ],
                 'label' => $this->translator->trans('Description'),
                 ]
             )
             ->add('fromDate', DateType::class, [
                 'label' => $this->translator->trans('From', [], 'experience'),
-                'format' => $this->defaultDateFormat,
-                'years' => $this->getYears(),
+                'html5' => true,
+                'attr' => [
+                    'data-provide' => 'datepicker',
+                    'class' => 'js-datepicker  form-control',
+                ],
             ])
             ->add('toDate', DateType::class, [
                 'label' => $this->translator->trans('To', [], 'experience'),
-                'format' => $this->defaultDateFormat,
-                'years' => $this->getYears(),
+                'html5' => true,
+                'required' => false,
+                'attr' => [
+                    'class' => 'js-datepicker form-control',
+                ],
+                'constraints' => [
+                    new Callback([$this, 'compareDates'])
+                ]
             ])
             ->add('company', TextType::class, [
                 'label' => $this->translator->trans('Company', [], 'experience'),
                 'attr' => [
                     'maxlength' => 64,
+                    'class' => 'form-control',
                 ],
                 'constraints' => [
                     new Length([
@@ -79,6 +95,7 @@ class ExperienceType extends AbstractType
                 'label' => $this->translator->trans('Location'),
                 'attr' => [
                     'maxlength' => 64,
+                    'class' => 'form-control',
                 ],
                 'constraints' => [
                     new Length([
@@ -89,7 +106,7 @@ class ExperienceType extends AbstractType
             ->add('image', FileType::class, [
                 'label' => $this->translator->trans('Image'),
                 'mapped' => false,
-                'required' => false,
+                'required' => !$experience->getImage(),
                 'constraints' => [
                     new File([
                         'mimeTypes' => [
@@ -100,7 +117,10 @@ class ExperienceType extends AbstractType
                             'image/bmp',
                         ],
                         'mimeTypesMessage' => $this->translator->trans('Please upload valid image. Support formats jpg, jpeg, png, gif, bmp'),
-                    ])
+                    ]),
+                ],
+                'attr' => [
+                    'class' => 'form-control',
                 ],
             ])
         ;
@@ -113,12 +133,21 @@ class ExperienceType extends AbstractType
         ]);
     }
 
-    public function getYears(): array
+    public function compareDates(?\DateTime $toDate, ExecutionContext $executionContext): bool
     {
-        $years = [];
-        for ($n = self::START_YEAR; $n <= date('Y'); $n++){
-            $years[$n] = $n;
+        if (!empty($toDate)) {
+            /**
+             * @var Form $form
+             */
+            $form = $executionContext->getRoot();
+            $fromDate = $form->get('fromDate')->getData();
+
+            if ($fromDate > $toDate) {
+                $executionContext->addViolation($this->translator->trans('Starting date is greater then end date.', [], 'experience'));
+                return false;
+            }
         }
-        return $years;
+
+        return true;
     }
 }
