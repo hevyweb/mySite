@@ -28,7 +28,7 @@ class ImageController extends AbstractController
             $newName = basename($this->imageUploader->save($request->files, $this->getParameter('images_article')));
 
             return $this->json([
-                'location' => '/blog/' . $newName
+                'location' => $request->getSchemeAndHttpHost().'/blog/' . $newName
             ]);
         } catch (\Exception $e) {
             return $this->json([

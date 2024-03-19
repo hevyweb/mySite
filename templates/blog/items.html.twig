@@ -25,7 +25,7 @@
                         {% endfor %}
                     </div>
                     <p>
-                        Lorem ipsum dolor sit amet elit. Nullam commodo mattis mi. Nullam eu erat lectus. Proin viverra risus vitae luctus. Proin ut ante, vitae sapien. Fusce sem ac erat rhoncus, ornare mattis nisl massa et eros vitae pulvin
+                        {{ article.preview }}
                     </p>
                     <a class="btn" href="{{ path('blog-view', {'slug': article.slug}) }}">{% trans %}Read More{% endtrans %} <i class="fa fa-angle-right"></i></a>
                 </div>
