@@ -8,31 +8,34 @@ use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Exception\RfcComplianceException;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class NewMessagesSubscriber implements EventSubscriberInterface
+readonly class NewMessagesSubscriber implements EventSubscriberInterface
 {
     public function __construct(
-        private TemplatedEmail      $templatedEmail,
-        private MailerInterface     $mailer,
+        private TemplatedEmail $templatedEmail,
+        private MailerInterface $mailer,
         private TranslatorInterface $translator,
-        private Address             $from,
+        private Address $from,
         private EntityManagerInterface $entityManager,
         private LoggerInterface $logger
     ) {
-
     }
 
     public static function getSubscribedEvents(): array
     {
         return [
-            NewMessagesEvent::class => 'sendNotification'
+            NewMessagesEvent::class => 'sendNotification',
         ];
     }
 
+    /**
+     * @throws TransportExceptionInterface
+     */
     public function sendNotification(NewMessagesEvent $event): void
     {
         /**
@@ -53,7 +56,9 @@ class NewMessagesSubscriber implements EventSubscriberInterface
                     $email->to(new Address($user->getEmail(), $user->getFullName()));
                     break;
                 } catch (RfcComplianceException $exception) {
-                    $this->logger->warning('User with id "' . $user->getId() . '" has invalid email');
+                    $this->logger->warning('User with id "'.$user->getId().'" has invalid email. Original message: '.
+                    $exception->getMessage()
+                    );
                 }
             }
 
@@ -62,7 +67,8 @@ class NewMessagesSubscriber implements EventSubscriberInterface
                     try {
                         $email->addCc(new Address($user->getEmail(), $user->getFullName()));
                     } catch (RfcComplianceException $exception) {
-                        $this->logger->warning('User with id "' . $user->getId() . '" has invalid email');
+                        $this->logger->warning('User with id "'.$user->getId().'" has invalid email. Original message'.
+                        $exception->getMessage());
                     }
                 }
             }

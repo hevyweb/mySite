@@ -8,11 +8,11 @@ use Symfony\Component\Validator\ConstraintValidator;
 
 class ReCaptchaValidator extends ConstraintValidator
 {
-    public function __construct(private ReCaptcha $reCaptcha)
+    public function __construct(private readonly ReCaptcha $reCaptcha)
     {
     }
 
-    public function validate(mixed $value, Constraint $constraint)
+    public function validate(mixed $value, Constraint $constraint): void
     {
         $response = $this->reCaptcha->verify($value);
 

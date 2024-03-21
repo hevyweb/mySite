@@ -7,10 +7,11 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity]
 class Role
 {
-    const ROLE_USER = 'ROLE_USER';
+    public const ROLE_USER = 'ROLE_USER';
 
-    const ROLE_ADMIN = 'ROLE_ADMIN';
+    public const ROLE_ADMIN = 'ROLE_ADMIN';
 
+    /** @noinspection PhpPropertyOnlyWrittenInspection */
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]

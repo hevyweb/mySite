@@ -14,10 +14,9 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class PageController extends AbstractController
 {
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        private TranslatorInterface $translator,
-    )
-    {
+        private readonly EntityManagerInterface $entityManager,
+        private readonly TranslatorInterface $translator,
+    ) {
     }
 
     public function index(): Response
@@ -26,7 +25,7 @@ class PageController extends AbstractController
 
         return $this->render('page/index.html.twig', [
             'pages' => $pages,
-            'title' => $this->translator->trans('Page content', [], 'page')
+            'title' => $this->translator->trans('Page content', [], 'page'),
         ]);
     }
 
@@ -43,6 +42,7 @@ class PageController extends AbstractController
                 ->setCreatedBy($this->getUser());
             $this->entityManager->persist($page);
             $this->entityManager->flush();
+
             return $this->redirectToRoute('page-list');
         }
 
@@ -59,7 +59,7 @@ class PageController extends AbstractController
         );
 
         if (empty($page)) {
-            throw new NotFoundHttpException('Content for page "' . $request->get('id') . '" not found.');
+            throw new NotFoundHttpException('Content for page "'.$request->get('id').'" not found.');
         }
 
         $form = $this->createForm(PageType::class, $page);
@@ -71,6 +71,7 @@ class PageController extends AbstractController
                 ->setUpdatedBy($this->getUser());
             $this->entityManager->persist($page);
             $this->entityManager->flush();
+
             return $this->redirectToRoute('page-list');
         }
 
@@ -81,7 +82,7 @@ class PageController extends AbstractController
         ]);
     }
 
-    public function delete(Request $request): Response
+    public function delete(): Response
     {
         return $this->redirectToRoute('page-list');
     }

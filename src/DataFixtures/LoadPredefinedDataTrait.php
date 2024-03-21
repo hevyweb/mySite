@@ -11,7 +11,7 @@ trait LoadPredefinedDataTrait
         $records = explode("\n", $data);
         foreach ($records as $record) {
             $record = trim($record);
-            if ($record === '') {
+            if ('' === $record) {
                 continue;
             }
             $data = explode(',', $record);
@@ -25,7 +25,7 @@ trait LoadPredefinedDataTrait
                 }
                 $entity = new $entityName();
                 foreach ($data as $key => $value) {
-                    if ($value === '') {
+                    if ('' === $value) {
                         $value = null;
                     }
                     call_user_func([$entity, $headers[$key]], $value);
@@ -33,13 +33,14 @@ trait LoadPredefinedDataTrait
                 $result[] = $entity;
             }
         }
+
         return $result;
     }
 
     private function setHeaders(array $data): array
     {
         return array_map(function ($header) {
-            return 'set' . str_replace(' ', '', ucwords(str_replace('_', ' ', $header)));
+            return 'set'.str_replace(' ', '', ucwords(str_replace('_', ' ', $header)));
         }, $data);
     }
 }

@@ -7,7 +7,7 @@ use Doctrine\ORM\EntityRepository;
 
 class RememberMeTokenRepository extends EntityRepository
 {
-    public function findBySeries(string $series): ? RememberMeToken
+    public function findBySeries(string $series): ?RememberMeToken
     {
         return $this->findOneBy(['series' => $series]);
     }
@@ -18,8 +18,10 @@ class RememberMeTokenRepository extends EntityRepository
         if (!empty($rememberMeToken)) {
             $this->getEntityManager()->remove($rememberMeToken);
             $this->getEntityManager()->flush();
+
             return true;
         }
+
         return false;
     }
 
@@ -27,13 +29,14 @@ class RememberMeTokenRepository extends EntityRepository
     {
         $rememberMeTokens = $this->findBy(['username' => $userName]);
         if (!empty($rememberMeToken)) {
-            foreach($rememberMeTokens as $rememberMeToken) {
+            foreach ($rememberMeTokens as $rememberMeToken) {
                 $this->getEntityManager()->remove($rememberMeToken);
             }
             $this->getEntityManager()->flush();
+
             return true;
         }
+
         return false;
     }
-
 }

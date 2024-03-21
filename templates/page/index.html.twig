@@ -31,7 +31,7 @@
                         <thead>
                         <tr>
                             <th>
-                                <input type="checkbox" class="check-all" />
+                                <label><input type="checkbox" class="check-all" /></label>
                             </th>
                             <th>{% trans %}Title{% endtrans %}</th>
                             <th>{% trans from 'messages' %}Locale{% endtrans %}</th>
@@ -42,7 +42,7 @@
                         {% for page in pages %}
                             <tr>
                                 <td>
-                                    <input type="checkbox" name="id[{{ page.id }}]" />
+                                    <label><input type="checkbox" name="id[{{ page.id }}]" /></label>
                                 </td>
                                 <td><a href="{{ path('page-update', {'id': page.id}) }}">{{ page.title }}</a></td>
                                 <td><img src="{{ absolute_url('/images/locales/' ~ page.locale) }}.png" alt="{{ page.locale|trans([], 'languages') }}" /></td>

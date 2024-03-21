@@ -6,10 +6,13 @@ use Symfony\Component\HttpFoundation\File\File;
 
 class ImageService
 {
-    public function sanitize(File $file)
+    /**
+     * @throws \ImagickException
+     */
+    public function sanitize(File $file): void
     {
         $imagick = new \Imagick($file->getRealPath());
-        $imagick->setImageFormat("jpg");
+        $imagick->setImageFormat('jpg');
         $imagick->stripImage();
         $imagick->writeImage($file->getRealPath());
     }

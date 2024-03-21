@@ -9,33 +9,20 @@ use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class ResetPasswordSubscriber implements EventSubscriberInterface
+readonly class ResetPasswordSubscriber implements EventSubscriberInterface
 {
-    private MailerInterface $mailer;
-
-    private TemplatedEmail $templatedEmail;
-
-    private TranslatorInterface $translator;
-
-    private Address $from;
-
     public function __construct(
-        TemplatedEmail      $templatedEmail,
-        MailerInterface     $mailer,
-        TranslatorInterface $translator,
-        Address             $from
-    )
-    {
-        $this->templatedEmail = $templatedEmail;
-        $this->mailer = $mailer;
-        $this->translator = $translator;
-        $this->from = $from;
+        private TemplatedEmail $templatedEmail,
+        private MailerInterface $mailer,
+        private TranslatorInterface $translator,
+        private Address $from,
+    ) {
     }
 
     public static function getSubscribedEvents(): array
     {
         return [
-            ResetPasswordEvent::class => 'resetPassword'
+            ResetPasswordEvent::class => 'resetPassword',
         ];
     }
 

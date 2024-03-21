@@ -31,7 +31,7 @@
                         <thead>
                         <tr>
                             <th>
-                                <input type="checkbox" class="check-all" />
+                                <label><input type="checkbox" class="check-all" /></label>
                             </th>
                             <th>{% trans %}Subject{% endtrans %}</th>
                             <th>{% trans from 'messages' %}Date{% endtrans %}</th>
@@ -43,7 +43,7 @@
                         {% for message in messages %}
                             <tr>
                                 <td>
-                                    <input type="checkbox" name="id[{{ message.id }}]" />
+                                    <label><input type="checkbox" name="id[{{ message.id }}]" /></label>
                                 </td>
                                 <td><a href="{{ path('message-view', {'id': message.id}) }}">
                                         {% if message.seen %}

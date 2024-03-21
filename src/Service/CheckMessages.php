@@ -7,13 +7,12 @@ use App\Event\NewMessagesEvent;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
-class CheckMessages
+readonly class CheckMessages
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
         private EventDispatcherInterface $dispatcher,
-    )
-    {
+    ) {
     }
 
     public function checkAndNotify(): void

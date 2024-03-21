@@ -15,8 +15,8 @@ use App\Exception\BrutForceException;
 use App\Exception\UserNotFoundException;
 use App\Form\User\EditUserType;
 use App\Form\User\RecoverPasswordType;
-use App\Form\User\UserPasswordsType;
 use App\Form\User\RegistrationType;
+use App\Form\User\UserPasswordsType;
 use App\Repository\UserRepository;
 use App\Service\Strings;
 use App\Traits\FlashMessageTrait;
@@ -39,20 +39,19 @@ class UserController extends AbstractController
 {
     use FlashMessageTrait;
 
-    const LIMIT = 20;
+    public const LIMIT = 20;
 
-    const RECOVERY_COOL_DOWN = 86400; //24 hours
+    public const RECOVERY_COOL_DOWN = 86400; // 24 hours
 
-    const ANTI_BRUT_FORCE_COOL_DOWN = 2000;
+    public const ANTI_BRUT_FORCE_COOL_DOWN = 2000;
 
     public function __construct(
-        private TranslatorInterface      $translator,
-        private LoggerInterface          $logger,
-        private EntityManagerInterface   $entityManager,
-        private EventDispatcherInterface $dispatcher,
-        private Strings                  $strings,
-    )
-    {
+        private readonly TranslatorInterface $translator,
+        private readonly LoggerInterface $logger,
+        private readonly EntityManagerInterface $entityManager,
+        private readonly EventDispatcherInterface $dispatcher,
+        private readonly Strings $strings,
+    ) {
     }
 
     public function index(Request $request): Response
@@ -66,9 +65,9 @@ class UserController extends AbstractController
         $criteria = Criteria::create();
 
         if (!empty($search)) {
-            $criteria->where(Criteria::expr()->contains("username", $search));
+            $criteria->where(Criteria::expr()->contains('username', $search));
         }
-        $criteria->orderBy(array("id" => Criteria::ASC))
+        $criteria->orderBy(['id' => Criteria::ASC])
             ->setFirstResult(($page - 1) * self::LIMIT)
             ->setMaxResults(self::LIMIT);
 
@@ -81,7 +80,7 @@ class UserController extends AbstractController
             'title' => 'Users',
             'totalPages' => $totalPages,
             'page' => $page,
-            'filtervariables' => ['q' => $search]
+            'filterVariables' => ['q' => $search],
         ]);
     }
 
@@ -91,7 +90,7 @@ class UserController extends AbstractController
         $userEditForm = $this->createForm(EditUserType::class, $user, [
             'action' => $this->generateUrl('user-edit-general', [
                 'id' => $user->getId() != $this->getUser()->getId() ? $user->getId() : null,
-            ])
+            ]),
         ]);
 
         $oldEmail = $user->getEmail();
@@ -122,7 +121,7 @@ class UserController extends AbstractController
         $userEditForm = $this->createForm(UserPasswordsType::class, $user, [
             'action' => $this->generateUrl('user-edit-password', [
                 'id' => $user->getId() != $this->getUser()->getId() ? $user->getId() : null,
-            ])
+            ]),
         ]);
 
         $userEditForm->handleRequest($request);
@@ -194,6 +193,7 @@ class UserController extends AbstractController
 
         $error = $authenticationUtils->getLastAuthenticationError();
         $lastUsername = $authenticationUtils->getLastUsername();
+
         return $this->render('user/login.html.twig', [
             'last_username' => $lastUsername,
             'error' => $error,
@@ -214,7 +214,7 @@ class UserController extends AbstractController
 
         if (!$this->getParameter('registration_enabled')) {
             return $this->render('user/register_closed.html.twig', [
-                'title' => $this->translator->trans('Sign up')
+                'title' => $this->translator->trans('Sign up'),
             ]);
         }
 
@@ -228,7 +228,7 @@ class UserController extends AbstractController
             $password = $passwordHasher->hashPassword($user, $user->getPlainPassword());
             $user->setPassword($password)
                 ->addRole($userRole)
-                ->setEmailConfirm(md5(uniqid()) . md5(uniqid()))
+                ->setEmailConfirm(md5(uniqid()).md5(uniqid()))
                 ->setCreatedAt(new \DateTimeImmutable());
             $this->entityManager->persist($user);
             $this->entityManager->flush();
@@ -239,10 +239,10 @@ class UserController extends AbstractController
         }
 
         return $this->render('user/register.html.twig', [
-                'title' => $this->translator->trans('Sign up'),
-                'form' => $form->createView(),
-                'submit' => $this->translator->trans('Sign up'),
-            ]
+            'title' => $this->translator->trans('Sign up'),
+            'form' => $form->createView(),
+            'submit' => $this->translator->trans('Sign up'),
+        ]
         );
     }
 
@@ -288,7 +288,6 @@ class UserController extends AbstractController
         if ($this->isCsrfTokenValid('recover_password', $request->request->get('_csrf_token'))) {
             $form->handleRequest($request);
             if ($form->isSubmitted() && $form->isValid()) {
-
                 $userRepository = $this->entityManager->getRepository(User::class);
                 try {
                     $email = $form->get('email')->getData();
@@ -299,9 +298,9 @@ class UserController extends AbstractController
                         throw new UserNotFoundException($this->translator->trans('User not found.', [], 'user'));
                     }
 
-                    if ($user->getRecoveredAt() !== null &&
-                        $user->getRecoveredAt()->diff(new \DateTime())->s <= self::RECOVERY_COOL_DOWN) {
-                        throw new BrutForceException('User "' . $user->getUsername() . '" is trying to recover the password too often.');
+                    if (null !== $user->getRecoveredAt()
+                        && $user->getRecoveredAt()->diff(new \DateTime())->s <= self::RECOVERY_COOL_DOWN) {
+                        throw new BrutForceException('User "'.$user->getUsername().'" is trying to recover the password too often.');
                     }
                     $user->setRecoveredAt(new \DateTime());
                     $user->setRecovery($this->strings->generateRandomSlug(64));
@@ -309,11 +308,11 @@ class UserController extends AbstractController
                     $event = new RecoverPasswordEvent($user);
 
                     $this->dispatcher->dispatch($event);
-
                 } catch (NotFoundHttpException $exception) {
                     // we should not display to user any warning to prevent email phishing.
                     $this->logger->warning(
-                        'Some one is trying to recover password for non existing user "' . $email . '"'
+                        'Some one is trying to recover password for non existing user "'.($email ?? 'empty email').'". Original message: '.
+                        $exception->getMessage()
                     );
                 } catch (BrutForceException $exception) {
                     // we should not display to user any warning to prevent email phishing.
@@ -326,6 +325,7 @@ class UserController extends AbstractController
                     [],
                     'user',
                 ));
+
             return $this->redirectToRoute('home');
         }
 
@@ -336,10 +336,9 @@ class UserController extends AbstractController
     }
 
     public function resetPassword(
-        string                      $token,
+        string $token,
         UserPasswordHasherInterface $passwordHasher,
-    ): Response
-    {
+    ): Response {
         $user = $this->entityManager->getRepository(User::class)->findOneBy(['recovery' => $token]);
         if ($user) {
             $user->setPlainPassword($this->strings->generateRandomString())
@@ -371,7 +370,7 @@ class UserController extends AbstractController
             ->findOneBy([
                 'user' => $this->getUser(),
                 'newConfirmationToken' => $token,
-                'completed' => false
+                'completed' => false,
             ]);
 
         if ($emailHistory) {
@@ -385,6 +384,7 @@ class UserController extends AbstractController
             $this->addFlash(self::$error, $this->translator->trans('The confirmation link is expired.'));
         }
         $this->entityManager->flush();
+
         return $this->redirectToRoute('home');
     }
 
@@ -394,7 +394,7 @@ class UserController extends AbstractController
             ->findOneBy([
                 'user' => $this->getUser(),
                 'oldConfirmationToken' => $token,
-                'completed' => false
+                'completed' => false,
             ]);
 
         if ($emailHistory) {
@@ -414,7 +414,7 @@ class UserController extends AbstractController
 
     private function getUserFromRequest(Request $request): UserInterface|User
     {
-        $userId = (int)$request->get('id');
+        $userId = (int) $request->get('id');
         if (empty($userId)) {
             return $this->getUser();
         }
@@ -423,7 +423,7 @@ class UserController extends AbstractController
         $user = $userRepository->find($userId);
 
         if (empty($user)) {
-            throw new UserNotFoundException('User with id "' . $userId . '" not found.');
+            throw new UserNotFoundException('User with id "'.$userId.'" not found.');
         }
 
         return $user;
@@ -439,13 +439,14 @@ class UserController extends AbstractController
         if ($this->getUser()->hasRole(Role::ROLE_ADMIN)) {
             $tabs['roles'] = 'Roles';
         }
+
         return $tabs;
     }
 
     private function checkEmailChanged(string $oldEmail, User $user): void
     {
         if ($oldEmail != $user->getEmail()) {
-            $emailHistory = $user->getEmailHistories()->filter(fn(EmailHistory $emailHistory) => !$emailHistory->getNewEmailConfirmAt() || !$emailHistory->getOldEmailConfirmAt()
+            $emailHistory = $user->getEmailHistories()->filter(fn (EmailHistory $emailHistory) => !$emailHistory->getNewEmailConfirmAt() || !$emailHistory->getOldEmailConfirmAt()
             );
 
             if (!$emailHistory->count()) {
@@ -488,8 +489,10 @@ class UserController extends AbstractController
                 ->setUpdatedAt(new \DateTime());
 
             $this->addFlash(self::$success, $this->translator->trans('Email has been successfully changed.'));
+
             return true;
         }
+
         return false;
     }
 }

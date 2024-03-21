@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Form\User;
 
 use App\Entity\User;
@@ -15,11 +16,8 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class EditUserType extends AbstractType
 {
-    private TranslatorInterface $translator;
-
-    public function __construct(TranslatorInterface $translator)
+    public function __construct(private readonly TranslatorInterface $translator)
     {
-        $this->translator = $translator;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -69,7 +67,7 @@ class EditUserType extends AbstractType
                     'class' => 'js-datepicker',
                     'placeholder' => $this->translator->trans($_SERVER['DEFAULT_DATE_FORMAT']),
                     'maxlength' => 10,
-                    'autocomplete' => 'off'
+                    'autocomplete' => 'off',
                 ],
                 'required' => false,
                 'format' => $_SERVER['DEFAULT_DATE_FORMAT'],
@@ -78,10 +76,10 @@ class EditUserType extends AbstractType
             ->add('sex', ChoiceType::class, [
                 'choices' => [
                     $this->translator->trans('Male', [], 'user') => 1,
-                    $this->translator->trans('Female', [], 'user') => 2
+                    $this->translator->trans('Female', [], 'user') => 2,
                 ],
                 'required' => false,
-                'label' => $this->translator->trans('Sex', [], 'user')
+                'label' => $this->translator->trans('Sex', [], 'user'),
             ])
         ;
     }

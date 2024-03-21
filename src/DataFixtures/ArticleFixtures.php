@@ -10,14 +10,17 @@ use Faker\Factory as FakerFactory;
 
 class ArticleFixtures extends Fixture implements DependentFixtureInterface
 {
-    public function __construct(private array $locales)
+    public function __construct(private readonly array $locales)
     {
     }
 
+    /**
+     * @throws \Exception
+     */
     public function load(ObjectManager $manager): void
     {
         $faker = FakerFactory::create();
-        for($n = 0; $n < 100; $n++) {
+        for ($n = 0; $n < 100; ++$n) {
             $article = new Article();
             $article
                 ->setLocale($faker->randomElement($this->locales))
@@ -40,7 +43,7 @@ class ArticleFixtures extends Fixture implements DependentFixtureInterface
         $manager->flush();
     }
 
-    public function getDependencies()
+    public function getDependencies(): array
     {
         return [
             UserFixtures::class,

@@ -10,9 +10,8 @@ use Symfony\Component\HttpFoundation\Response;
 class ImageController extends AbstractController
 {
     public function __construct(
-        private ImageUploader $imageUploader,
-    )
-    {
+        private readonly ImageUploader $imageUploader,
+    ) {
     }
 
     public function index(): Response
@@ -28,11 +27,11 @@ class ImageController extends AbstractController
             $newName = basename($this->imageUploader->save($request->files, $this->getParameter('images_article')));
 
             return $this->json([
-                'location' => $request->getSchemeAndHttpHost().'/blog/' . $newName
+                'location' => $request->getSchemeAndHttpHost().'/blog/'.$newName,
             ]);
         } catch (\Exception $e) {
             return $this->json([
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ], 400);
         }
     }

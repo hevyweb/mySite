@@ -7,13 +7,14 @@ class Strings
     public function generateRandomString(int $length = 12): string
     {
         $charset = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*-_+=?';
-        return $this->stringGenerate($length, $charset);
 
+        return $this->stringGenerate($length, $charset);
     }
 
     public function generateRandomSlug(int $length = 12): string
     {
         $charset = '0123456789abcdefghijklmnopqrstuvwxyz-';
+
         return $this->stringGenerate($length, $charset);
     }
 
@@ -21,9 +22,10 @@ class Strings
     {
         $charactersLength = strlen($charset) - 1;
         $randomString = '';
-        for ($i = 0; $i < $length; $i++) {
+        for ($i = 0; $i < $length; ++$i) {
             $randomString .= $charset[mt_rand(0, $charactersLength)];
         }
+
         return $randomString;
     }
 }

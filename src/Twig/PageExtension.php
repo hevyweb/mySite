@@ -5,7 +5,6 @@ namespace App\Twig;
 use App\Entity\Page;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\RouterInterface;
 use Twig\Environment;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
@@ -13,9 +12,8 @@ use Twig\TwigFunction;
 class PageExtension extends AbstractExtension
 {
     public function __construct(
-        private EntityManagerInterface $entityManager,
-    )
-    {
+        readonly private EntityManagerInterface $entityManager,
+    ) {
     }
 
     public function getFunctions(): array
@@ -28,7 +26,7 @@ class PageExtension extends AbstractExtension
         ];
     }
 
-    public function getPageContent(Environment $environment, array $context)
+    public function getPageContent(Environment $environment, array $context): string
     {
         /**
          * @var Request $request
@@ -38,8 +36,9 @@ class PageExtension extends AbstractExtension
         $route = $request->attributes->get('_route');
 
         $pages = $this->entityManager->getRepository(Page::class)->findBy(['route' => $route, 'locale' => $locale]);
+
         return $environment->render('common/page.html.twig', [
-            'pages' => $pages
+            'pages' => $pages,
         ]);
     }
 }

@@ -31,7 +31,7 @@
                         <thead>
                         <tr>
                             <th>
-                                <input type="checkbox" class="check-all" />
+                                <label><input type="checkbox" class="check-all" /></label>
                             </th>
                             <th>{% trans from 'messages'  %}Image{% endtrans %}</th>
                             <th>{% trans %}Title{% endtrans %}</th>
@@ -46,7 +46,7 @@
                         {% for experience in experiences %}
                             <tr>
                                 <td>
-                                    <input type="checkbox" name="id[{{ experience.id }}]" />
+                                    <label><input type="checkbox" name="id[{{ experience.id }}]" /></label>
                                 </td>
                                 <td>
                                     {% if experience.image %}

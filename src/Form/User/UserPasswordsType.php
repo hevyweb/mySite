@@ -13,11 +13,8 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class UserPasswordsType extends AbstractType
 {
-    private TranslatorInterface $translator;
-
-    public function __construct(TranslatorInterface $translator)
+    public function __construct(private readonly TranslatorInterface $translator)
     {
-        $this->translator = $translator;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -25,17 +22,17 @@ class UserPasswordsType extends AbstractType
         $builder->add('plainPassword', RepeatedType::class, [
             'type' => PasswordType::class,
             'invalid_message' => $this->translator->trans('The password fields must match.', [], 'user'),
-            'first_options'  => [
+            'first_options' => [
                 'label' => $this->translator->trans('New password', [], 'user'),
                 'attr' => [
                     'autocomplete' => 'new-password',
-                ]
+                ],
             ],
             'second_options' => [
                 'label' => $this->translator->trans('Repeat new password', [], 'user'),
                 'attr' => [
                     'autocomplete' => 'confirm-password',
-                ]
+                ],
             ],
             'constraints' => [
                 new NotBlank(),

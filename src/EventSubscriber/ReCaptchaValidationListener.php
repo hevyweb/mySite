@@ -9,23 +9,21 @@ use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\HttpFoundation\Request;
 
-class ReCaptchaValidationListener implements EventSubscriberInterface
+readonly class ReCaptchaValidationListener implements EventSubscriberInterface
 {
-    private $reCaptcha;
-
-    public function __construct(ReCaptcha $reCaptcha)
-    {
-        $this->reCaptcha = $reCaptcha;
+    public function __construct(
+        private ReCaptcha $reCaptcha,
+    ) {
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
-            FormEvents::POST_SUBMIT => 'onPostSubmit'
+            FormEvents::POST_SUBMIT => 'onPostSubmit',
         ];
     }
 
-    public function onPostSubmit(FormEvent $event)
+    public function onPostSubmit(FormEvent $event): void
     {
         $request = Request::createFromGlobals();
 

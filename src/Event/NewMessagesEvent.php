@@ -4,9 +4,9 @@ namespace App\Event;
 
 use Symfony\Contracts\EventDispatcher\Event;
 
-class NewMessagesEvent  extends Event
+class NewMessagesEvent extends Event
 {
-    public function __construct(private int $newMessages)
+    public function __construct(private readonly int $newMessages)
     {
     }
 

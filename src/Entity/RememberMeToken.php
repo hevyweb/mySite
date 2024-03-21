@@ -8,6 +8,7 @@ use Symfony\Component\Security\Core\Authentication\RememberMe\PersistentTokenInt
 #[ORM\Entity(repositoryClass: 'App\Repository\RememberMeTokenRepository')]
 class RememberMeToken implements PersistentTokenInterface
 {
+    /** @noinspection PhpPropertyOnlyWrittenInspection */
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]

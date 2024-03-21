@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Form\User;
 
 use App\Entity\User;
@@ -18,11 +19,8 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class RegistrationType extends AbstractType
 {
-    private TranslatorInterface $translator;
-
-    public function __construct(TranslatorInterface $translator)
+    public function __construct(private readonly TranslatorInterface $translator)
     {
-        $this->translator = $translator;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -39,8 +37,8 @@ class RegistrationType extends AbstractType
                     ]),
                     new Regex([
                         'pattern' => '/^[\w\d\-_]+$/',
-                        'message' => $this->translator->trans('Username should contain only letters, numbers, minus sign or underscore.', [], 'user')
-                    ])
+                        'message' => $this->translator->trans('Username should contain only letters, numbers, minus sign or underscore.', [], 'user'),
+                    ]),
                 ],
             ])
             ->add('email', EmailType::class, [
@@ -57,7 +55,7 @@ class RegistrationType extends AbstractType
             ])
             ->add('plainPassword', RepeatedType::class, [
                 'type' => PasswordType::class,
-                'first_options'  => [
+                'first_options' => [
                     'label' => $this->translator->trans('Password', [], 'user'),
                     'attr' => [
                         'maxlength' => 32,
@@ -117,7 +115,7 @@ class RegistrationType extends AbstractType
                     'class' => 'js-datepicker',
                     'placeholder' => $this->translator->trans($_SERVER['DEFAULT_DATE_FORMAT']),
                     'maxlength' => 10,
-                    'autocomplete' => 'off'
+                    'autocomplete' => 'off',
                 ],
                 'required' => false,
                 'format' => $_SERVER['DEFAULT_DATE_FORMAT'],
@@ -126,10 +124,10 @@ class RegistrationType extends AbstractType
             ->add('sex', ChoiceType::class, [
                 'choices' => [
                     $this->translator->trans('Male', [], 'user') => 1,
-                    $this->translator->trans('Female', [], 'user') => 2
+                    $this->translator->trans('Female', [], 'user') => 2,
                 ],
                 'required' => false,
-                'label' => $this->translator->trans('Sex', [], 'user')
+                'label' => $this->translator->trans('Sex', [], 'user'),
             ])
         ;
     }

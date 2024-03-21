@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Entity\Article;
 use App\Entity\Experience;
 use App\Form\ExperienceType;
 use App\Service\ArrayService;
@@ -21,24 +20,25 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ExperienceController extends AbstractController
 {
-    use FlashMessageTrait, LoggerAwareTrait;
+    use FlashMessageTrait;
+    use LoggerAwareTrait;
 
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        private TranslatorInterface $translator,
-        private ParameterBagInterface $parameterBag,
-        private File $fileService,
-        private ArrayService $arrayService,
-    )
-    {
+        private readonly EntityManagerInterface $entityManager,
+        private readonly TranslatorInterface $translator,
+        private readonly ParameterBagInterface $parameterBag,
+        private readonly File $fileService,
+        private readonly ArrayService $arrayService,
+    ) {
     }
 
     public function index(): Response
     {
         $experience = $this->entityManager->getRepository(Experience::class)->findAll();
+
         return $this->render('experience/table.html.twig', [
             'experiences' => $experience,
-            'title' => $this->translator->trans('Experiences', [], 'experiences')
+            'title' => $this->translator->trans('Experiences', [], 'experiences'),
         ]);
     }
 
@@ -56,12 +56,14 @@ class ExperienceController extends AbstractController
                 }
                 $this->entityManager->persist($experience);
                 $this->entityManager->flush();
+
                 return $this->redirectToRoute('experience-list');
             } catch (FileException $fileException) {
                 $error = new FormError($fileException->getMessage());
                 $form->get('image')->addError($error);
             }
         }
+
         return $this->render('experience/create.html.twig', [
             'title' => $this->translator->trans('Add working place', [], 'experience'),
             'form' => $form->createView(),
@@ -85,12 +87,14 @@ class ExperienceController extends AbstractController
                     $experience->setImage($file->getFilename());
                 }
                 $this->entityManager->flush();
+
                 return $this->redirectToRoute('experience-list');
             } catch (FileException $fileException) {
                 $error = new FormError($fileException->getMessage());
                 $form->get('image')->addError($error);
             }
         }
+
         return $this->render('experience/create.html.twig', [
             'title' => $this->translator->trans('Update working place', [], 'experience'),
             'form' => $form->createView(),
@@ -127,10 +131,11 @@ class ExperienceController extends AbstractController
                             $this->fileService->remove($experience->getImage(), $this->parameterBag->get('images_experience'));
                         }
                         $this->entityManager->remove($experience);
-                        $this->logger->debug('Experience "' . $experience->getName() . '" removed.');
+                        $this->logger->debug('Experience "'.$experience->getName().'" removed.');
                     } catch (FileNotFoundException $exception) {
                         $this->logger->error($exception->getMessage());
                         $this->addFlash(self::$success, $this->translator->trans('Can not remove image of the company.', [], 'experience'));
+
                         return $this->redirectToRoute('experience-list');
                     }
                 }

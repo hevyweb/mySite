@@ -16,6 +16,9 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
     {
     }
 
+    /**
+     * @throws \Exception
+     */
     public function load(ObjectManager $manager): void
     {
         $faker = FakerFactory::create();
@@ -23,7 +26,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
 
         $this->createAdminUser($manager, $faker);
 
-        for($n = 0; $n < 10; $n++) {
+        for ($n = 0; $n < 10; ++$n) {
             $user = new User();
             $user->setBirthDay($faker->dateTimeBetween('-60 years', '-18 years'))
                 ->setEmail($faker->email)
@@ -35,7 +38,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
                 ->setPassword($this->passwordHasher->hashPassword($user, 'admin'))
                 ->setActive($faker->boolean(90))
                 ->setEnabled($faker->boolean(90))
-                ->addRole($this->getReference('role_' . $n))
+                ->addRole($this->getReference('role_'.$n))
                 ->setCreatedAt(new \DateTimeImmutable($faker->dateTimeBetween()->format('c')))
             ;
             $manager->persist($user);
@@ -44,6 +47,9 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
         $manager->flush();
     }
 
+    /**
+     * @throws \Exception
+     */
     private function createAdminUser(ObjectManager $manager, Generator $faker): void
     {
         $user = new User();

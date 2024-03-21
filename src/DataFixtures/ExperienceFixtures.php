@@ -19,9 +19,9 @@ class ExperienceFixtures extends Fixture
         $this->buildTenEntries($fakerUA, $manager, 'ua');
     }
 
-    public function buildTenEntries(Generator $faker, ObjectManager $manager, string $locale)
+    public function buildTenEntries(Generator $faker, ObjectManager $manager, string $locale): void
     {
-        for($n = 0; $n < 10; $n++) {
+        for ($n = 0; $n < 10; ++$n) {
             $experience = new Experience();
             $experience->setLocale($locale)
                 ->setCompany($faker->company())

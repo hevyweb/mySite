@@ -23,9 +23,9 @@ class PageType extends AbstractType
     public function __construct(
         private readonly TranslatorInterface $translator,
         private readonly RouterInterface $router
-    )
-    {
+    ) {
     }
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -71,7 +71,7 @@ class PageType extends AbstractType
             ])
             ->add('save', SubmitType::class, [
                 'attr' => ['class' => 'btn btn-primary mt-4'],
-                'label' => $this->translator->trans('Save')
+                'label' => $this->translator->trans('Save'),
             ])
         ;
     }
@@ -80,10 +80,9 @@ class PageType extends AbstractType
     {
         $routes = array_keys($this->router->getRouteCollection()->all());
         $list = [];
-        foreach ($routes as $route)
-        {
+        foreach ($routes as $route) {
             if (preg_match('/^_/', $route)) {
-                //ignore service routes
+                // ignore service routes
                 continue;
             }
             if (preg_match('/^([^\-]+)-(.+)/', $route, $matches)) {
@@ -94,7 +93,6 @@ class PageType extends AbstractType
         }
 
         return $list;
-
     }
 
     public function configureOptions(OptionsResolver $resolver): void

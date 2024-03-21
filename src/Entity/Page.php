@@ -8,36 +8,37 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: PageRepository::class)]
 class Page
 {
+    /** @noinspection PhpPropertyOnlyWrittenInspection */
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    private $id;
+    private ?int $id;
 
     #[ORM\Column(type: 'string', length: 255)]
-    private $title;
+    private ?string $title;
 
     #[ORM\Column(type: 'text')]
-    private $body;
+    private ?string $body;
 
     #[ORM\Column(type: 'string', length: 2)]
-    private $locale;
+    private ?string $locale;
 
     #[ORM\Column(name: 'created_at', type: 'datetime_immutable')]
-    private $createdAt;
+    private ?\DateTimeImmutable $createdAt;
 
     #[ORM\Column(name: 'updated_at', type: 'datetime', nullable: true)]
-    private $updatedAt;
+    private ?\DateTimeInterface $updatedAt;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(name: 'created_by_id', nullable: false)]
-    private $createdBy;
+    private ?User $createdBy;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(name: 'updated_by_id')]
-    private $updatedBy;
+    private ?User $updatedBy;
 
     #[ORM\Column(type: 'string', length: 255)]
-    private $route;
+    private ?string $route;
 
     public function getId(): ?int
     {

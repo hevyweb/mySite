@@ -25,8 +25,7 @@ class ExperienceType extends AbstractType
 
     public function __construct(
         private readonly TranslatorInterface $translator,
-    )
-    {
+    ) {
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -58,7 +57,7 @@ class ExperienceType extends AbstractType
                     'class' => 'form-control',
                 ],
                 'label' => $this->translator->trans('Description'),
-                ]
+            ]
             )
             ->add('fromDate', DateType::class, [
                 'label' => $this->translator->trans('From', [], 'experience'),
@@ -76,8 +75,8 @@ class ExperienceType extends AbstractType
                     'class' => 'js-datepicker form-control',
                 ],
                 'constraints' => [
-                    new Callback([$this, 'compareDates'])
-                ]
+                    new Callback([$this, 'compareDates']),
+                ],
             ])
             ->add('company', TextType::class, [
                 'label' => $this->translator->trans('Company', [], 'experience'),
@@ -144,6 +143,7 @@ class ExperienceType extends AbstractType
 
             if ($fromDate > $toDate) {
                 $executionContext->addViolation($this->translator->trans('Starting date is greater then end date.', [], 'experience'));
+
                 return false;
             }
         }

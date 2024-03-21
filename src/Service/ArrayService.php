@@ -2,8 +2,6 @@
 
 namespace App\Service;
 
-use Symfony\Component\HttpFoundation\Request;
-
 class ArrayService
 {
     public function getIntegerIds($requestVariable): array

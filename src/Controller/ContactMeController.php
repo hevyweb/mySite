@@ -15,12 +15,12 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class ContactMeController extends AbstractController
 {
     use FlashMessageTrait;
-    public function __construct(
-        private EntityManagerInterface $entityManager,
-        private TranslatorInterface $translator,
-        private CsrfTokenManagerInterface $csrfTokenManager,
-    ) {
 
+    public function __construct(
+        private readonly EntityManagerInterface $entityManager,
+        private readonly TranslatorInterface $translator,
+        private readonly CsrfTokenManagerInterface $csrfTokenManager,
+    ) {
     }
 
     public function index(Request $request): Response
@@ -32,10 +32,11 @@ class ContactMeController extends AbstractController
 
         if ($form->isSubmitted()) {
             $token = $request->get('contact_me')['_token'];
-            if (!$this->isCsrfTokenValid('message', $token)){
+            if (!$this->isCsrfTokenValid('message', $token)) {
                 $this->addFlash($this::$error, $this->translator->trans('Some error happened. Please try again.'));
                 $this->csrfTokenManager->refreshToken('message');
                 $this->csrfTokenManager->removeToken('message');
+
                 return $this->redirectToRoute('contact-me');
             } elseif ($form->isValid()) {
                 $this->csrfTokenManager->removeToken('message');
@@ -43,13 +44,14 @@ class ContactMeController extends AbstractController
                 $this->entityManager->persist($message);
                 $this->entityManager->flush();
                 $this->addFlash(self::$success, $this->translator->trans('Thanks for the message. I\'ll do my best to reach out to you as soon as possible.', [], 'contactme'));
+
                 return $this->redirectToRoute('home');
             }
         }
 
         return $this->render('contact_me/index.html.twig', [
             'form' => $form->createView(),
-            'title' => $this->translator->trans('Contact me', [], 'contactme')
+            'title' => $this->translator->trans('Contact me', [], 'contactme'),
         ]);
     }
 }

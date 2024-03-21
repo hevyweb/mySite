@@ -2,7 +2,8 @@
 
 namespace App\Traits;
 
-trait FlashMessageTrait {
-    static public string $success = 'success';
-    static public string $error = 'error';
+trait FlashMessageTrait
+{
+    public static string $success = 'success';
+    public static string $error = 'error';
 }

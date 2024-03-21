@@ -20,19 +20,19 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Validator\Constraints\Date;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ArticleController extends AbstractController
 {
-    use LoggerAwareTrait, FlashMessageTrait;
+    use LoggerAwareTrait;
+    use FlashMessageTrait;
 
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        private TranslatorInterface $translator,
-        private File $fileService,
-        private ParameterBagInterface $parameterBag,
-        private ArrayService $arrayService,
+        private readonly EntityManagerInterface $entityManager,
+        private readonly TranslatorInterface $translator,
+        private readonly File $fileService,
+        private readonly ParameterBagInterface $parameterBag,
+        private readonly ArrayService $arrayService,
     ) {
     }
 
@@ -54,9 +54,9 @@ class ArticleController extends AbstractController
             'currentFilters' => [
                 'search' => $request->get('search'),
                 'sorting' => $request->get('sorting', 'createdAt'),
-                'dir' => $request->get('dir', Criteria::DESC)
+                'dir' => $request->get('dir', Criteria::DESC),
             ],
-            'lastPage' => ceil($repository->getCount($request)/$repository::PER_PAGE),
+            'lastPage' => ceil($repository->getCount($request) / $repository::PER_PAGE),
             'currentPage' => (int) $request->get('page', 1),
         ]);
     }
@@ -80,6 +80,7 @@ class ArticleController extends AbstractController
                     ->setCreatedAt(new \DateTimeImmutable());
                 $this->entityManager->persist($article);
                 $this->entityManager->flush();
+
                 return $this->redirectToRoute('article-list');
             } catch (FileException $fileException) {
                 $error = new FormError($fileException->getMessage());
@@ -104,12 +105,12 @@ class ArticleController extends AbstractController
         $originArticle = $articleRepository->find($originArticleId);
 
         if (!$originArticle) {
-            throw new NotFoundHttpException($this->translator->trans('Article with id {{ id }} not found.', ['id'=> $originArticleId], 'article'));
+            throw new NotFoundHttpException($this->translator->trans('Article with id {{ id }} not found.', ['id' => $originArticleId], 'article'));
         }
 
         $locale = $request->get('locale');
 
-        if (!in_array($locale, $this->getParameter('app_locales'))){
+        if (!in_array($locale, $this->getParameter('app_locales'))) {
             throw new NotFoundHttpException($this->translator->trans('Locale {{ locale }} not found', ['locale' => $locale], 'languages'));
         }
 
@@ -157,12 +158,14 @@ class ArticleController extends AbstractController
                     ->setUpdatedBy($this->getUser())
                     ->setUpdatedAt(new \DateTime());
                 $this->entityManager->flush();
+
                 return $this->redirectToRoute('article-list');
             } catch (FileException $fileException) {
                 $error = new FormError($fileException->getMessage());
                 $form->get('image')->addError($error);
             }
         }
+
         return $this->render('article/create.html.twig', [
             'title' => $this->translator->trans('Update an article', [], 'article'),
             'article' => $article,
@@ -184,10 +187,11 @@ class ArticleController extends AbstractController
                             $this->fileService->remove($article->getImage(), $this->parameterBag->get('images_article'));
                         }
                         $this->entityManager->remove($article);
-                        $this->logger->debug('Article "' . $article->getTitle() . '" removed.');
+                        $this->logger->debug('Article "'.$article->getTitle().'" removed.');
                     } catch (FileNotFoundException $exception) {
                         $this->logger->error($exception->getMessage());
                         $this->addFlash(self::$success, $this->translator->trans('Can not remove image of the article.', [], 'article'));
+
                         return $this->redirectToRoute('article-list');
                     }
                 }

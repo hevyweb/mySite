@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: MessageRepository::class)]
 class Message
 {
+    /** @noinspection PhpPropertyOnlyWrittenInspection */
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
@@ -23,7 +24,7 @@ class Message
     private ?string $message;
 
     #[ORM\Column(type: 'datetime_immutable')]
-    private ?\DateTimeInterface $createdAt;
+    private ?\DateTimeImmutable $createdAt;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $subject;

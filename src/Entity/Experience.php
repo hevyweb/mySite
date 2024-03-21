@@ -8,34 +8,35 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: ExperienceRepository::class)]
 class Experience
 {
+    /** @noinspection PhpPropertyOnlyWrittenInspection */
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
-    private $id;
+    private ?int $id;
 
     #[ORM\Column(type: 'string', length: 255)]
-    private $name;
+    private ?string $name;
 
     #[ORM\Column(type: 'text')]
-    private $description;
+    private ?string $description;
 
     #[ORM\Column(type: 'string', length: 2)]
-    private $locale;
+    private ?string $locale;
 
     #[ORM\Column(type: 'string', length: 64)]
-    private $image;
+    private ?string $image;
 
     #[ORM\Column(type: 'date')]
-    private $fromDate;
+    private ?\DateTimeInterface $fromDate;
 
     #[ORM\Column(type: 'date', nullable: true)]
-    private $toDate;
+    private ?\DateTimeInterface $toDate;
 
     #[ORM\Column(type: 'string', length: 64, nullable: true)]
-    private $company;
+    private ?string $company;
 
     #[ORM\Column(type: 'string', length: 128)]
-    private $location;
+    private ?string $location;
 
     public function getId(): ?int
     {

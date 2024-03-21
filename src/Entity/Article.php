@@ -21,7 +21,7 @@ class Article
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type:'integer')]
+    #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
     #[ORM\Column(type: 'string', length: 255)]
@@ -59,10 +59,10 @@ class Article
     private ?string $image;
 
     #[ORM\Column(type: 'text')]
-    private $preview;
+    private ?string $preview;
 
     #[ORM\Column(type: 'integer', nullable: true)]
-    private $hit = 0;
+    private int $hit = 0;
 
     public function getId(): ?int
     {

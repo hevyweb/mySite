@@ -13,7 +13,7 @@
         </div>
         <form method="get" action="{{ path('user-list') }}" class="quick-search">
             <div class="input-group quick-search">
-                <input type="search" id="form1" class="form-control" aria-label="{% trans from 'messages' %}Search{% endtrans%}"  value="{{ filtervariables.q }}" name="q" />
+                <input type="search" id="form1" class="form-control" aria-label="{% trans from 'messages' %}Search{% endtrans%}"  value="{{ filterVariables.q }}" name="q" />
                 <div class="input-group-append">
                     <button type="button" class="btn btn-sm btn-primary" title="{% trans %}Find users{% endtrans %}">
                         <i class="fas fa-search"></i>
@@ -22,7 +22,7 @@
             </div>
         </form>
         {% include 'common/pagination.html.twig' with {
-            currentFilters: filtervariables,
+            currentFilters: filterVariables,
             currentPage: page,
             paginationPath: "user-list",
             lastPage: totalPages,
@@ -69,7 +69,7 @@
             </table>
         </div>
         {% include 'common/pagination.html.twig' with {
-            currentFilters: filtervariables,
+            currentFilters: filterVariables,
             currentPage: page,
             paginationPath: "user-list",
             lastPage: totalPages,

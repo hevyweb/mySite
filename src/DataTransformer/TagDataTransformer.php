@@ -6,12 +6,12 @@ use Symfony\Component\Form\DataTransformerInterface;
 
 class TagDataTransformer implements DataTransformerInterface
 {
-
     public function transform(mixed $value): string
     {
         if (!empty($value)) {
             return implode(', ', $value);
         }
+
         return '';
     }
 
@@ -20,6 +20,7 @@ class TagDataTransformer implements DataTransformerInterface
         if (!empty($value)) {
             return array_map('trim', explode(',', $value));
         }
+
         return [];
     }
 }

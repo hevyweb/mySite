@@ -9,9 +9,9 @@ use Symfony\Component\Security\Core\Authentication\RememberMe\PersistentTokenInt
 use Symfony\Component\Security\Core\Authentication\RememberMe\TokenProviderInterface;
 use Symfony\Component\Security\Core\Exception\TokenNotFoundException;
 
-class AppTokenProvider implements TokenProviderInterface
+readonly class AppTokenProvider implements TokenProviderInterface
 {
-    public function __construct(private readonly EntityManagerInterface $entityManager)
+    public function __construct(private EntityManagerInterface $entityManager)
     {
     }
 
@@ -19,7 +19,7 @@ class AppTokenProvider implements TokenProviderInterface
     {
         /**
          * @var RememberMeTokenRepository $rememberMeTokenRepo
-         * @var RememberMeToken $rememberMeToken
+         * @var RememberMeToken           $rememberMeToken
          */
         $rememberMeTokenRepo = $this->entityManager->getRepository(RememberMeToken::class);
         $rememberMeToken = $rememberMeTokenRepo->findBySeries($series);
@@ -31,9 +31,6 @@ class AppTokenProvider implements TokenProviderInterface
         throw new TokenNotFoundException('No token found.');
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function deleteTokenBySeries(string $series): void
     {
         /**
@@ -43,10 +40,7 @@ class AppTokenProvider implements TokenProviderInterface
         $rememberMeTokenRepo->deleteBySeries($series);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function updateToken(string $series, string $tokenValue, \DateTimeInterface $lastUsed): void
+    public function updateToken(string $series, string $tokenValue, \DateTime|\DateTimeInterface $lastUsed): void
     {
         $rememberMeToken = $this->loadTokenBySeries($series);
         $rememberMeToken->setLastUsed($lastUsed);
@@ -55,9 +49,6 @@ class AppTokenProvider implements TokenProviderInterface
         $this->entityManager->flush();
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function createNewToken(PersistentTokenInterface $token): void
     {
         $rememberMeToken = new RememberMeToken();

@@ -10,9 +10,6 @@ abstract class AbstractDataGridRepository extends LazyServiceEntityRepository
     /**
      * There is an issue in symfony. It doesn't allow to get total number of items, if search criteria is not empty.
      * That's why I have to implement this overflow.
-     *
-     * @param Criteria $criteria
-     * @return int
      */
     public function total(Criteria $criteria): int
     {

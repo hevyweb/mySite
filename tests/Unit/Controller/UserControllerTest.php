@@ -85,11 +85,11 @@ class UserControllerTest extends TestCase
             ->method('get')
             ->willReturnOnConsecutiveCalls($tokenStorage, $parameterBag, $this->formFactory, $router);
 
-
         $this->formFactory->expects($this->once())
             ->method('create')
             ->willReturnCallback(function ($type, $user) {
                 $user->setPlainPassword('test');
+
                 return $this->form;
             });
 

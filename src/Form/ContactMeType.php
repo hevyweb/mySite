@@ -15,11 +15,11 @@ use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class ContactMeType extends AbstractType {
+class ContactMeType extends AbstractType
+{
     public function __construct(
         private readonly TranslatorInterface $translator,
-    )
-    {
+    ) {
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -36,7 +36,7 @@ class ContactMeType extends AbstractType {
                     'class' => 'form-control',
                     'maxlength' => 64,
                     'placeholder' => $this->translator->trans('Your name', [], 'contactme'),
-                    'aria-describedby' => 'invalidNameFeedback'
+                    'aria-describedby' => 'invalidNameFeedback',
                 ],
                 'constraints' => [
                     new NotBlank(),
@@ -46,7 +46,7 @@ class ContactMeType extends AbstractType {
                 ],
                 'help' => $this->translator->trans('Please enter your name', [], 'contactme'),
                 'help_attr' => [
-                    'class' => 'invalid-feedback'
+                    'class' => 'invalid-feedback',
                 ],
             ])
             ->add('email', EmailType::class, [
@@ -59,7 +59,7 @@ class ContactMeType extends AbstractType {
                     'id' => 'email',
                     'class' => 'form-control',
                     'placeholder' => $this->translator->trans('Your email', [], 'contactme'),
-                    'aria-describedby' => 'invalidEmailFeedback'
+                    'aria-describedby' => 'invalidEmailFeedback',
                 ],
                 'constraints' => [
                     new NotBlank(),
@@ -69,7 +69,7 @@ class ContactMeType extends AbstractType {
                 ],
                 'help' => $this->translator->trans('Please enter valid email', [], 'contactme'),
                 'help_attr' => [
-                    'class' => 'invalid-feedback'
+                    'class' => 'invalid-feedback',
                 ],
             ])
             ->add('subject', TextType::class, [
@@ -91,7 +91,7 @@ class ContactMeType extends AbstractType {
                 ],
                 'help' => $this->translator->trans('Please enter a subject', [], 'contactme'),
                 'help_attr' => [
-                    'class' => 'invalid-feedback'
+                    'class' => 'invalid-feedback',
                 ],
             ])
             ->add('message', TextareaType::class, [
@@ -111,7 +111,7 @@ class ContactMeType extends AbstractType {
                 ],
                 'help' => $this->translator->trans('Please enter your message', [], 'contactme'),
                 'help_attr' => [
-                    'class' => 'invalid-feedback'
+                    'class' => 'invalid-feedback',
                 ],
             ])->add('recaptcha', ReCaptchaType::class, [
                 'mapped' => false,
@@ -126,11 +126,11 @@ class ContactMeType extends AbstractType {
                 ],
                 'help' => $this->translator->trans('Please confirm that you are not a robot.'),
                 'help_attr' => [
-                    'class' => 'invalid-feedback'
+                    'class' => 'invalid-feedback',
                 ],
             ])->add('save', SubmitType::class, [
                 'attr' => ['class' => 'btn btn-primary mt-4'],
-                'label' => $this->translator->trans('Send')
+                'label' => $this->translator->trans('Send'),
             ])
         ;
     }
@@ -141,8 +141,8 @@ class ContactMeType extends AbstractType {
             'data_class' => Message::class,
             'csrf_protection' => true,
             'csrf_field_name' => '_token',
-            'csrf_token_id'   => 'message',
-            'csrf_message' => $this->translator->trans('Invalid CSRF token.', [], 'security')
+            'csrf_token_id' => 'message',
+            'csrf_message' => $this->translator->trans('Invalid CSRF token.', [], 'security'),
         ]);
     }
 }

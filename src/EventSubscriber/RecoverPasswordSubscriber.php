@@ -5,40 +5,31 @@ namespace App\EventSubscriber;
 use App\Event\RecoverPasswordEvent;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class RecoverPasswordSubscriber implements EventSubscriberInterface
+readonly class RecoverPasswordSubscriber implements EventSubscriberInterface
 {
-    private MailerInterface $mailer;
-
-    private TemplatedEmail $templatedEmail;
-
-    private TranslatorInterface $translator;
-
-    private Address $from;
-
     public function __construct(
-        TemplatedEmail      $templatedEmail,
-        MailerInterface     $mailer,
-        TranslatorInterface $translator,
-        Address             $from
-    )
-    {
-        $this->templatedEmail = $templatedEmail;
-        $this->mailer = $mailer;
-        $this->translator = $translator;
-        $this->from = $from;
+        private TemplatedEmail $templatedEmail,
+        private MailerInterface $mailer,
+        private TranslatorInterface $translator,
+        private Address $from,
+    ) {
     }
 
     public static function getSubscribedEvents(): array
     {
         return [
-            RecoverPasswordEvent::class => 'recoverPassword'
+            RecoverPasswordEvent::class => 'recoverPassword',
         ];
     }
 
+    /**
+     * @throws TransportExceptionInterface
+     */
     public function recoverPassword(RecoverPasswordEvent $event): void
     {
         $user = $event->getUser();

@@ -16,11 +16,9 @@ class LocaleExtension extends AbstractExtension
 
     public function convertLocaleToUi(string $value): string
     {
-        switch ($value) {
-            case 'ua':
-                return 'uk';
-            default:
-                return $value;
-        }
+        return match ($value) {
+            'ua' => 'uk',
+            default => $value,
+        };
     }
 }

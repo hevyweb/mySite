@@ -14,14 +14,12 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class BlogController extends AbstractController
 {
-    const PER_PAGE = 6;
+    public const PER_PAGE = 6;
 
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        private TranslatorInterface $translator,
-    )
-    {
-
+        private readonly EntityManagerInterface $entityManager,
+        private readonly TranslatorInterface $translator,
+    ) {
     }
 
     public function index(Request $request): Response
@@ -42,7 +40,7 @@ class BlogController extends AbstractController
         return $this->render('blog/index.html.twig', [
             'title' => $this->translator->trans('Blog', [], 'article'),
             'articles' => $articleRepository->getBlogArticles(self::PER_PAGE, $page, $request->getLocale()),
-            'lastPage' => ceil($count/self::PER_PAGE),
+            'lastPage' => ceil($count / self::PER_PAGE),
             'currentPage' => $page,
         ]);
     }
@@ -69,7 +67,7 @@ class BlogController extends AbstractController
 
         $hit = $_COOKIE['hit'] ?? '';
 
-        if ($hit === '') {
+        if ('' === $hit) {
             $hit = [];
         } else {
             $hit = array_unique(array_map('intval', explode(',', $hit)));

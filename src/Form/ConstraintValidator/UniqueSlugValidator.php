@@ -10,13 +10,11 @@ use Symfony\Component\Validator\ConstraintValidator;
 class UniqueSlugValidator extends ConstraintValidator
 {
     public function __construct(
-        private EntityManagerInterface $entityManager
-    )
-    {
-
+        private readonly EntityManagerInterface $entityManager
+    ) {
     }
 
-    public function validate(mixed $value, Constraint $constraint)
+    public function validate(mixed $value, Constraint $constraint): void
     {
         $this->entityManager->getRepository(Article::class)
             ->findDuplicates($value, $this->context->getRoot());

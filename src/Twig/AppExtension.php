@@ -16,9 +16,6 @@ class AppExtension extends AbstractExtension
 
     /**
      * Return the value of the requested environment variable.
-     *
-     * @param string $name
-     * @return string
      */
     public function getEnvironmentVariable(string $name): string
     {

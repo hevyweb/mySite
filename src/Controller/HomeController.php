@@ -12,10 +12,9 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class HomeController extends AbstractController
 {
     public function __construct(
-        private TranslatorInterface $translator,
-        private EntityManagerInterface $em,
-    )
-    {
+        private readonly TranslatorInterface $translator,
+        private readonly EntityManagerInterface $em,
+    ) {
     }
 
     public function index(Request $request): Response

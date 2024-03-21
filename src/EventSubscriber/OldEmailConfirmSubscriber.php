@@ -6,29 +6,31 @@ use App\Event\NewEmailConfirmEvent;
 use App\Event\OldEmailConfirmEvent;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
-use Symfony\Contracts\EventDispatcher\Event;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class OldEmailConfirmSubscriber implements EventSubscriberInterface
+readonly class OldEmailConfirmSubscriber implements EventSubscriberInterface
 {
     public function __construct(
-        private TemplatedEmail      $templatedEmail,
-        private MailerInterface     $mailer,
+        private TemplatedEmail $templatedEmail,
+        private MailerInterface $mailer,
         private TranslatorInterface $translator,
-        private Address             $from
+        private Address $from
     ) {
-
     }
 
     public static function getSubscribedEvents(): array
     {
         return [
-            OldEmailConfirmEvent::class => 'confirmOldEmail'
+            OldEmailConfirmEvent::class => 'confirmOldEmail',
         ];
     }
 
+    /**
+     * @throws TransportExceptionInterface
+     */
     public function confirmOldEmail(NewEmailConfirmEvent $event): void
     {
         $emailHistory = $event->getEmailHistory();

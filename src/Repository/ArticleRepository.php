@@ -5,7 +5,10 @@ namespace App\Repository;
 use App\Entity\Article;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Query\QueryBuilder;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -19,14 +22,17 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class ArticleRepository extends ServiceEntityRepository
 {
-    const PER_PAGE = 30;
+    public const PER_PAGE = 30;
 
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Article::class);
     }
 
-    public function search(Request $request)
+    /**
+     * @throws Exception
+     */
+    public function search(Request $request): array
     {
         $query = $this->createBasicSearchQuery($request);
         $query->setMaxResults($request->get('limit', self::PER_PAGE));
@@ -38,6 +44,9 @@ class ArticleRepository extends ServiceEntityRepository
         return $query->executeQuery()->fetchAllAssociative();
     }
 
+    /**
+     * @throws Exception
+     */
     public function getCount(Request $request): int
     {
         $query = $this->createBasicSearchQuery($request);
@@ -50,10 +59,7 @@ class ArticleRepository extends ServiceEntityRepository
 
     /**
      * Unfortunately I have to use Doctrine DBAL because I need MySQL function GROUP_CONCAT, which does not exist out
-     * of the box in Doctrine ORM, and I'm too lazy to implement it via lexer:)
-     *
-     * @param Request $request
-     * @return QueryBuilder
+     * of the box in Doctrine ORM, and I'm too lazy to implement it via lexer:).
      */
     protected function createBasicSearchQuery(Request $request): QueryBuilder
     {
@@ -69,7 +75,7 @@ class ArticleRepository extends ServiceEntityRepository
                     $query->expr()->like('a.body', ':search')
                 )
             )
-            ->setParameter('search', '%' . $request->get('search') . '%');
+            ->setParameter('search', '%'.$request->get('search').'%');
         }
 
         return $query;
@@ -90,11 +96,15 @@ class ArticleRepository extends ServiceEntityRepository
         return $this->createBasicBlogQuery($locale)
             ->addOrderBy('a.createdAt', 'DESC')
             ->setMaxResults($count)
-            ->setFirstResult(($page -1)*$count)
+            ->setFirstResult(($page - 1) * $count)
             ->getQuery()
             ->getResult();
     }
 
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
     public function countBlogArticles(string $locale): int
     {
         return (int) $this->createBasicBlogQuery($locale)
@@ -114,6 +124,10 @@ class ArticleRepository extends ServiceEntityRepository
         ;
     }
 
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
     public function findArticleWithSubstitutes(string $slug, string $locale): ?Article
     {
         return $this->createQueryBuilder('a')
@@ -137,5 +151,4 @@ class ArticleRepository extends ServiceEntityRepository
             ->getQuery()
             ->getArrayResult();
     }
-
 }

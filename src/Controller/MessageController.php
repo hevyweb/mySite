@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Message;
+use App\Repository\MessageRepository;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -13,17 +14,19 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class MessageController extends AbstractController
 {
-    const PER_PAGE = 20;
+    public const PER_PAGE = 20;
 
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        private TranslatorInterface $translator,
-    )
-    {
+        private readonly EntityManagerInterface $entityManager,
+        private readonly TranslatorInterface $translator,
+    ) {
     }
 
     public function index(Request $request): Response
     {
+        /**
+         * @var MessageRepository $messagesRepo
+         */
         $messagesRepo = $this->entityManager->getRepository(Message::class);
 
         $page = (int) $request->get('page', 1);
@@ -32,12 +35,13 @@ class MessageController extends AbstractController
 
         $messages = $messagesRepo->findBy([], [
             'seen' => Criteria::ASC,
-            'createdAt' => Criteria::DESC
-        ], self::PER_PAGE, ($page-1) * self::PER_PAGE);
+            'createdAt' => Criteria::DESC,
+        ], self::PER_PAGE, ($page - 1) * self::PER_PAGE);
+
         return $this->render('messages/index.html.twig', [
             'messages' => $messages,
             'title' => $this->translator->trans('Messages', [], 'message'),
-            'totalPages' => ceil($count/self::PER_PAGE),
+            'totalPages' => ceil($count / self::PER_PAGE),
             'page' => $page,
         ]);
     }
@@ -52,7 +56,7 @@ class MessageController extends AbstractController
         );
 
         if (empty($message)) {
-            throw new NotFoundHttpException('Message for id "' . (int) $request->get('id') . '" not found.');
+            throw new NotFoundHttpException('Message for id "'.(int) $request->get('id').'" not found.');
         }
 
         if (!$message->isSeen()) {

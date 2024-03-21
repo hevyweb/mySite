@@ -3,25 +3,20 @@
 namespace App\Form;
 
 use App\Entity\Article;
-use App\Entity\GenericList;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use Symfony\Component\Form\Extension\Core\Type\RangeType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\LessThanOrEqual;
 use Symfony\Component\Validator\Constraints\PositiveOrZero;
 
-class ArticleListType  extends AbstractType
+class ArticleListType extends AbstractType
 {
     public function __construct(
-        private EntityManagerInterface $entityManager,
-    )
-    {
-
+        private readonly EntityManagerInterface $entityManager,
+    ) {
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -30,7 +25,7 @@ class ArticleListType  extends AbstractType
             ->add('dir', ChoiceType::class, [
                 'choices' => [
                     Criteria::ASC,
-                    Criteria::DESC
+                    Criteria::DESC,
                 ],
                 'mapped' => false,
                 'required' => false,
@@ -41,7 +36,7 @@ class ArticleListType  extends AbstractType
                     'locale',
                     'draft',
                     'hit',
-                    'createdAt'
+                    'createdAt',
                 ],
                 'mapped' => false,
                 'required' => false,
@@ -51,11 +46,10 @@ class ArticleListType  extends AbstractType
                     new PositiveOrZero(),
                     new LessThanOrEqual(
                         $this->entityManager->getRepository(Article::class)->getCount($builder->getData())
-                    )
+                    ),
                 ],
                 'mapped' => false,
                 'required' => false,
             ]);
-
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Form\User;
 
 use App\Entity\User;
@@ -11,11 +12,8 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ResetPasswordType extends AbstractType
 {
-    private TranslatorInterface $translator;
-
-    public function __construct(TranslatorInterface $translator)
+    public function __construct(private readonly TranslatorInterface $translator)
     {
-        $this->translator = $translator;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -24,11 +22,11 @@ class ResetPasswordType extends AbstractType
             ->add('password', PasswordType::class)
             ->add('plainPassword', RepeatedType::class, [
                 'type' => PasswordType::class,
-                'first_options'  => [
+                'first_options' => [
                     'label' => $this->translator->trans('New password', [], 'user'),
                 ],
                 'second_options' => [
-                    'label' => $this->translator->trans('Repeat new password', [], 'user')
+                    'label' => $this->translator->trans('Repeat new password', [], 'user'),
                 ],
                 'required' => false,
             ])

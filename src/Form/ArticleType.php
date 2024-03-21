@@ -23,9 +23,8 @@ class ArticleType extends AbstractType
 
     public function __construct(
         private readonly TranslatorInterface $translator,
-        private TagDataTransformer $dataTransformer,
-    )
-    {
+        private readonly TagDataTransformer $dataTransformer,
+    ) {
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -48,17 +47,17 @@ class ArticleType extends AbstractType
             ])
             ->add('body', TextareaType::class, [
                 'attr' => [
-                    'rows' => 10
+                    'rows' => 10,
                 ],
                 'label' => $this->translator->trans('Body', [], 'article'),
-                ]
+            ]
             )
             ->add('preview', TextareaType::class, [
                 'attr' => [
-                    'rows' => 10
+                    'rows' => 10,
                 ],
                 'label' => $this->translator->trans('Preview', [], 'article'),
-                ]
+            ]
             )
             ->add('tags', TextType::class, [
                 'label' => $this->translator->trans('Tags', [], 'article'),
@@ -75,7 +74,6 @@ class ArticleType extends AbstractType
                     new Length([
                         'max' => 255,
                     ]),
-
                 ],
             ])
             ->add('draft', CheckboxType::class, [
@@ -96,7 +94,7 @@ class ArticleType extends AbstractType
                             'image/bmp',
                         ],
                         'mimeTypesMessage' => $this->translator->trans('Please upload valid image. Support formats jpg, jpeg, png, gif, bmp'),
-                    ])
+                    ]),
                 ],
             ])
         ;

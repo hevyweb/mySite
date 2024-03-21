@@ -20,6 +20,7 @@ trait LocaleBuilderTrait
         foreach ($this->locales as $locale) {
             $languages[$this->translator->trans($locale, [], 'languages')] = $locale;
         }
+
         return $languages;
     }
 }
