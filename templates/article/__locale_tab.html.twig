@@ -1,0 +1,17 @@
+{% set currentLocale = form.vars.value.translation.locale == locale %}
+{% set exist = article.getArticleTranslation(locale) %}
+<li class="nav-item d-flex {{ currentLocale ? 'nav-item-active' : '' }}">
+    <a class="nav-link {{ currentLocale ? 'active' : (exist ? '' : 'disabled') }}" aria-current="page" href="{{
+    exist and exist.id ? url('article-edit', {'slug': article.slug, 'locale': locale}) : '#'
+    }}">
+        <img src="{{ absolute_url('/images/locales/' ~ locale) }}.png" alt="{{ locale|trans([], 'languages') }}"
+             class="{{ currentLocale or exist ? '' ? 'monochrome' }}
+        "/>
+        {{ locale|trans([], 'languages') }}
+        {% if exist == false and currentLocale == false and form.vars.value.translation.id is not null %}
+            <a href="{{ url('article-translate', {'id': form.vars.value.translation.id, 'locale': locale}) }}" class="ms-1">
+                <i class="fa-solid fa-square-plus green"></i>
+            </a>
+        {% endif %}
+    </a>
+</li>

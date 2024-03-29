@@ -4,11 +4,12 @@
 {% block javascripts %}
     {{ parent() }}
     {{ encore_entry_script_tags('js/admin') }}
+    {{ encore_entry_script_tags('js/article') }}
 {% endblock %}
 
 {% block content %}
 {% set breadcrumbs = [
-    {title: 'Admin panel' | trans([], 'dashboard'), link: absolute_url(path('admin-dashboard'))},
+    {title: 'Admin panel' | trans([], 'dashboard'), path: 'admin-dashboard'},
     {title: 'Articles' | trans }
 ] %}
 {% include 'common/breadcrumbs.html.twig' with breadcrumbs %}
@@ -39,7 +40,7 @@
                 } only %}
             </div>
         </div>
-        <form action="{{ absolute_url(path('article-list')) }}">
+        <form action="{{ url('article-list') }}">
             <div class="input-group quick-search">
                 <input type="search" name="search" value="{{ currentFilters.search }}" id="form1" class="form-control" placeholder="{% trans from 'messages' %}Search{% endtrans%}" />
                 <div class="input-group-append">
@@ -48,9 +49,18 @@
                     </button>
                 </div>
             </div>
+            {% if tagFiltering is not null %}
+            <div class="article-filtering mt-1 mb-3">
+                {% trans %}Tags{% endtrans %}:
+                <a href="{{ url('article-list') }}">
+                    {{ tagFiltering }}
+                    <i class="fa-solid fa-xmark"></i>
+                </a>
+            </div>
+            {% endif %}
         </form>
         <div class="row">
-            <form method="post" action="{{ absolute_url(path('article-delete')) }}" class="datagrid-form">
+            <form method="post" action="{{ url('article-delete') }}" class="datagrid-form" id="article-list">
                 <table class="table table-striped">
                     <thead>
                         <tr>
@@ -65,7 +75,7 @@
                                 {{ include('common/sorting.html.twig', {alias: 'article-list', label: 'Locale'|trans, sorting: 'locale'}) }}
                             </th>
                             <th>
-                                {{ include('common/sorting.html.twig', {alias: 'article-list', label: 'Created'|trans, sorting: 'createdAt'}) }}
+                                {{ include('common/sorting.html.twig', {alias: 'article-list', label: 'Last upd.'|trans, sorting: 'updatedAt'}) }}
                             </th>
                             <th>{% trans %}Tags{% endtrans %}</th>
                             <th>{% trans %}Link{% endtrans %}</th>
@@ -78,33 +88,35 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for n, article in articles %}
+                        {% for n, row in articles %}
+                            {% set article = row.article %}
+                            {% set translation = article.getArticleTranslationWithFallBack(app.request.locale) %}
                             <tr>
                                 <td>
-                                    <input type="checkbox" name="id[{{ article.id }}]" />
+                                    <label><input type="checkbox" name="id[{{ article.id }}]" /></label>
                                 </td>
                                 <td>
-                                    {% if article.image %}
-                                        <img src="/blog/{{ article.image }}" class="img-thumbnail" alt="" />
+                                    {% if translation.image %}
+                                        <a href="{{ path('article-edit', {'slug': article.slug, locale: translation.locale}) }}">
+                                            <img src="/blog/{{ translation.image }}" class="img-thumbnail" alt="" />
+                                        </a>
                                     {% endif %}
                                 </td>
-                                <td><a href="{{ path('article-edit', {'id': article.id}) }}">{{ article.title }}</a></td>
+                                <td><a href="{{ path('article-edit', {'slug': article.slug, locale: translation.locale}) }}">{{ translation.title }}</a></td>
                                 <td>
-                                    {% for locale in article.locale|split(',') %}
-                                        <img src="{{ absolute_url('/images/locales/' ~ locale) }}.png" alt="{{ locale|trans([], 'languages') }}" />
+                                    {% for trans in article.getArticleTranslations() %}
+                                        <img src="{{ absolute_url('/images/locales/' ~ trans.locale) }}.png" alt="{{ trans.locale|trans([], 'languages') }}" />
                                     {% endfor %}
                                 </td>
                                 <td>
-                                    {{ article.created_at|date('d.m.Y H:i') }}
+                                    {{ translation.updatedAt|date('d.m.Y H:i') }}
                                 </td>
                                 <td>
-                                {% if article.tags %}
                                     {% for tag in article.tags %}
-                                        <a href="{{ absolute_url(path('article-list', {'tag': tag })) }}" class="tag text-nowrap">
-                                            <i class="fa-solid fa-tag "></i> {{ tag }}
+                                        <a href="{{ absolute_url(path('article-list', {'tag': tag.name })) }}" class="tag text-nowrap">
+                                            <i class="fa-solid fa-tag "></i> {{ tag.name }}
                                         </a>
                                     {% endfor %}
-                                {% endif %}
                                 </td>
                                 <td>
                                     <a href="{{ absolute_url(path('blog-view', {'slug': article.slug})) }}" target="_blank" class="btn btn-sm btn-primary btn-smaller">
@@ -113,7 +125,7 @@
                                 </td>
                                 <td>
                                     <button class="btn btn-sm btn-primary btn-smaller">
-                                        <i class="fa-solid {{ article.draft ? 'fa-eye-slash': 'fa-eye' }}"></i>
+                                        <i class="fa-solid {{ translation.draft ? 'fa-eye-slash': 'fa-eye' }}"></i>
                                     </button>
                                 </td>
                                 <td>

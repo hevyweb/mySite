@@ -1,38 +1,38 @@
 {% extends 'base.html.twig' %}
 {% trans_default_domain 'article' %}
 {% block content %}
-{% include 'common/title.html.twig' with {title: article.title} %}
+{% include 'common/title.html.twig' with {title: translation.title} %}
 <div class="blog">
     <div class="d-flex justify-content-between">
         <div class="blog-meta">
-            <span><i class="far fa-user blog-meta-icon"></i> {{ article.createdBy.getFullName() }}</span>
-            <span><i class="far fa-calendar-alt blog-meta-icon"></i> {{ article.createdAt|date('d-m-Y') }}</span>
-            <span><i class="fa-solid fa-ghost blog-meta-icon"></i> {{ article.hit }}</span>
-            <span><i class="far fa-comments blog-meta-icon"></i>0</span>
+            <span><i class="far fa-user blog-meta-icon"></i> {{ translation.createdBy.getFullName() }}</span>
+            <span><i class="far fa-calendar-alt blog-meta-icon"></i> {{ translation.createdAt|date('d-m-Y') }}</span>
+            <span><i class="fa-solid fa-ghost blog-meta-icon"></i> {{ translation.hit }}</span>
+            {# <span><i class="far fa-comments blog-meta-icon"></i>0</span> #}
         </div>
         <div class="tags">
             {% for tag in article.tags %}
                 <span class="text-nowrap">
-                    <i class="fa-solid fa-tag blog-meta-icon"></i> {{ tag }}
+                    <i class="fa-solid fa-tag blog-meta-icon"></i> {{ tag.name }}
                 </span>
             {% endfor %}
         </div>
     </div>
-    {% if app.request.locale != article.locale %}
+    {% if app.request.locale != translation.locale %}
         <div class="alert alert-warning" role="alert">
             {% trans %}This article does not have a translation in the language that you requested.{% endtrans %}
             {% trans %}You're viewing the original text.{% endtrans %}
             {% trans %}If you want to help with the translation, please contact me using{% endtrans %}
-            <a href="{{ absolute_url(path('contact-me')) }}">{% trans from "contactme" %}Contact form{% endtrans %}</a>
+            <a href="{{ url('contact-me') }}">{% trans from "contactme" %}Contact form{% endtrans %}</a>
         </div>
     {% endif %}
     <div class="rounded text-center overflow-hidden">
-        {% if article.image %}
-            <img src="{{ absolute_url('/blog/' ~ article.image) }}" alt="{{ article.title }}">
+        {% if translation.image %}
+            <img src="{{ absolute_url('/blog/' ~ translation.image) }}" alt="{{ translation.title }}">
         {% endif %}
     </div>
     <p>
-        {{ article.body|raw }}
+        {{ translation.body|raw }}
     </p>
 </div>
 {% endblock %}

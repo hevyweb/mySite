@@ -3,20 +3,11 @@
 namespace App\Entity;
 
 use App\Repository\ArticleRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: ArticleRepository::class)]
-#[ORM\UniqueConstraint(
-    name: 'slug_locale',
-    fields: ['slug', 'locale']
-)]
-#[UniqueEntity(
-    fields: ['slug', 'locale'],
-    message: 'Article with such slug already exists.',
-    errorPath: 'slug',
-    groups: ['article']
-)]
 class Article
 {
     #[ORM\Id]
@@ -25,144 +16,23 @@ class Article
     private ?int $id = null;
 
     #[ORM\Column(type: 'string', length: 255)]
-    private ?string $title;
-
-    #[ORM\Column(type: 'string', length: 2)]
-    private ?string $locale;
-
-    #[ORM\Column(type: 'text')]
-    private ?string $body;
-
-    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
-    private ?\DateTimeImmutable $createdAt;
-
-    #[ORM\Column(type: 'datetime', nullable: true)]
-    private ?\DateTimeInterface $updatedAt = null;
-
-    #[ORM\ManyToOne(targetEntity: User::class)]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?User $createdBy;
-
-    #[ORM\ManyToOne(targetEntity: User::class)]
-    private ?User $updatedBy = null;
-
-    #[ORM\Column(type: 'array', nullable: true)]
-    private array $tags = [];
-
-    #[ORM\Column(type: 'string', length: 255)]
     private string $slug;
 
-    #[ORM\Column(type: 'boolean')]
-    private bool $draft = true;
+    #[ORM\ManyToMany(targetEntity: Tag::class, mappedBy: 'article', cascade: ['persist', 'remove'])]
+    private Collection $tags;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $image;
+    #[ORM\OneToMany(mappedBy: 'article', targetEntity: ArticleTranslation::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
+    private Collection $articleTranslations;
 
-    #[ORM\Column(type: 'text')]
-    private ?string $preview;
-
-    #[ORM\Column(type: 'integer', nullable: true)]
-    private int $hit = 0;
+    public function __construct()
+    {
+        $this->tags = new ArrayCollection();
+        $this->articleTranslations = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getTitle(): ?string
-    {
-        return $this->title;
-    }
-
-    public function setTitle(string $title): self
-    {
-        $this->title = $title;
-
-        return $this;
-    }
-
-    public function getLocale(): ?string
-    {
-        return $this->locale;
-    }
-
-    public function setLocale(string $locale): self
-    {
-        $this->locale = $locale;
-
-        return $this;
-    }
-
-    public function getBody(): ?string
-    {
-        return $this->body;
-    }
-
-    public function setBody(string $body): self
-    {
-        $this->body = $body;
-
-        return $this;
-    }
-
-    public function getCreatedAt(): ?\DateTimeImmutable
-    {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(\DateTimeImmutable $createdAt): self
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    public function getUpdatedAt(): ?\DateTimeInterface
-    {
-        return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(?\DateTimeInterface $updatedAt): self
-    {
-        $this->updatedAt = $updatedAt;
-
-        return $this;
-    }
-
-    public function getCreatedBy(): ?User
-    {
-        return $this->createdBy;
-    }
-
-    public function setCreatedBy(?User $created_by): self
-    {
-        $this->createdBy = $created_by;
-
-        return $this;
-    }
-
-    public function getUpdatedBy(): ?User
-    {
-        return $this->updatedBy;
-    }
-
-    public function setUpdatedBy(?User $updated_by): self
-    {
-        $this->updatedBy = $updated_by;
-
-        return $this;
-    }
-
-    public function getTags(): ?array
-    {
-        return $this->tags;
-    }
-
-    public function setTags(?array $tags): self
-    {
-        $this->tags = $tags;
-
-        return $this;
     }
 
     public function getSlug(): ?string
@@ -177,51 +47,84 @@ class Article
         return $this;
     }
 
-    public function isDraft(): ?bool
+    /**
+     * @return Collection<int, Tag>
+     */
+    public function getTags(): Collection
     {
-        return $this->draft;
+        return $this->tags;
     }
 
-    public function setDraft(bool $draft): self
+    public function addTag(Tag $tag): static
     {
-        $this->draft = $draft;
+        if (!$this->tags->contains($tag)) {
+            $this->tags->add($tag);
+            $tag->addArticle($this);
+        }
 
         return $this;
     }
 
-    public function getImage(): ?string
+    public function removeTag(Tag $tag): static
     {
-        return $this->image;
-    }
-
-    public function setImage(string $image): self
-    {
-        $this->image = $image;
+        if ($this->tags->removeElement($tag)) {
+            $tag->removeArticle($this);
+        }
 
         return $this;
     }
 
-    public function getPreview(): ?string
+    /**
+     * @return Collection<int, ArticleTranslation>
+     */
+    public function getArticleTranslations(): Collection
     {
-        return $this->preview;
+        return $this->articleTranslations;
     }
 
-    public function setPreview(string $preview): self
+    public function addArticleTranslation(ArticleTranslation $articleTranslation): static
     {
-        $this->preview = $preview;
+        if (!$this->articleTranslations->contains($articleTranslation)) {
+            $this->articleTranslations->add($articleTranslation);
+            $articleTranslation->setArticle($this);
+        }
 
         return $this;
     }
 
-    public function getHit(): ?int
+    public function removeArticleTranslation(ArticleTranslation $articleTranslation): static
     {
-        return $this->hit;
-    }
-
-    public function setHit(?int $hit): self
-    {
-        $this->hit = $hit;
+        if ($this->articleTranslations->removeElement($articleTranslation)) {
+            // set the owning side to null (unless already changed)
+            if ($articleTranslation->getArticle() === $this) {
+                $articleTranslation->setArticle(null);
+            }
+        }
 
         return $this;
+    }
+
+    public function getArticleTranslation(string $locale): ?ArticleTranslation
+    {
+        $translation = $this->articleTranslations->filter(
+            fn (ArticleTranslation $articleTranslation) => $articleTranslation->getLocale() == $locale
+        )->first();
+
+        if (false === $translation) {
+            return null;
+        }
+
+        return $translation;
+    }
+
+    public function getArticleTranslationWithFallBack(string $locale): ?ArticleTranslation
+    {
+        $translation = $this->getArticleTranslation($locale) ?? $this->articleTranslations->first();
+
+        if (false === $translation) {
+            return null;
+        }
+
+        return $translation;
     }
 }

@@ -1,9 +1,7 @@
-<div class="user-another-user-edit warning">
-    <div class="icon">
-        <i class="fa-solid fa-triangle-exclamation"></i>
-    </div>
-    <div class="warning-body">
-        <h3>{{ header|default('Warning')|trans }}</h3>
-        {{ message }}
-    </div>
+<div class="alert alert-warning" role="alert">
+    <h6><i class="fa-solid fa-triangle-exclamation"></i>
+        {{ header|default('Warning')|trans }}
+    </h6>
+    <hr>
+    <p class="mb-0">{{ message }}</p>
 </div>

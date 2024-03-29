@@ -23,9 +23,6 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
     {
         $faker = FakerFactory::create();
         $fakerUA = FakerFactory::create('uk_UA');
-
-        $this->createAdminUser($manager, $faker);
-
         for ($n = 0; $n < 10; ++$n) {
             $user = new User();
             $user->setBirthDay($faker->dateTimeBetween('-60 years', '-18 years'))
@@ -43,8 +40,11 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
             ;
             $manager->persist($user);
         }
-
+        gc_collect_cycles();
         $manager->flush();
+        $manager->clear();
+
+        $this->createAdminUser($manager, $faker);
     }
 
     /**

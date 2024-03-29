@@ -31,6 +31,7 @@ class RoleFixtures extends Fixture
         }
 
         $manager->flush();
+        $manager->clear();
     }
 
     private function loadPredefinedRoles(ObjectManager $manager): void

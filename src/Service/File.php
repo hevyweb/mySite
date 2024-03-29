@@ -4,6 +4,7 @@ namespace App\Service;
 
 use PHPUnit\Runner\DirectoryCannotBeCreatedException;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\File as SymfonyFile;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
@@ -51,5 +52,18 @@ readonly class File
         if (!is_dir($dir) && !mkdir($dir)) {
             throw new DirectoryCannotBeCreatedException('Directory "'.$dir.'" can not be created.');
         }
+    }
+
+    public function copy(string $filePath, string $dir): string
+    {
+        $ext = pathinfo($filePath, \PATHINFO_EXTENSION);
+        $newFileName = $this->generateUniqueFilename($ext, $dir);
+        $newPath = $this->getFilePath($dir, $newFileName);
+
+        if (!@copy($filePath, $newPath)) {
+            throw new FileException('Can not copy file from "'.$filePath.'" to "'.$newPath.'"');
+        }
+
+        return $newFileName;
     }
 }

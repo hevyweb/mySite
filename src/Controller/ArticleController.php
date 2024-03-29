@@ -2,23 +2,26 @@
 
 namespace App\Controller;
 
+use App\DTO\SearchArticle;
 use App\Entity\Article;
-use App\Form\ArticleListType;
+use App\Entity\ArticleTranslation;
+use App\Form\ArticleTranslationType;
 use App\Form\ArticleType;
 use App\Repository\ArticleRepository;
 use App\Service\ArrayService;
 use App\Service\File;
 use App\Traits\FlashMessageTrait;
-use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerAwareTrait;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\Form\FormError;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -36,48 +39,52 @@ class ArticleController extends AbstractController
     ) {
     }
 
-    public function index(Request $request): Response
+    public function index(#[MapQueryString] ?SearchArticle $searchArticle, Request $request): Response
     {
-        $abstractForm = $this->createForm(ArticleListType::class, $request);
-        $abstractForm->handleRequest($request);
-        if ($abstractForm->isSubmitted() && !$abstractForm->isValid()) {
-            return $this->redirectToRoute('article-list');
-        }
+        $searchArticle = $searchArticle ?? new SearchArticle();
         /**
          * @var ArticleRepository $repository
          */
         $repository = $this->entityManager->getRepository(Article::class);
+        $locale = $request->getLocale();
 
         return $this->render('article/index.html.twig', [
-            'articles' => $repository->search($request),
+            'articles' => $repository->search($searchArticle, $locale),
             'title' => $this->translator->trans('Articles', [], 'article'),
             'currentFilters' => [
-                'search' => $request->get('search'),
-                'sorting' => $request->get('sorting', 'createdAt'),
-                'dir' => $request->get('dir', Criteria::DESC),
+                'search' => $searchArticle->search,
+                'sorting' => $searchArticle->sorting,
+                'dir' => $searchArticle->dir,
             ],
-            'lastPage' => ceil($repository->getCount($request) / $repository::PER_PAGE),
-            'currentPage' => (int) $request->get('page', 1),
+            'lastPage' => ceil($repository->getCount($searchArticle) / $searchArticle->limit),
+            'currentPage' => $searchArticle->page,
+            'tagFiltering' => $searchArticle->tag,
         ]);
     }
 
     public function create(Request $request): Response
     {
         $article = new Article();
+        $translation = new ArticleTranslation();
 
-        $article->setLocale($request->getLocale());
-        $form = $this->createForm(ArticleType::class, $article);
+        $translation->setLocale($request->getLocale());
+        $article->addArticleTranslation($translation);
+        $form = $this->createFormBuilder([
+            'article' => $article,
+            'translation' => $translation,
+        ])
+            ->add('article', ArticleType::class)
+            ->add('translation', ArticleTranslationType::class)
+            ->getForm();
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             try {
-                $file = $form->get('image')->getData();
-                if ($file) {
-                    $file = $this->fileService->saveFileTo($file, $this->parameterBag->get('images_article'));
-                    $article->setImage($file->getFilename());
-                }
-                $article
+                $this->setImage($form, $translation);
+                $translation
                     ->setCreatedBy($this->getUser())
-                    ->setCreatedAt(new \DateTimeImmutable());
+                    ->setCreatedAt(new \DateTimeImmutable())
+                    ->setUpdatedBy($this->getUser())
+                    ->setUpdatedAt(new \DateTime());
                 $this->entityManager->persist($article);
                 $this->entityManager->flush();
 
@@ -91,21 +98,21 @@ class ArticleController extends AbstractController
         return $this->render('article/create.html.twig', [
             'title' => $this->translator->trans('Create an article', [], 'article'),
             'form' => $form->createView(),
-            'translations' => [],
             'submit' => $this->translator->trans('Save'),
+            'article' => $article,
         ]);
     }
 
     public function translate(Request $request): Response
     {
-        $originArticleId = $request->get('id');
+        $articleTranslationId = $request->get('id');
 
-        $articleRepository = $this->entityManager->getRepository(Article::class);
+        $articleTranslationRepository = $this->entityManager->getRepository(ArticleTranslation::class);
 
-        $originArticle = $articleRepository->find($originArticleId);
+        $articleTranslation = $articleTranslationRepository->find($articleTranslationId);
 
-        if (!$originArticle) {
-            throw new NotFoundHttpException($this->translator->trans('Article with id {{ id }} not found.', ['id' => $originArticleId], 'article'));
+        if (!$articleTranslation) {
+            throw new NotFoundHttpException($this->translator->trans('Article translation with id {{ id }} not found.', ['id' => $articleTranslationId], 'article'));
         }
 
         $locale = $request->get('locale');
@@ -114,47 +121,73 @@ class ArticleController extends AbstractController
             throw new NotFoundHttpException($this->translator->trans('Locale {{ locale }} not found', ['locale' => $locale], 'languages'));
         }
 
-        if ($existingArticle = $articleRepository->findOneBy(['slug' => $originArticle->getSlug(), 'locale' => $locale])) {
+        if ($existingArticle = $articleTranslationRepository->findOneBy([
+            'article' => $articleTranslation->getArticle(),
+            'locale' => $locale])
+        ) {
             return $this->redirectToRoute('article-edit', ['id' => $existingArticle->getId()]);
         }
 
-        $article = new Article();
-        $article->setLocale($locale)
-            ->setImage($originArticle->getImage())
-            ->setCreatedAt(new \DateTimeImmutable())
-            ->setBody($originArticle->getBody())
-            ->setDraft(true)
-            ->setPreview($originArticle->getPreview())
-            ->setSlug($originArticle->getSlug())
-            ->setTags($originArticle->getTags())
-            ->setTitle($originArticle->getTitle())
-            ->setCreatedBy($this->getUser());
+        $newArticleTranslation = clone $articleTranslation;
+        $newArticleTranslation
+            ->setLocale($locale)
+            ->setCreatedBy($this->getUser())
+            ->setUpdatedAt(new \DateTime())
+            ->setUpdatedBy($this->getUser())
+        ;
+        try {
+            $this->cloneImage($articleTranslation, $newArticleTranslation);
+        } catch (FileException $e) {
+            $this->logger->error($e->getMessage());
+            $this->addFlash(self::$error, $this->translator->trans('Error occurred. Not able to copy the image.'));
 
-        $this->entityManager->persist($article);
+            return $this->redirectToRoute('article-edit', [
+                'slug' => $articleTranslation->getArticle()->getSlug(),
+                'locale' => $articleTranslation->getLocale(),
+            ]);
+        }
+
+        $this->entityManager->persist($newArticleTranslation);
         $this->entityManager->flush();
 
-        return $this->redirectToRoute('article-edit', ['id' => $article->getId()]);
+        return $this->redirectToRoute('article-edit', [
+            'slug' => $newArticleTranslation->getArticle()->getSlug(),
+            'locale' => $newArticleTranslation->getLocale(),
+        ]);
     }
 
     public function update(Request $request): Response
     {
-        $article = $this->entityManager->getRepository(Article::class)->find((int) $request->get('id'));
+        /**
+         * @var Article $article
+         */
+        $locale = $request->get('locale');
+        $article = $this->entityManager->getRepository(Article::class)->findOneBySlug($request->get('slug'));
         if (!$article) {
             throw $this->createNotFoundException();
         }
-        $form = $this->createForm(ArticleType::class, $article);
+        $translation = $article->getArticleTranslation($locale);
+
+        if (!$translation) {
+            $translation = $article->getArticleTranslationWithFallBack($locale);
+            if (!$translation) {
+                return $this->redirectToRoute('article-create');
+            }
+        }
+
+        $form = $this->createFormBuilder([
+            'article' => $article,
+            'translation' => $translation,
+        ])
+        ->add('article', ArticleType::class)
+        ->add('translation', ArticleTranslationType::class)
+        ->getForm();
+
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             try {
-                $file = $form->get('image')->getData();
-                if ($file) {
-                    $file = $this->fileService->saveFileTo($file, $this->parameterBag->get('images_article'));
-                    if (!empty($article->getImage())) {
-                        $this->fileService->remove($article->getImage(), $this->parameterBag->get('images_article'));
-                    }
-                    $article->setImage($file->getFilename());
-                }
-                $article
+                $this->setImage($form, $translation);
+                $translation
                     ->setUpdatedBy($this->getUser())
                     ->setUpdatedAt(new \DateTime());
                 $this->entityManager->flush();
@@ -170,7 +203,6 @@ class ArticleController extends AbstractController
             'title' => $this->translator->trans('Update an article', [], 'article'),
             'article' => $article,
             'form' => $form->createView(),
-            'translations' => $this->entityManager->getRepository(Article::class)->findBy(['slug' => $article->getSlug()]),
             'submit' => $this->translator->trans('Update'),
         ]);
     }
@@ -200,5 +232,27 @@ class ArticleController extends AbstractController
         }
 
         return $this->redirectToRoute('article-list');
+    }
+
+    private function setImage(FormInterface $form, ArticleTranslation $articleTranslation): void
+    {
+        $file = $form->get('translation')->get('image')->getData();
+        if ($file) {
+            $file = $this->fileService->saveFileTo($file, $this->parameterBag->get('images_article'));
+            if (!empty($articleTranslation->getImage())) {
+                $this->fileService->remove($articleTranslation->getImage(), $this->parameterBag->get('images_article'));
+            }
+            $articleTranslation->setImage($file->getFilename());
+        }
+    }
+
+    private function cloneImage(ArticleTranslation $articleTranslation, ArticleTranslation $newArticleTranslation): void
+    {
+        if (null != $articleTranslation->getImage()) {
+            $dir = $this->parameterBag->get('images_article');
+            $filePath = $this->fileService->getFilePath($dir, $articleTranslation->getImage());
+            $newImage = $this->fileService->copy($filePath, $dir);
+            $newArticleTranslation->setImage($newImage);
+        }
     }
 }

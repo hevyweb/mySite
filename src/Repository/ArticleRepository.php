@@ -2,15 +2,13 @@
 
 namespace App\Repository;
 
+use App\DTO\SearchArticle;
 use App\Entity\Article;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Collections\Criteria;
-use Doctrine\DBAL\Exception;
-use Doctrine\DBAL\Query\QueryBuilder;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
-use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @extends ServiceEntityRepository<Article>
@@ -19,73 +17,76 @@ use Symfony\Component\HttpFoundation\Request;
  * @method Article|null findOneBy(array $criteria, array $orderBy = null)
  * @method Article[]    findAll()
  * @method Article[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Article|null findOneBySlug(string $slug, array $orderBy = null)
  */
 class ArticleRepository extends ServiceEntityRepository
 {
-    public const PER_PAGE = 30;
-
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Article::class);
     }
 
-    /**
-     * @throws Exception
-     */
-    public function search(Request $request): array
+    public function search(SearchArticle $searchArticle, string $locale): array
     {
-        $query = $this->createBasicSearchQuery($request);
-        $query->setMaxResults($request->get('limit', self::PER_PAGE));
-        $query->setFirstResult(((int) $request->get('page', 1) - 1) * self::PER_PAGE);
-        $query->groupBy('a.slug');
-
-        $query->orderBy('a.'.$request->get('sorting', 'created_at'), $request->get('dir', Criteria::DESC));
-
-        return $query->executeQuery()->fetchAllAssociative();
+        return $this->createBasicSearchQuery($searchArticle)
+            ->select('a as article')
+            ->setMaxResults($searchArticle->limit)
+            ->setFirstResult(((int) $searchArticle->page - 1) * $searchArticle->limit)
+            ->addOrderBy('trans.'.$searchArticle->sorting, $searchArticle->dir)
+            ->getQuery()
+            ->getResult();
     }
 
-    /**
-     * @throws Exception
-     */
-    public function getCount(Request $request): int
+    public function getCount(SearchArticle $searchArticle): int
     {
-        $query = $this->createBasicSearchQuery($request);
-        $query->select('count(a.slug)');
-
-        $query->setMaxResults(1);
-
-        return (int) $query->executeQuery()->fetchFirstColumn();
+        return $this->createBasicSearchQuery($searchArticle)
+            ->select('count(DISTINCT a.id)')
+            ->distinct()
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 
-    /**
-     * Unfortunately I have to use Doctrine DBAL because I need MySQL function GROUP_CONCAT, which does not exist out
-     * of the box in Doctrine ORM, and I'm too lazy to implement it via lexer:).
-     */
-    protected function createBasicSearchQuery(Request $request): QueryBuilder
+    protected function createBasicSearchQuery(SearchArticle $searchArticle): QueryBuilder
     {
-        $query = $this->getEntityManager()->getConnection()->createQueryBuilder();
-        $query->from($this->getEntityManager()->getClassMetadata(Article::class)->getTableName(), 'a');
-        $query->select('a.*');
-        $query->addSelect('GROUP_CONCAT(a.locale SEPARATOR \',\') as locale');
+        $queryBuilder = $this->createQueryBuilder('a')
+            ->innerJoin('a.articleTranslations', 'trans')
+        ;
 
-        if ($request->query->has('search')) {
-            $query->andWhere(
-                $query->expr()->or(
-                    $query->expr()->like('a.title', ':search'),
-                    $query->expr()->like('a.body', ':search')
+        $this->addSearchFilter($queryBuilder, $searchArticle->search);
+        $this->addTagFilter($queryBuilder, $searchArticle->tag);
+
+        return $queryBuilder;
+    }
+
+    private function addSearchFilter(QueryBuilder $queryBuilder, ?string $search): void
+    {
+        if ($search) {
+            $queryBuilder->andWhere(
+                $queryBuilder->expr()->orX(
+                    $queryBuilder->expr()->like('trans.title', ':search'),
+                    $queryBuilder->expr()->like('trans.body', ':search')
                 )
             )
-            ->setParameter('search', '%'.$request->get('search').'%');
+                ->setParameter('search', '%'.$search.'%');
         }
+    }
 
-        return $query;
+    private function addTagFilter(QueryBuilder $queryBuilder, ?string $tag): void
+    {
+        if ($tag) {
+            $queryBuilder
+                ->innerJoin('a.tags', 't')
+                ->andWhere('t.name = :tag')
+                ->setParameter('tag', $tag);
+        }
     }
 
     public function getTopArticles(int $count, string $locale): array
     {
         return $this->createBasicBlogQuery($locale)
-            ->orderBy('a.hit', 'DESC')
-            ->addOrderBy('a.createdAt', 'DESC')
+            ->orderBy('trans.hit', 'DESC')
+            ->addOrderBy('trans.updatedAt', 'DESC')
             ->setMaxResults($count)
             ->getQuery()
             ->getResult();
@@ -94,7 +95,7 @@ class ArticleRepository extends ServiceEntityRepository
     public function getBlogArticles(int $count, int $page, string $locale): array
     {
         return $this->createBasicBlogQuery($locale)
-            ->addOrderBy('a.createdAt', 'DESC')
+            ->addOrderBy('trans.updatedAt', 'DESC')
             ->setMaxResults($count)
             ->setFirstResult(($page - 1) * $count)
             ->getQuery()
@@ -108,47 +109,20 @@ class ArticleRepository extends ServiceEntityRepository
     public function countBlogArticles(string $locale): int
     {
         return (int) $this->createBasicBlogQuery($locale)
-            ->select('COUNT(a)')
+            ->select('COUNT(DISTINCT a.id)')
             ->setMaxResults(1)
             ->getQuery()
             ->getSingleScalarResult();
     }
 
-    protected function createBasicBlogQuery($locale): \Doctrine\ORM\QueryBuilder
+    protected function createBasicBlogQuery($locale): QueryBuilder
     {
         return $this->createQueryBuilder('a')
-            ->where('a.draft != :not_draft')
-            ->andWhere('a.locale = :locale')
+            ->innerJoin('a.articleTranslations', 'trans')
+            ->where('trans.draft != :not_draft')
+            ->andWhere('trans.locale = :locale')
             ->setParameter('not_draft', true)
             ->setParameter('locale', $locale)
         ;
-    }
-
-    /**
-     * @throws NonUniqueResultException
-     * @throws NoResultException
-     */
-    public function findArticleWithSubstitutes(string $slug, string $locale): ?Article
-    {
-        return $this->createQueryBuilder('a')
-            ->select('a')
-            ->addSelect('(CASE WHEN a.locale = :locale THEN 1 ELSE 2END) AS HIDDEN ORD')
-            ->where('a.slug = :slug')
-            ->orderBy('ORD', Criteria::ASC)
-            ->setParameter('slug', $slug)
-            ->setParameter('locale', $locale)
-            ->setMaxResults(1)
-            ->getQuery()
-            ->getSingleResult();
-    }
-
-    public function getTranslatedLocales(string $slug): array
-    {
-        return $this->createQueryBuilder('a')
-            ->select('a.locale')
-            ->where('a.slug = :slug')
-            ->setParameter('slug', $slug)
-            ->getQuery()
-            ->getArrayResult();
     }
 }

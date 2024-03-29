@@ -1,28 +1,43 @@
 {% extends 'base.html.twig' %}
 {% trans_default_domain 'user' %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('css/user') }}
+{% endblock %}
+
 {% block content %}
+{% if 'ROLE_ADMIN' in app.user.roles %}
+    {% set breadcrumbs = [
+        {title: 'Admin panel' | trans([], 'dashboard'), path: 'admin-dashboard'},
+        {title: 'Users' | trans, path: 'user-list' },
+        {title: title}
+    ] %}
+    {% include 'common/breadcrumbs.html.twig' with breadcrumbs %}
+{% endif %}
 <div class="user">
-    <h1>{{ title }}</h1>
+    <div class="section-header text-center wow zoomIn" data-wow-delay="0.1s">
+        <h2>{{ title }}</h2>
+    </div>
     {% include '/user/__tabs.html.twig' with {current_tab: 'roles', 'id': user.id} %}
     <div class="user-form-body user-roles">
         <form method="post" action="">
             {% include '/user/__username.html.twig' %}
             <label for="user-roles">{% trans %}Roles{% endtrans %}</label>
-            <div class="user-roles-list">
+            <div class="user-roles-list p-2">
                 {% for role in roles %}
-                    <div>
-                        <label>
-            <input type="checkbox" id="user-roles" name="roles[]"
-                    {{ user.hasRole(role.code) ? 'checked="checked"' : '' }} value="{{ role.id }}">
-                        {{ role.label }}
+                    <div class="form-check">
+                        <input type="checkbox" id="user-roles" name="roles[]" class="form-check-input"
+                        {{ user.hasRole(role.code) ? 'checked="checked"' : '' }} value="{{ role.id }}">
+                        <label class="form-check-label">
+                            {{ role.label }}
                         </label>
                     </div>
                 {% else %}
                     <div>{% trans %}No roles added to the system{% endtrans %}</div>
                 {% endfor %}
             </div>
-        <button type="submit">{% trans %}Set roles{% endtrans %}</button>
+            <button type="submit" class="btn btn-primary mt-4">{% trans %}Set roles{% endtrans %}</button>
         </form>
     </div>
 </div>

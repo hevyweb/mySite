@@ -1,0 +1,23 @@
+@import "/node_modules/bootstrap/scss/bootstrap";
+
+@import "_colors";
+
+.user-form-body{
+  border: 2px solid $gray-300;
+  border-top: 0;
+  background: $white;
+  padding: 20px;
+  border-radius: 0 7px 7px 7px;
+  box-shadow: 5px 5px 5px $gray-300;
+
+  label {
+    margin: 5px 0;
+    font-weight: bold;
+    display: block;
+  }
+
+  input {
+    display: block;
+    margin: 5px 0;
+  }
+}

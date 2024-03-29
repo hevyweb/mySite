@@ -1,31 +1,32 @@
 <div class="row" id="blog">
     {% for article in articles %}
+        {% set translation = article.getArticleTranslationWithFallBack(app.request.locale) %}
         <div class="col-lg-6">
             <div class="blog-item wow fadeInUp" data-wow-delay="0.1s">
                 <div class="figure-img img-fluid rounded placeholder-glow overflow-hidden">
-                    {% if article.image %}
+                    {% if translation.image %}
                         <a href="{{ path('blog-view', {'slug': article.slug}) }}">
-                            <img src="/blog/{{ article.image}}" alt="{{ article.title }}" class="col-12 h-100 overflow-hidden">
+                            <img src="/blog/{{ translation.image}}" alt="{{ translation.title }}" class="col-12 h-100 overflow-hidden">
                         </a>
                     {% endif %}
                 </div>
                 <div class="blog-text">
-                    <h2>{{ article.title }}</h2>
+                    <h2>{{ translation.title }}</h2>
                     <div class="blog-meta">
-                        <span class="text-nowrap blog-meta-icon"><i class="far fa-user blog-meta-icon"></i> {{ article.createdBy.getFullName() }}</span>
-                        <span class="text-nowrap blog-meta-icon"><i class="far fa-calendar-alt blog-meta-icon"></i> {{ article.createdAt|date('d-m-Y') }}</span>
-                        <span class="text-nowrap blog-meta-icon"><i class="fa-solid fa-ghost blog-meta-icon"></i> {{ article.hit }}</span>
+                        <span class="text-nowrap blog-meta-icon"><i class="far fa-user blog-meta-icon"></i> {{ translation.createdBy.getFullName() }}</span>
+                        <span class="text-nowrap blog-meta-icon"><i class="far fa-calendar-alt blog-meta-icon"></i> {{ translation.createdAt|date('d-m-Y') }}</span>
+                        <span class="text-nowrap blog-meta-icon"><i class="fa-solid fa-ghost blog-meta-icon"></i> {{ translation.hit }}</span>
                         <span class="text-nowrap blog-meta-icon"><i class="far fa-comments blog-meta-icon"></i>0</span>
                     </div>
                     <div class="tags mb-2">
                         {% for tag in article.tags %}
                             <span class="text-nowrap">
-                                <i class="fa-solid fa-tag blog-meta-icon"></i> {{ tag }}
+                                <i class="fa-solid fa-tag blog-meta-icon"></i> {{ tag.name }}
                             </span>
                         {% endfor %}
                     </div>
                     <p>
-                        {{ article.preview }}
+                        {{ translation.preview }}
                     </p>
                     <a class="btn" href="{{ path('blog-view', {'slug': article.slug}) }}">{% trans %}Read More{% endtrans %} <i class="fa fa-angle-right"></i></a>
                 </div>

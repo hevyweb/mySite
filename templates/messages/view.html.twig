@@ -2,8 +2,8 @@
 {% trans_default_domain 'contactme' %}
 {% block content %}
     {% set breadcrumbs = [
-        {title: 'Admin panel' | trans([], 'dashboard'), link: absolute_url(path('admin-dashboard'))},
-        {title: 'Messages' | trans, link: absolute_url(path('message-list'))},
+        {title: 'Admin panel' | trans([], 'dashboard'), path: 'admin-dashboard'},
+        {title: 'Messages' | trans, path: 'message-list'},
         {title: 'Message view' | trans }
     ] %}
     {% include 'common/breadcrumbs.html.twig' with breadcrumbs %}

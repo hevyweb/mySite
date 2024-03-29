@@ -36,5 +36,7 @@ class ExperienceFixtures extends Fixture
         }
 
         $manager->flush();
+        $manager->clear();
+        gc_collect_cycles();
     }
 }

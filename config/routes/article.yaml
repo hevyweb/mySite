@@ -7,10 +7,10 @@ article-create:
   controller: App\Controller\ArticleController::create
 
 article-edit:
-  path: /administrator/article/{id}
+  path: /administrator/article/{slug}/{locale}
   controller: App\Controller\ArticleController::update
   requirements:
-    id: '^\d+$'
+    slug: '^[\w\-]+$'
 
 article-translate:
   path: /administrator/article/translate/{id}/{locale}

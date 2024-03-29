@@ -6,7 +6,7 @@
 {% endblock %}
 {% block content %}
     {% set breadcrumbs = [
-        {title: 'Admin panel' | trans([], 'dashboard'), link: absolute_url(path('admin-dashboard'))},
+        {title: 'Admin panel' | trans([], 'dashboard'), path: 'admin-dashboard'},
         {title: 'Page content' | trans }
     ] %}
     {% include 'common/breadcrumbs.html.twig' with breadcrumbs %}
@@ -26,7 +26,7 @@
                 </button>
             </div>
             <div class="row">
-                <form action="{{ absolute_url(path('page-delete')) }}" method="post" class="datagrid-form">
+                <form action="{{ url('page-delete') }}" method="post" class="datagrid-form">
                     <table class="table table-striped">
                         <thead>
                         <tr>

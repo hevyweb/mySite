@@ -6,7 +6,7 @@
 {% endblock %}
 {% block content %}
     {% set breadcrumbs = [
-        {title: 'Admin panel' | trans([], 'dashboard'), link: absolute_url(path('admin-dashboard'))},
+        {title: 'Admin panel' | trans([], 'dashboard'), path: 'admin-dashboard'},
         {title: 'Messages' | trans }
     ] %}
     {% include 'common/breadcrumbs.html.twig' with breadcrumbs %}
@@ -20,13 +20,13 @@
                     <i class="fa-solid fa-trash-can"></i>
                     {% trans from 'messages'  %}Delete{% endtrans %}
                 </button>
-                <button class="btn btn-lg btn-success" id="mark-read" data-href="{{ absolute_url(path('message-seen')) }}"  data-confirm="{% trans %}Are you sure that you want to mark as read selected messages?{% endtrans %}">
+                <button class="btn btn-lg btn-success" id="mark-read" data-href="{{ url('message-seen') }}"  data-confirm="{% trans %}Are you sure that you want to mark as read selected messages?{% endtrans %}">
                     <i class="fa-solid fa-envelope-open-text"></i>
                     {% trans %}Mark as read{% endtrans %}
                 </button>
             </div>
             <div class="row">
-                <form action="{{ absolute_url(path('message-delete')) }}" method="post" class="datagrid-form" id="message-form">
+                <form action="{{ url('message-delete') }}" method="post" class="datagrid-form" id="message-form">
                     <table class="table table-striped">
                         <thead>
                         <tr>

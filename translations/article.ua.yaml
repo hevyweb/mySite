@@ -14,10 +14,12 @@ Articles: Статті
 Article not found.: Стаття не знайдена
 Creation date:  Дата створення
 Created: Створено
+Last upd.: Останнє онов.
 Are you sure, that you want to delete selected articles?: Ви впевненні, що бажаєте видалити обрані статті?
 Preview: Прив'ю
 Blog: Блог
 This article does not have a translation in the language that you requested.: Ця стаття не має перекладу мовою, яку ви запитували.
 You're viewing the original text.: Ви переглядаєте оригінальний текст.
 If you want to help with the translation, please contact me using: Якщо ви хочете допомогти з перекладом, зв'яжіться зі мною за допомогою
-Article with id {{ id }} not found.: Статтю з ID {{ id }} не знайдено.
+Article translation with id {{ id }} not found.: Переклад з ID {{ id }} не знайдено.
+Error occurred. Not able to copy the image.: Сталася помилка. Не можливо скопіювати зображення.

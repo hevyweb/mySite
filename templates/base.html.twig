@@ -32,7 +32,7 @@
 <header id="header" role="banner" class="mb-4">
     <div class="navbar">
         <div class="container-fluid">
-            <a href="{{ absolute_url(path('home')) }}" class="navbar-brand">
+            <a href="{{ url('home') }}" class="navbar-brand">
                 <img src="{{ absolute_url('/logo.png') }}" alt="{% trans %}Dmytro Dzyuba{% endtrans %}">
                 <span class="navbar-title">{% trans %}Dmytro Dzyuba{% endtrans %}</span>
             </a>
@@ -40,7 +40,7 @@
                 <div class="user-control align-top">
                     {% include 'common/language_switch.html.twig' | raw %}
                     {% if is_granted('ROLE_ADMIN') %}
-                        <a class="bottom-btn" href="{{ absolute_url(path('admin-dashboard')) }}" title="{% trans from 'dashboard' %}Admin panel{% endtrans %}">
+                        <a class="bottom-btn" href="{{ url('admin-dashboard') }}" title="{% trans from 'dashboard' %}Admin panel{% endtrans %}">
                             <i class="fa-solid fa-shield-halved"></i>
                         </a>
                     {% endif %}

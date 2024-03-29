@@ -2,8 +2,8 @@
 {% trans_default_domain 'experience' %}
 {% block content %}
 {% set breadcrumbs = [
-    {title: 'Admin panel' | trans([], 'dashboard'), link: absolute_url(path('admin-dashboard'))},
-    {title: 'Experiences' | trans, link: absolute_url(path('experience-list')) },
+    {title: 'Admin panel' | trans([], 'dashboard'), path: 'admin-dashboard'},
+    {title: 'Experiences' | trans, path: 'experience-list' },
     {title: title}
 ] %}
 {% include 'common/breadcrumbs.html.twig' with breadcrumbs %}

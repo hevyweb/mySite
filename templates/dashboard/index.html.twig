@@ -8,13 +8,13 @@
     </div>
     <div class="dashboard-content d-flex flex-row">
         <div class="p-2">
-            <a href="{{ absolute_url(path('user-list')) }}">
+            <a href="{{ url('user-list') }}">
                 <i class="fa-solid fa-users"></i>
                 <span>{% trans from 'user' %}Users{% endtrans %}</span>
             </a>
         </div>
         <div class="p-2">
-            <a href="{{ absolute_url(path('message-list')) }}">
+            <a href="{{ url('message-list') }}">
                 <i class="fa-solid fa-inbox"></i>
                 <span>{% trans from 'contactme' %}Messages{% endtrans %}</span>
                 {% if messages %}
@@ -23,31 +23,31 @@
             </a>
         </div>
         <div class="p-2">
-            <a href="{{ absolute_url(path('role-list')) }}">
+            <a href="{{ url('role-list') }}">
                 <i class="fa-solid fa-shield-halved"></i>
                 <span>{% trans from 'role' %}Roles{% endtrans %}</span>
             </a>
         </div>
         <div class="p-2">
-            <a href="{{ absolute_url(path('article-list')) }}">
+            <a href="{{ url('article-list') }}">
                 <i class="fa-regular fa-newspaper"></i>
                 <span>{% trans from 'article' %}Articles{% endtrans %}</span>
             </a>
         </div>
         <div class="p-2">
-            <a href="{{ absolute_url(path('experience-list')) }}">
+            <a href="{{ url('experience-list') }}">
                 <i class="fa-regular fa-building"></i>
                 <span>{% trans from 'experience' %}Experiences{% endtrans %}</span>
             </a>
         </div>
         <div class="p-2">
-            <a href="{{ absolute_url(path('page-list')) }}">
+            <a href="{{ url('page-list') }}">
                 <i class="fa-solid fa-file-lines"></i>
                 <span>{% trans from 'page' %}Page content{% endtrans %}</span>
             </a>
         </div>
         <div class="p-2">
-            <a href="{{ absolute_url(path('user-logout')) }}">
+            <a href="{{ url('user-logout') }}">
                 <i class="fa-solid fa-right-from-bracket"></i>
                 <span>{% trans %}Logout{% endtrans %}</span>
             </a>

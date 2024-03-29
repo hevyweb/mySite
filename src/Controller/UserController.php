@@ -174,6 +174,8 @@ class UserController extends AbstractController
             $user
                 ->setUpdatedAt(new \DateTime())
                 ->setUpdatedBy($this->getUser());
+
+            $this->addFlash(self::$success, $this->translator->trans('Saved successfully'));
             $this->entityManager->flush();
         }
 

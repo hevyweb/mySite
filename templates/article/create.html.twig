@@ -3,11 +3,12 @@
 {% block javascripts %}
     {{ parent() }}
     {{ encore_entry_script_tags('js/article') }}
+    {{ encore_entry_script_tags('js/tag') }}
 {% endblock %}
 {% block content %}
 {% set breadcrumbs = [
-    {title: 'Admin panel' | trans([], 'dashboard'), link: absolute_url(path('admin-dashboard'))},
-    {title: 'Articles' | trans, link: absolute_url(path('article-list')) },
+    {title: 'Admin panel' | trans([], 'dashboard'), path: 'admin-dashboard'},
+    {title: 'Articles' | trans, path: 'article-list' },
     {title: title}
 ] %}
 {% include 'common/breadcrumbs.html.twig' with breadcrumbs %}
@@ -19,26 +20,7 @@
         <div class="tabs">
             <ul class="nav nav-tabs">
                 {% for locale in app_locales %}
-                    <li class="nav-item d-flex {{ form.vars.value.locale == locale ? "nav-item-active" : "" }}">
-                        {% set article = translations|filter(a => a.locale == locale)|first %}
-                        {% set url =
-                            (form.vars.value.locale == locale)
-                                ? '#'
-                                : (
-                                    article and article.locale == locale
-                                        ? url('article-edit', {'id': article.id})
-                                        : '#'
-                                ) %}
-                        <a class="nav-link {{ form.vars.value.locale == locale ? "active" : (url == '#' ? 'disabled' : '') }}" aria-current="page" href="{{ url }}">
-                            <img src="{{ absolute_url('/images/locales/' ~ locale) }}.png" alt="{{ locale|trans([], 'languages') }}" class="{{ form.vars.value.locale != locale and url == '#' ? 'monochrome' : '' }}" />
-                            {{ locale|trans([], 'languages') }}
-                        </a>
-                        {% if form.vars.value.locale != locale and url == '#' and form.vars.value.id %}
-                        <a href="{{ url('article-translate', {'id': form.vars.value.id, 'locale': locale}) }}" class="ms-1">
-                            <i class="fa-solid fa-square-plus green"></i>
-                        </a>
-                        {% endif %}
-                    </li>
+                    {% include 'article/__locale_tab.html.twig' %}
                 {% endfor %}
             </ul>
         </div>
@@ -46,22 +28,31 @@
             {{ form_start(form, {attr: {'class': 'form-inline'}}) }}
             <div class="row">
                 <div class="col-lg-8">
-                    {{ form_row(form.title, {attr: {'class': 'form-control'}}) }}
-                    {{ form_row(form.slug, {attr: {'class': 'form-control'}}) }}
-                    {{ form_row(form.body, {attr: {'class': 'html-editor'}}) }}
-                    {{ form_row(form.locale, {attr: {'class': 'form-control'}}) }}
-                    {{ form_row(form.tags, {attr: {'class': 'form-control'}}) }}
+                    {{ form_row(form.translation.title, {attr: {'class': 'form-control slug-source'}}) }}
+                    <div class="control-group">
+                        {{ form_label(form.article.slug) }}
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fa-solid fa-hashtag"></i></span>
+                            {{ form_widget(form.article.slug, {attr: {'class': 'form-control slug-input'}}) }}
+                            <button class="btn btn-outline-secondary slug-button" type="button">
+                                <i class="fa-solid fa-gears"></i>
+                            </button>
+                        </div>
+                    </div>
+                    {{ form_row(form.translation.body, {attr: {'class': 'html-editor'}}) }}
+                    {{ form_row(form.translation.locale, {attr: {'class': 'form-select'}}) }}
+                    {{ form_row(form.article.tags, {attr: {'class': 'form-control tag-input'}}) }}
                     <div class="custom-control custom-checkbox my-1 mr-sm-2">
-                        {{ form_row(form.draft, {attr: {'class': 'custom-control-input'}, label_attr: {'class': 'custom-control-input'}}) }}
+                        {{ form_row(form.translation.draft, {attr: {'class': 'form-check-input mt-2'}, label_attr: {'class': 'form-check-label'}}) }}
                     </div>
                     <button type="submit" class="btn btn-primary">{{ submit }}</button>
                 </div>
                 <div class="col-lg-4">
-                    {% if article.image is defined %}
-                        <img src="/blog/{{ article.image }}" alt="" class="img-fluid"  />
+                    {% if form.vars.value.translation.image is not null %}
+                        <img src="{{ absolute_url('/blog/' ~ form.vars.value.translation.image) }}" alt="" class="img-fluid"  />
                     {% endif %}
-                    {{ form_row(form.image, {attr: {'class': 'form-control'}}) }}
-                    {{ form_row(form.preview, {attr: {'class': 'form-control'}}) }}
+                    {{ form_row(form.translation.image, {attr: {'class': 'form-control'}}) }}
+                    {{ form_row(form.translation.preview, {attr: {'class': 'form-control'}}) }}
                 </div>
             </div>
             {{ form_end(form) }}

@@ -1,7 +1,11 @@
 {% trans_default_domain 'user' %}
 
 <div class="tabs">
+    <ul class="nav nav-tabs">
     {% for key, value in tabs %}
-        <a href="{{  path('user-edit-' ~ key) }}" class="{{ key == current_tab ? 'active' : '' }}">{{ value|trans }}</a>
+        <li class="nav-item">
+            <a href="{{  path('user-edit-' ~ key, {'id': id}) }}" class="nav-link {{ key == current_tab ? 'active' : '' }}" aria-current="page">{{ value|trans }}</a>
+        </li>
     {% endfor %}
+    </ul>
 </div>

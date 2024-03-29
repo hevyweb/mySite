@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Article;
+use App\Entity\ArticleTranslation;
 use App\Repository\ArticleRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -48,23 +49,28 @@ class BlogController extends AbstractController
     public function view(Request $request): Response
     {
         /**
-         * @var Article|null $article
+         * @var Article|null      $article
+         * @var ArticleRepository $articleRepository
          */
-        $article = $this->entityManager->getRepository(Article::class)
-            ->findArticleWithSubstitutes(
-                $request->get('slug'),
-                $request->getLocale(),
-            );
+        $articleRepository = $this->entityManager->getRepository(Article::class);
+        $article = $articleRepository->findOneBySlug($request->get('slug'));
 
         if (empty($article)) {
             throw new NotFoundHttpException($this->translator->trans('Article not found.', [], 'article'));
         }
 
-        $response = $this->render('blog/view.html.twig', [
-            'title' => $article->getTitle(),
-            'article' => $article,
-        ]);
+        $translation = $article->getArticleTranslationWithFallBack($request->getLocale());
 
+        return $this->render('blog/view.html.twig', [
+            'title' => $translation->getTitle(),
+            'article' => $article,
+            'translation' => $translation,
+        ], $this->incrementHit($translation)
+        );
+    }
+
+    private function incrementHit(ArticleTranslation $articleTranslation): Response
+    {
         $hit = $_COOKIE['hit'] ?? '';
 
         if ('' === $hit) {
@@ -72,10 +78,10 @@ class BlogController extends AbstractController
         } else {
             $hit = array_unique(array_map('intval', explode(',', $hit)));
         }
-
-        if (!in_array($article->getId(), $hit)) {
-            $article->setHit($article->getHit() + 1);
-            $hit[] = $article->getId();
+        $response = new Response();
+        if (!in_array($articleTranslation->getId(), $hit)) {
+            $articleTranslation->setHit($articleTranslation->getHit() + 1);
+            $hit[] = $articleTranslation->getId();
             $cookie = Cookie::create('hit')
                 ->withValue(implode(',', $hit))
                 ->withExpires(new \DateTime('+24 hours'))

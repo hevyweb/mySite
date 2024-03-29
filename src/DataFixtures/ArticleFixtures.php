@@ -7,46 +7,46 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory as FakerFactory;
+use Faker\Generator;
 
 class ArticleFixtures extends Fixture implements DependentFixtureInterface
 {
-    public function __construct(private readonly array $locales)
-    {
-    }
+    private Generator $faker;
 
     /**
      * @throws \Exception
      */
     public function load(ObjectManager $manager): void
     {
-        $faker = FakerFactory::create();
+        $this->faker = FakerFactory::create();
         for ($n = 0; $n < 100; ++$n) {
             $article = new Article();
             $article
-                ->setLocale($faker->randomElement($this->locales))
-                ->setCreatedAt(new \DateTimeImmutable($faker->dateTimeBetween->format('c')))
-                ->setUpdatedAt($faker->boolean() ? $faker->dateTimeBetween() : null)
-                ->setTitle($faker->text(128))
-                ->setUpdatedBy($article->getUpdatedAt() ? $this->getReference('user_admin') : null)
-                ->setCreatedBy($this->getReference('user_admin'))
-                ->setBody($faker->randomHtml())
-                ->setDraft($faker->boolean())
-                ->setHit($faker->numberBetween(0, 999))
-                ->setPreview($faker->text(256))
-                ->setSlug($faker->slug())
-                ->setTags($faker->words($faker->numberBetween(0, 5)))
-                ->setImage('../images/notfound.jpg')
+                 ->setSlug($this->faker->slug())
             ;
+
+            $this->addTags($article);
             $manager->persist($article);
+            $this->setReference('article_'.$n, $article);
         }
 
         $manager->flush();
+        $manager->clear();
+    }
+
+    private function addTags(Article $article): void
+    {
+        for ($n = 0; $n < $this->faker->numberBetween(0, 3); ++$n) {
+            $tag = $this->getReference('tag_'.$this->faker->numberBetween(0, 99));
+            $article->addTag($tag);
+        }
     }
 
     public function getDependencies(): array
     {
         return [
             UserFixtures::class,
+            TagFixture::class,
         ];
     }
 }
