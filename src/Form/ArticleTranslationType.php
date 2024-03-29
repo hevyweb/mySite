@@ -7,7 +7,6 @@ use App\Traits\LocaleBuilderTrait;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
-use Symfony\Component\Form\Extension\Core\Type\LocaleType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -39,7 +38,7 @@ class ArticleTranslationType extends AbstractType
                     ]),
                 ],
             ])
-            ->add('locale', LocaleType::class, [
+            ->add('locale', TextType::class, [
                 'choices' => $this->buildLanguages(),
                 'label' => $this->translator->trans('Locale', [], 'article'),
             ])
