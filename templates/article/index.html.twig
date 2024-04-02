@@ -124,14 +124,10 @@
                                     </a>
                                 </td>
                                 <td>
-                                    <button class="btn btn-sm btn-primary btn-smaller">
-                                        <i class="fa-solid {{ translation.draft ? 'fa-eye-slash': 'fa-eye' }}"></i>
-                                    </button>
+                                    <i class="fa-solid {{ translation.draft ? 'fa-eye-slash': 'fa-eye' }}"></i>
                                 </td>
                                 <td>
-                                    <button class="btn btn-sm btn-primary btn-smaller">
-                                        <i class="fa-solid fa-ghost"></i> 0
-                                    </button>
+                                    {{ translation.hit }}
                                 </td>
                             </tr>
                         {% endfor %}

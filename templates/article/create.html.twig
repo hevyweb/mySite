@@ -28,31 +28,31 @@
             {{ form_start(form, {attr: {'class': 'form-inline'}}) }}
             <div class="row">
                 <div class="col-lg-8">
-                    {{ form_row(form.translation.title, {attr: {'class': 'form-control slug-source'}}) }}
+                    {{ form_row(form.translation.title) }}
                     <div class="control-group">
                         {{ form_label(form.article.slug) }}
                         <div class="input-group">
                             <span class="input-group-text"><i class="fa-solid fa-hashtag"></i></span>
-                            {{ form_widget(form.article.slug, {attr: {'class': 'form-control slug-input'}}) }}
+                            {{ form_widget(form.article.slug) }}
                             <button class="btn btn-outline-secondary slug-button" type="button">
                                 <i class="fa-solid fa-gears"></i>
                             </button>
                         </div>
                     </div>
-                    {{ form_row(form.translation.body, {attr: {'class': 'html-editor'}}) }}
-                    {{ form_row(form.translation.locale, {attr: {'class': 'form-select'}}) }}
-                    {{ form_row(form.article.tags, {attr: {'class': 'form-control tag-input'}}) }}
-                    <div class="custom-control custom-checkbox my-1 mr-sm-2">
-                        {{ form_row(form.translation.draft, {attr: {'class': 'form-check-input mt-2'}, label_attr: {'class': 'form-check-label'}}) }}
+                    {{ form_row(form.translation.body) }}
+                    {{ form_row(form.translation.locale) }}
+                    {{ form_row(form.article.tags) }}
+                    <div class="form-check form-switch mt-2 mb-2 p-0">
+                        {{ form_row(form.translation.draft) }}
                     </div>
                     <button type="submit" class="btn btn-primary">{{ submit }}</button>
                 </div>
                 <div class="col-lg-4">
                     {% if form.vars.value.translation.image is not null %}
-                        <img src="{{ absolute_url('/blog/' ~ form.vars.value.translation.image) }}" alt="" class="img-fluid"  />
+                        <img src="{{ absolute_url('/blog/' ~ form.vars.value.translation.image) }}" alt="" class="img-fluid" />
                     {% endif %}
-                    {{ form_row(form.translation.image, {attr: {'class': 'form-control'}}) }}
-                    {{ form_row(form.translation.preview, {attr: {'class': 'form-control'}}) }}
+                    {{ form_row(form.translation.image) }}
+                    {{ form_row(form.translation.preview) }}
                 </div>
             </div>
             {{ form_end(form) }}

@@ -26,12 +26,14 @@ class ArticleType extends AbstractType
                 'label' => $this->translator->trans('Tags', [], 'article'),
                 'attr' => [
                     'maxlength' => 255,
+                    'class' => 'form-control tag-input',
                 ],
             ])
             ->add('slug', TextType::class, [
                 'label' => $this->translator->trans('Slug', [], 'article'),
                 'attr' => [
                     'maxlength' => 255,
+                    'class' => 'form-control slug-input',
                 ],
                 'constraints' => [
                     new Length([

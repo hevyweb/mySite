@@ -42,21 +42,16 @@ class ArticleController extends AbstractController
     public function index(#[MapQueryString] ?SearchArticle $searchArticle, Request $request): Response
     {
         $searchArticle = $searchArticle ?? new SearchArticle();
-        /**
-         * @var ArticleRepository $repository
-         */
-        $repository = $this->entityManager->getRepository(Article::class);
-        $locale = $request->getLocale();
 
         return $this->render('article/index.html.twig', [
-            'articles' => $repository->search($searchArticle, $locale),
+            'articles' => $this->getArticleRepository()->search($searchArticle, $request->getLocale()),
             'title' => $this->translator->trans('Articles', [], 'article'),
             'currentFilters' => [
                 'search' => $searchArticle->search,
                 'sorting' => $searchArticle->sorting,
                 'dir' => $searchArticle->dir,
             ],
-            'lastPage' => ceil($repository->getCount($searchArticle) / $searchArticle->limit),
+            'lastPage' => ceil($this->getArticleRepository()->getCount($searchArticle) / $searchArticle->limit),
             'currentPage' => $searchArticle->page,
             'tagFiltering' => $searchArticle->tag,
         ]);
@@ -66,16 +61,10 @@ class ArticleController extends AbstractController
     {
         $article = new Article();
         $translation = new ArticleTranslation();
-
         $translation->setLocale($request->getLocale());
         $article->addArticleTranslation($translation);
-        $form = $this->createFormBuilder([
-            'article' => $article,
-            'translation' => $translation,
-        ])
-            ->add('article', ArticleType::class)
-            ->add('translation', ArticleTranslationType::class)
-            ->getForm();
+
+        $form = $this->buildForm($article, $translation);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             try {
@@ -162,7 +151,7 @@ class ArticleController extends AbstractController
          * @var Article $article
          */
         $locale = $request->get('locale');
-        $article = $this->entityManager->getRepository(Article::class)->findOneBySlug($request->get('slug'));
+        $article = $this->getArticleRepository()->findOneBySlug($request->get('slug'));
         if (!$article) {
             throw $this->createNotFoundException();
         }
@@ -175,14 +164,7 @@ class ArticleController extends AbstractController
             }
         }
 
-        $form = $this->createFormBuilder([
-            'article' => $article,
-            'translation' => $translation,
-        ])
-        ->add('article', ArticleType::class)
-        ->add('translation', ArticleTranslationType::class)
-        ->getForm();
-
+        $form = $this->buildForm($article, $translation);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             try {
@@ -211,21 +193,11 @@ class ArticleController extends AbstractController
     {
         $ids = $this->arrayService->getIntegerIds($request->get('id'));
         if (count($ids)) {
-            $articles = $this->entityManager->getRepository(Article::class)->findBy(['id' => $ids]);
+            $articles = $this->getArticleRepository()->findBy(['id' => $ids]);
             if (count($articles)) {
                 foreach ($articles as $article) {
-                    try {
-                        if ($article->getImage()) {
-                            $this->fileService->remove($article->getImage(), $this->parameterBag->get('images_article'));
-                        }
-                        $this->entityManager->remove($article);
-                        $this->logger->debug('Article "'.$article->getTitle().'" removed.');
-                    } catch (FileNotFoundException $exception) {
-                        $this->logger->error($exception->getMessage());
-                        $this->addFlash(self::$success, $this->translator->trans('Can not remove image of the article.', [], 'article'));
-
-                        return $this->redirectToRoute('article-list');
-                    }
+                    $this->removeImage($article);
+                    $this->entityManager->remove($article);
                 }
                 $this->entityManager->flush();
             }
@@ -254,5 +226,35 @@ class ArticleController extends AbstractController
             $newImage = $this->fileService->copy($filePath, $dir);
             $newArticleTranslation->setImage($newImage);
         }
+    }
+
+    private function removeImage(Article $article): void
+    {
+        foreach ($article->getArticleTranslations() as $articleTranslation) {
+            try {
+                if ($articleTranslation->getImage()) {
+                    $this->fileService->remove($articleTranslation->getImage(), $this->parameterBag->get('images_article'));
+                }
+            } catch (FileNotFoundException $exception) {
+                $this->logger->error($exception->getMessage());
+                $this->addFlash(self::$success, $this->translator->trans('Can not remove image of the article.', [], 'article'));
+            }
+        }
+    }
+
+    private function buildForm(Article $article, ArticleTranslation $articleTranslation): FormInterface
+    {
+        return $this->createFormBuilder([
+            'article' => $article,
+            'translation' => $articleTranslation,
+        ])
+            ->add('article', ArticleType::class)
+            ->add('translation', ArticleTranslationType::class)
+            ->getForm();
+    }
+
+    private function getArticleRepository(): ArticleRepository
+    {
+        return $this->entityManager->getRepository(Article::class);
     }
 }
