@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Service;
+namespace App\Service\FileSystem;
 
+use App\Service\StringService;
 use PHPUnit\Runner\DirectoryCannotBeCreatedException;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
@@ -10,7 +11,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 readonly class File
 {
-    public function __construct(private Strings $strings)
+    public function __construct(private StringService $strings)
     {
     }
 
@@ -31,15 +32,13 @@ readonly class File
         return $fileName;
     }
 
-    public function remove($fileName, $dir): bool
+    public function remove($fileName, $dir): void
     {
         $filePath = $this->getFilePath($dir, $fileName);
 
         if (is_file($filePath) && !unlink($filePath)) {
             throw new FileNotFoundException('Can not delete file "'.$filePath.'"');
         }
-
-        return true;
     }
 
     public function getFilePath(string $dir, string $fileName): string

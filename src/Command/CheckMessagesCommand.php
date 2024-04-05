@@ -14,7 +14,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 )]
 class CheckMessagesCommand extends Command
 {
-    public function __construct(private CheckMessages $checkMessages)
+    public function __construct(private readonly CheckMessages $checkMessages)
     {
         parent::__construct();
     }

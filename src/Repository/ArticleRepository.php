@@ -18,25 +18,36 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Article[]    findAll()
  * @method Article[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  * @method Article|null findOneBySlug(string $slug, array $orderBy = null)
+ *
+ * @seal-methods
  */
 class ArticleRepository extends ServiceEntityRepository
 {
+    /**
+     * @psalm-suppress PossiblyUnusedParam
+     */
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Article::class);
     }
 
-    public function search(SearchArticle $searchArticle, string $locale): array
+    /**
+     * @psalm-suppress PossiblyUnusedParam
+     */
+    public function search(SearchArticle $searchArticle): array
     {
         return $this->createBasicSearchQuery($searchArticle)
             ->select('a as article')
             ->setMaxResults($searchArticle->limit)
-            ->setFirstResult(((int) $searchArticle->page - 1) * $searchArticle->limit)
+            ->setFirstResult(($searchArticle->page - 1) * $searchArticle->limit)
             ->addOrderBy('trans.'.$searchArticle->sorting, $searchArticle->dir)
             ->getQuery()
             ->getResult();
     }
 
+    /**
+     * @psalm-suppress PossiblyUnusedParam
+     */
     public function getCount(SearchArticle $searchArticle): int
     {
         return $this->createBasicSearchQuery($searchArticle)
@@ -47,6 +58,10 @@ class ArticleRepository extends ServiceEntityRepository
             ->getSingleScalarResult();
     }
 
+    /**
+     * @psalm-suppress PossiblyUnusedParam
+     * @psalm-suppress PossiblyUnusedMethod
+     */
     protected function createBasicSearchQuery(SearchArticle $searchArticle): QueryBuilder
     {
         $queryBuilder = $this->createQueryBuilder('a')
@@ -82,6 +97,9 @@ class ArticleRepository extends ServiceEntityRepository
         }
     }
 
+    /**
+     * @psalm-suppress PossiblyUnusedParam
+     */
     public function getTopArticles(int $count, string $locale): array
     {
         return $this->createBasicBlogQuery($locale)
@@ -92,6 +110,9 @@ class ArticleRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    /**
+     * @psalm-suppress PossiblyUnusedParam
+     */
     public function getBlogArticles(int $count, int $page, string $locale): array
     {
         return $this->createBasicBlogQuery($locale)
@@ -105,6 +126,8 @@ class ArticleRepository extends ServiceEntityRepository
     /**
      * @throws NonUniqueResultException
      * @throws NoResultException
+     *
+     * @psalm-suppress PossiblyUnusedParam
      */
     public function countBlogArticles(string $locale): int
     {
@@ -115,7 +138,11 @@ class ArticleRepository extends ServiceEntityRepository
             ->getSingleScalarResult();
     }
 
-    protected function createBasicBlogQuery($locale): QueryBuilder
+    /**
+     * @psalm-suppress PossiblyUnusedParam
+     * @psalm-suppress PossiblyUnusedMethod
+     */
+    protected function createBasicBlogQuery(string $locale): QueryBuilder
     {
         return $this->createQueryBuilder('a')
             ->innerJoin('a.articleTranslations', 'trans')

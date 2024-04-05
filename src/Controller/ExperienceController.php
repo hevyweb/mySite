@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Entity\Experience;
 use App\Form\ExperienceType;
 use App\Service\ArrayService;
-use App\Service\File;
+use App\Service\FileSystem\File;
 use App\Traits\FlashMessageTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerAwareTrait;
@@ -18,6 +18,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+/**
+ * @psalm-api
+ */
 class ExperienceController extends AbstractController
 {
     use FlashMessageTrait;

@@ -2,15 +2,18 @@
 
 namespace App\Controller;
 
-use App\Service\ImageUploader;
+use App\Service\FileSystem\FileManagementInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * @psalm-api
+ */
 class ImageController extends AbstractController
 {
     public function __construct(
-        private readonly ImageUploader $imageUploader,
+        private readonly FileManagementInterface $fileManagement,
     ) {
     }
 
@@ -24,7 +27,7 @@ class ImageController extends AbstractController
     public function upload(Request $request): Response
     {
         try {
-            $newName = basename($this->imageUploader->save($request->files, $this->getParameter('images_article')));
+            $newName = basename($this->fileManagement->save($request->files, $this->getParameter('images_article')));
 
             return $this->json([
                 'location' => $request->getSchemeAndHttpHost().'/blog/'.$newName,

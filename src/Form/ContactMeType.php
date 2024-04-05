@@ -15,6 +15,9 @@ use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+/**
+ * @extends AbstractType<string>
+ */
 class ContactMeType extends AbstractType
 {
     public function __construct(

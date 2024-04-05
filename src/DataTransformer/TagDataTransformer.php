@@ -7,7 +7,10 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\DataTransformerInterface;
 
-class TagDataTransformer implements DataTransformerInterface
+/**
+ * @template-implements DataTransformerInterface<ArrayCollection, string>
+ */
+readonly class TagDataTransformer implements DataTransformerInterface
 {
     public function __construct(private EntityManagerInterface $entityManager)
     {
@@ -25,22 +28,27 @@ class TagDataTransformer implements DataTransformerInterface
     public function reverseTransform(mixed $value): ArrayCollection
     {
         if (!empty($value)) {
-            $names = array_unique(array_filter(array_map('trim', explode(',', $value))));
+            $newTagNames = $this->cleanInputData($value);
+            $existingTags = $this->entityManager->getRepository(Tag::class)->findBy(['name' => $newTagNames]);
 
-            $existingTags = $this->entityManager->getRepository(Tag::class)->findBy(['name' => $names]);
-
-            return $this->fullFillCollection($existingTags, $names);
+            return $this->extendTagCollection($existingTags, $newTagNames);
         }
 
-        return new ArrayCollection();
+        return $this->createEmptyCollection();
     }
 
-    private function fullFillCollection($existingTags, $names): ArrayCollection
+    private function cleanInputData(string $tagString): array
     {
-        $tags = new ArrayCollection();
+        return array_unique(array_filter(array_map('trim', explode(',', $tagString))));
+    }
+
+    private function extendTagCollection(array $existingTags, array $names): ArrayCollection
+    {
+        $tags = $this->createEmptyCollection();
 
         foreach ($names as $name) {
-            if (!($tag = $this->findByName($existingTags, $name))) {
+            $tag = $this->findInCollection($existingTags, $name);
+            if (!$tag) {
                 $tag = new Tag();
                 $tag->setName($name);
             }
@@ -50,7 +58,17 @@ class TagDataTransformer implements DataTransformerInterface
         return $tags;
     }
 
-    private function findByName($existingTags, $name): ?Tag
+    /**
+     * This is a crutch for psalm, because it does not line generic collections.
+     *
+     * @return ArrayCollection<int, Tag>
+     */
+    private function createEmptyCollection(): ArrayCollection
+    {
+        return new ArrayCollection();
+    }
+
+    private function findInCollection(array $existingTags, string $name): ?Tag
     {
         foreach ($existingTags as $tag) {
             if ($tag->getName() === $name) {

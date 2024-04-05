@@ -8,20 +8,17 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @psalm-immutable
  */
-final readonly class SearchArticle
+final readonly class UserSearch
 {
     public const DIRECTIONS = [Criteria::DESC, Criteria::ASC];
 
-    public const SORTING = ['title', 'locale', 'updatedAt', 'draft', 'hit'];
+    public const SORTING = ['id'];
 
     public const DEFAULT_PAGE_LIMIT = 30;
 
     public function __construct(
-        #[Assert\Regex(pattern: '/^[\w\-]+$/', message: 'Invalid tag search criteria')]
-        public ?string $tag = null,
-
         #[Assert\Choice(choices: self::SORTING, message: 'Wrong sorting parameter')]
-        public ?string $sorting = 'updatedAt',
+        public ?string $sorting = 'id',
 
         #[Assert\Choice(choices: self::DIRECTIONS, message: 'Wrong sorting direction')]
         public ?string $dir = Criteria::DESC,

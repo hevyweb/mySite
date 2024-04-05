@@ -51,12 +51,12 @@
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^3.4",
         "friendsofphp/php-cs-fixer": "^3.52",
-        "phpunit/phpunit": "^10.0",
+        "phpunit/phpunit": "^10.5",
+        "psalm/plugin-symfony": "^5.1",
         "symfony/browser-kit": "^7.0",
         "symfony/css-selector": "^7.0",
         "symfony/debug-bundle": "^7.0",
         "symfony/maker-bundle": "^1.7",
-        "symfony/phpunit-bridge": "^7.0",
         "symfony/stopwatch": "^7.0",
         "symfony/var-dumper": "^7.0",
         "symfony/web-profiler-bundle": "^7.0"
@@ -100,6 +100,20 @@
         ],
         "post-update-cmd": [
             "@auto-scripts"
+        ],
+        "psalm": [
+            "php vendor/vimeo/psalm/psalm --no-cache --no-reflection-cache --no-file-cache"
+        ],
+        "csfixer": [
+            "php vendor/friendsofphp/php-cs-fixer/php-cs-fixer check"
+        ],
+        "tests-unit": [
+            "php vendor/phpunit/phpunit/phpunit tests/Unit"
+        ],
+        "quality-check": [
+            "@csfixer",
+            "@psalm",
+            "@tests-unit"
         ]
     },
     "conflict": {

@@ -3,7 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Experience;
-use App\Traits\LocaleBuilderTrait;
+use App\Service\Language;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -19,12 +19,14 @@ use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Context\ExecutionContext;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+/**
+ * @extends AbstractType<string>
+ */
 class ExperienceType extends AbstractType
 {
-    use LocaleBuilderTrait;
-
     public function __construct(
         private readonly TranslatorInterface $translator,
+        private readonly Language $language,
     ) {
     }
 
@@ -45,7 +47,7 @@ class ExperienceType extends AbstractType
                 ],
             ])
             ->add('locale', ChoiceType::class, [
-                'choices' => $this->buildLanguages(),
+                'choices' => $this->language->buildLanguages(),
                 'label' => $this->translator->trans('Locale'),
                 'attr' => [
                     'class' => 'form-control',

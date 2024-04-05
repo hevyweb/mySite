@@ -4,7 +4,7 @@ namespace App\Tests\Unit\Controller;
 
 use App\Controller\UserController;
 use App\Entity\Role;
-use App\Service\Strings;
+use App\Service\StringService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -47,7 +47,7 @@ class UserControllerTest extends TestCase
         $this->form = $this->createMock(FormInterface::class);
         $this->formFactory = $this->createMock(FormFactoryInterface::class);
         $this->eventDispatcher = $this->createMock(EventDispatcherInterface::class);
-        $this->strings = $this->createMock(Strings::class);
+        $this->strings = $this->createMock(StringService::class);
 
         $this->sut = new UserController(
             $this->translator,

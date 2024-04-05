@@ -8,7 +8,6 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
-use Symfony\Contracts\EventDispatcher\Event;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 readonly class SignUpSubscriber implements EventSubscriberInterface
@@ -31,7 +30,7 @@ readonly class SignUpSubscriber implements EventSubscriberInterface
     /**
      * @throws TransportExceptionInterface
      */
-    public function onSignUpEvent(Event $event): void
+    public function onSignUpEvent(SignUpEvent $event): void
     {
         $user = $event->getUser();
 

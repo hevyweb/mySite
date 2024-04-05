@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Entity\Article;
 use App\Entity\ArticleTranslation;
-use App\Repository\ArticleRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Cookie;
@@ -13,6 +12,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+/**
+ * @psalm-api
+ */
 class BlogController extends AbstractController
 {
     public const PER_PAGE = 6;
@@ -31,9 +33,6 @@ class BlogController extends AbstractController
             $page = 1;
         }
 
-        /**
-         * @var ArticleRepository $articleRepository
-         */
         $articleRepository = $this->entityManager->getRepository(Article::class);
 
         $count = $articleRepository->countBlogArticles($request->getLocale());
@@ -48,10 +47,6 @@ class BlogController extends AbstractController
 
     public function view(Request $request): Response
     {
-        /**
-         * @var Article|null      $article
-         * @var ArticleRepository $articleRepository
-         */
         $articleRepository = $this->entityManager->getRepository(Article::class);
         $article = $articleRepository->findOneBySlug($request->get('slug'));
 

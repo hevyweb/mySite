@@ -2,6 +2,7 @@
 
 namespace App\Form\ConstraintValidator;
 
+use App\Form\Constraint\ReCaptcha as ReCaptchaConstraint;
 use ReCaptcha\ReCaptcha;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
@@ -12,8 +13,11 @@ class ReCaptchaValidator extends ConstraintValidator
     {
     }
 
-    public function validate(mixed $value, Constraint $constraint): void
+    public function validate(mixed $value, Constraint|ReCaptchaConstraint $constraint): void
     {
+        /**
+         * @psalm-var ReCaptchaConstraint $constraint
+         */
         $response = $this->reCaptcha->verify($value);
 
         if (!$response->isSuccess()) {

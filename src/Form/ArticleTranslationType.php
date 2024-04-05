@@ -3,7 +3,7 @@
 namespace App\Form;
 
 use App\Entity\ArticleTranslation;
-use App\Traits\LocaleBuilderTrait;
+use App\Service\Language;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -18,12 +18,14 @@ use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+/**
+ * @extends AbstractType<string>
+ */
 class ArticleTranslationType extends AbstractType
 {
-    use LocaleBuilderTrait;
-
     public function __construct(
         private readonly TranslatorInterface $translator,
+        private readonly Language $language,
     ) {
     }
 
@@ -106,7 +108,7 @@ class ArticleTranslationType extends AbstractType
 
     public function getAvailableLocales(ArticleTranslation $articleTranslation): array
     {
-        $availableLocales = array_flip($this->buildLanguages());
+        $availableLocales = array_flip($this->language->buildLanguages());
         $translations = $articleTranslation->getArticle()->getArticleTranslations();
         foreach ($translations as $translation) {
             if ($translation->getId() != $articleTranslation->getId() && isset($availableLocales[$translation->getLocale()])) {

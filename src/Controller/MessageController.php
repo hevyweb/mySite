@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\Message;
-use App\Repository\MessageRepository;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -12,6 +11,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+/**
+ * @psalm-api
+ */
 class MessageController extends AbstractController
 {
     public const PER_PAGE = 20;
@@ -24,9 +26,6 @@ class MessageController extends AbstractController
 
     public function index(Request $request): Response
     {
-        /**
-         * @var MessageRepository $messagesRepo
-         */
         $messagesRepo = $this->entityManager->getRepository(Message::class);
 
         $page = (int) $request->get('page', 1);

@@ -2,7 +2,7 @@
 
 namespace App\Service;
 
-class Strings
+class StringService
 {
     public function generateRandomString(int $length = 12): string
     {

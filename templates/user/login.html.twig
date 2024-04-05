@@ -26,7 +26,7 @@
             <input type="password" name="_password" id="inputPassword" class="form-control" placeholder="{% trans %}Password{% endtrans %}" maxlength="32" required>
         </div>
         <div class="d-flex flex-row">
-            {% if get_env('REGISTRATION_ENABLED') %}
+            {% if app.request.server.get('REGISTRATION_ENABLED') %}
                 <div class="p-2">
                     <a href="{{ path('user-recover-password') }}">
                         <i class="fa-solid fa-rotate-right"></i>

@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use App\Repository\ArticleTranslationRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -13,7 +12,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
     errorPath: 'locale',
     groups: ['article']
 )]
-#[ORM\Entity(repositoryClass: ArticleTranslationRepository::class)]
+#[ORM\Entity]
 class ArticleTranslation
 {
     #[ORM\Id]
@@ -209,7 +208,7 @@ class ArticleTranslation
         return $this;
     }
 
-    public function __clone(): void
+    public function __clone()
     {
         $this->id = null;
         $this->draft = true;

@@ -11,6 +11,9 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+/**
+ * @extends AbstractType<string>
+ */
 class UserPasswordsType extends AbstractType
 {
     public function __construct(private readonly TranslatorInterface $translator)

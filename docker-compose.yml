@@ -18,7 +18,7 @@ services:
     build: docker/php
     volumes:
       - './:/var/www/html'
-      - './docker/php/php.ini:/opt/bitnami/php/lib/php.ini'
+      - './docker/php/php.ini:/opt/bitnami/php/etc/php.ini'
     ports:
       - '9000:9000'
     working_dir: '/var/www/html'

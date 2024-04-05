@@ -11,6 +11,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+/**
+ * @psalm-api
+ */
 class PageController extends AbstractController
 {
     public function __construct(
@@ -84,6 +87,9 @@ class PageController extends AbstractController
 
     public function delete(): Response
     {
+        /*
+         * @TODO implement later
+         */
         return $this->redirectToRoute('page-list');
     }
 }

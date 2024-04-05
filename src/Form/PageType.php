@@ -3,7 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Page;
-use App\Traits\LocaleBuilderTrait;
+use App\Service\Language;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -16,13 +16,15 @@ use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+/**
+ * @extends AbstractType<string>
+ */
 class PageType extends AbstractType
 {
-    use LocaleBuilderTrait;
-
     public function __construct(
         private readonly TranslatorInterface $translator,
-        private readonly RouterInterface $router
+        private readonly RouterInterface $router,
+        private readonly Language $language,
     ) {
     }
 
@@ -52,7 +54,7 @@ class PageType extends AbstractType
                 'label' => $this->translator->trans('Description'),
             ])
             ->add('locale', ChoiceType::class, [
-                'choices' => $this->buildLanguages(),
+                'choices' => $this->language->buildLanguages(),
                 'label' => $this->translator->trans('Locale'),
                 'attr' => [
                     'maxlength' => 255,

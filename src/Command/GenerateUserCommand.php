@@ -56,9 +56,7 @@ class GenerateUserCommand extends Command
         $io = new SymfonyStyle($input, $output);
         $username = $input->getOption('username');
         $plainPassword = $input->getOption('password');
-        /**
-         * @var UserRepository $userRepository
-         */
+
         $userRepository = $this->entityManager->getRepository(User::class);
 
         if ($userRepository->findOneBy(['username' => $username])) {

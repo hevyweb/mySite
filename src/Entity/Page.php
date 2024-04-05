@@ -2,10 +2,9 @@
 
 namespace App\Entity;
 
-use App\Repository\PageRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: PageRepository::class)]
+#[ORM\Entity]
 class Page
 {
     /** @noinspection PhpPropertyOnlyWrittenInspection */

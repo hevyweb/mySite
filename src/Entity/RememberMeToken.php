@@ -5,7 +5,7 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\Authentication\RememberMe\PersistentTokenInterface;
 
-#[ORM\Entity(repositoryClass: 'App\Repository\RememberMeTokenRepository')]
+#[ORM\Entity]
 class RememberMeToken implements PersistentTokenInterface
 {
     /** @noinspection PhpPropertyOnlyWrittenInspection */

@@ -16,11 +16,17 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class TagRepository extends ServiceEntityRepository
 {
+    /**
+     * @psalm-suppress PossiblyUnusedParam
+     */
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Tag::class);
     }
 
+    /**
+     * @psalm-suppress PossiblyUnusedParam
+     */
     public function search(string $name): array
     {
         return $this->createQueryBuilder('t')

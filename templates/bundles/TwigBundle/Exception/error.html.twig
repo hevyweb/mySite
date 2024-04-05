@@ -7,6 +7,6 @@
         <div>
             {% trans %}Some unpredicted error occurred. Please try again later or contact administrator.{% endtrans %}
         </div>
-        <div><a href="mailto:{{ get_env('EMAIL_FROM') }}">{{ get_env('EMAIL_FROM') }}</a></div>
+        <div><a href="mailto:{{ app.request.server.get('EMAIL_FROM') }}">{{ app.request.server.get('EMAIL_FROM') }}</a></div>
     </div>
 {% endblock %}

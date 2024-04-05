@@ -7,6 +7,9 @@ use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+/**
+ * @extends AbstractType<string>
+ */
 class RecoverPasswordType extends AbstractType
 {
     public function __construct(readonly TranslatorInterface $translator)

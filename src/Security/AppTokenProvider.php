@@ -3,26 +3,21 @@
 namespace App\Security;
 
 use App\Entity\RememberMeToken;
-use App\Repository\RememberMeTokenRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Security\Core\Authentication\RememberMe\PersistentTokenInterface;
 use Symfony\Component\Security\Core\Authentication\RememberMe\TokenProviderInterface;
 use Symfony\Component\Security\Core\Exception\TokenNotFoundException;
 
 readonly class AppTokenProvider implements TokenProviderInterface
 {
-    public function __construct(private EntityManagerInterface $entityManager)
+    public function __construct(private EntityManagerInterface $entityManager, private LoggerInterface $logger)
     {
     }
 
     public function loadTokenBySeries(string $series): RememberMeToken|PersistentTokenInterface
     {
-        /**
-         * @var RememberMeTokenRepository $rememberMeTokenRepo
-         * @var RememberMeToken           $rememberMeToken
-         */
-        $rememberMeTokenRepo = $this->entityManager->getRepository(RememberMeToken::class);
-        $rememberMeToken = $rememberMeTokenRepo->findBySeries($series);
+        $rememberMeToken = $this->entityManager->getRepository(RememberMeToken::class)->findOneBy(['series' => $series]);
 
         if ($rememberMeToken) {
             return $rememberMeToken;
@@ -33,11 +28,13 @@ readonly class AppTokenProvider implements TokenProviderInterface
 
     public function deleteTokenBySeries(string $series): void
     {
-        /**
-         * @var RememberMeTokenRepository $rememberMeTokenRepo
-         */
-        $rememberMeTokenRepo = $this->entityManager->getRepository(RememberMeToken::class);
-        $rememberMeTokenRepo->deleteBySeries($series);
+        try {
+            $rememberMeToken = $this->loadTokenBySeries($series);
+            $this->entityManager->remove($rememberMeToken);
+            $this->entityManager->flush();
+        } catch (TokenNotFoundException $e) {
+            $this->logger->info($e->getMessage());
+        }
     }
 
     public function updateToken(string $series, string $tokenValue, \DateTime|\DateTimeInterface $lastUsed): void

@@ -17,6 +17,9 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Regex;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+/**
+ * @extends AbstractType<string>
+ */
 class RegistrationType extends AbstractType
 {
     public function __construct(private readonly TranslatorInterface $translator)

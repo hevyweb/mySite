@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\DTO\UserSearch;
 use App\Entity\EmailHistory;
 use App\Entity\RememberMeToken;
 use App\Entity\Role;
@@ -18,23 +19,28 @@ use App\Form\User\RecoverPasswordType;
 use App\Form\User\RegistrationType;
 use App\Form\User\UserPasswordsType;
 use App\Repository\UserRepository;
-use App\Service\Strings;
+use App\Service\StringService;
 use App\Traits\FlashMessageTrait;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+/**
+ * @psalm-api
+ */
 class UserController extends AbstractController
 {
     use FlashMessageTrait;
@@ -50,37 +56,18 @@ class UserController extends AbstractController
         private readonly LoggerInterface $logger,
         private readonly EntityManagerInterface $entityManager,
         private readonly EventDispatcherInterface $dispatcher,
-        private readonly Strings $strings,
+        private readonly StringService $strings,
     ) {
     }
 
-    public function index(Request $request): Response
+    public function index(#[MapQueryString] ?UserSearch $userSearch = new UserSearch()): Response
     {
-        $search = $request->get('q');
-        $page = intval($request->get('page', 1));
-        /**
-         * @var UserRepository $userRepository
-         */
-        $userRepository = $this->entityManager->getRepository(User::class);
-        $criteria = Criteria::create();
-
-        if (!empty($search)) {
-            $criteria->where(Criteria::expr()->contains('username', $search));
-        }
-        $criteria->orderBy(['id' => Criteria::ASC])
-            ->setFirstResult(($page - 1) * self::LIMIT)
-            ->setMaxResults(self::LIMIT);
-
-        $users = $userRepository->matching($criteria);
-        $total = $userRepository->total($criteria);
-        $totalPages = ceil($total / self::LIMIT);
-
         return $this->render('user/index.html.twig', [
-            'users' => $users,
+            'users' => $this->getUserRepository()->search($userSearch),
             'title' => 'Users',
-            'totalPages' => $totalPages,
-            'page' => $page,
-            'filterVariables' => ['q' => $search],
+            'totalPages' => ceil($this->getUserRepository()->total($userSearch) / $userSearch->limit),
+            'page' => $userSearch->page,
+            'filterVariables' => ['search' => $userSearch->search],
         ]);
     }
 
@@ -137,8 +124,7 @@ class UserController extends AbstractController
             if ($user->getId() == $this->getUser()->getId()) {
                 return $security->logout(false);
             } else {
-                $this->entityManager->getRepository(RememberMeToken::class)
-                    ->removeTokenByUsername($user->getUsername());
+                $this->removeTokenByUsername($user->getUsername());
             }
         }
 
@@ -159,14 +145,12 @@ class UserController extends AbstractController
         $existingRoles = $roleRepository->findAll();
 
         if ($request->isMethod('POST')) {
-            $roles = $request->get('roles');
-            $userRoles = new ArrayCollection();
-            if (!is_null($roles) && count($roles)) {
-                foreach ($roles as $roleId) {
-                    $role = $roleRepository->find($roleId);
-                    if (!empty($role)) {
-                        $userRoles->add($role);
-                    }
+            $rolesIds = $request->get('roles');
+            $userRoles = $this->createEmptyCollection();
+            if (!is_null($rolesIds) && count($rolesIds)) {
+                $roles = $roleRepository->findBy(['id' => $rolesIds]);
+                foreach ($roles as $role) {
+                    $userRoles->add($role);
                 }
             }
 
@@ -414,7 +398,7 @@ class UserController extends AbstractController
         return $this->redirectToRoute('home');
     }
 
-    private function getUserFromRequest(Request $request): UserInterface|User
+    private function getUserFromRequest(Request $request): UserInterface|User|PasswordAuthenticatedUserInterface
     {
         $userId = (int) $request->get('id');
         if (empty($userId)) {
@@ -496,5 +480,32 @@ class UserController extends AbstractController
         }
 
         return false;
+    }
+
+    /**
+     * This is a crutch for psalm, because it does not line generic collections.
+     *
+     * @return ArrayCollection<int, Role>
+     */
+    private function createEmptyCollection(): ArrayCollection
+    {
+        return new ArrayCollection();
+    }
+
+    private function getUserRepository(): EntityRepository|UserRepository
+    {
+        return $this->entityManager->getRepository(User::class);
+    }
+
+    public function removeTokenByUsername(string $userName): void
+    {
+        $rememberMeTokens = $this->entityManager->getRepository(RememberMeToken::class)
+            ->findBy(['username' => $userName]);
+        if (!empty($rememberMeTokens)) {
+            foreach ($rememberMeTokens as $rememberMeToken) {
+                $this->entityManager->remove($rememberMeToken);
+            }
+            $this->entityManager->flush();
+        }
     }
 }

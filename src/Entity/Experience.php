@@ -2,10 +2,9 @@
 
 namespace App\Entity;
 
-use App\Repository\ExperienceRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: ExperienceRepository::class)]
+#[ORM\Entity]
 class Experience
 {
     /** @noinspection PhpPropertyOnlyWrittenInspection */

@@ -9,7 +9,7 @@ use App\Form\ArticleTranslationType;
 use App\Form\ArticleType;
 use App\Repository\ArticleRepository;
 use App\Service\ArrayService;
-use App\Service\File;
+use App\Service\FileSystem\FileManagementInterface;
 use App\Traits\FlashMessageTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerAwareTrait;
@@ -25,6 +25,9 @@ use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+/**
+ * @psalm-api
+ */
 class ArticleController extends AbstractController
 {
     use LoggerAwareTrait;
@@ -33,18 +36,16 @@ class ArticleController extends AbstractController
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly TranslatorInterface $translator,
-        private readonly File $fileService,
+        private readonly FileManagementInterface $fileManager,
         private readonly ParameterBagInterface $parameterBag,
         private readonly ArrayService $arrayService,
     ) {
     }
 
-    public function index(#[MapQueryString] ?SearchArticle $searchArticle, Request $request): Response
+    public function index(#[MapQueryString] ?SearchArticle $searchArticle = new SearchArticle()): Response
     {
-        $searchArticle = $searchArticle ?? new SearchArticle();
-
         return $this->render('article/index.html.twig', [
-            'articles' => $this->getArticleRepository()->search($searchArticle, $request->getLocale()),
+            'articles' => $this->getArticleRepository()->search($searchArticle),
             'title' => $this->translator->trans('Articles', [], 'article'),
             'currentFilters' => [
                 'search' => $searchArticle->search,
@@ -210,20 +211,19 @@ class ArticleController extends AbstractController
     {
         $file = $form->get('translation')->get('image')->getData();
         if ($file) {
-            $file = $this->fileService->saveFileTo($file, $this->parameterBag->get('images_article'));
+            $file = $this->fileManager->save($file, $this->parameterBag->get('images_article'));
             if (!empty($articleTranslation->getImage())) {
-                $this->fileService->remove($articleTranslation->getImage(), $this->parameterBag->get('images_article'));
+                $this->fileManager->delete($articleTranslation->getImage(), $this->parameterBag->get('images_article'));
             }
-            $articleTranslation->setImage($file->getFilename());
+            $articleTranslation->setImage($file);
         }
     }
 
     private function cloneImage(ArticleTranslation $articleTranslation, ArticleTranslation $newArticleTranslation): void
     {
         if (null != $articleTranslation->getImage()) {
-            $dir = $this->parameterBag->get('images_article');
-            $filePath = $this->fileService->getFilePath($dir, $articleTranslation->getImage());
-            $newImage = $this->fileService->copy($filePath, $dir);
+            $destination = $this->parameterBag->get('images_article');
+            $newImage = $this->fileManager->copy($articleTranslation->getImage(), $destination, $destination);
             $newArticleTranslation->setImage($newImage);
         }
     }
@@ -233,7 +233,7 @@ class ArticleController extends AbstractController
         foreach ($article->getArticleTranslations() as $articleTranslation) {
             try {
                 if ($articleTranslation->getImage()) {
-                    $this->fileService->remove($articleTranslation->getImage(), $this->parameterBag->get('images_article'));
+                    $this->fileManager->delete($articleTranslation->getImage(), $this->parameterBag->get('images_article'));
                 }
             } catch (FileNotFoundException $exception) {
                 $this->logger->error($exception->getMessage());

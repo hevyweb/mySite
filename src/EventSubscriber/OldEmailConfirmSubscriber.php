@@ -2,7 +2,6 @@
 
 namespace App\EventSubscriber;
 
-use App\Event\NewEmailConfirmEvent;
 use App\Event\OldEmailConfirmEvent;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -31,7 +30,7 @@ readonly class OldEmailConfirmSubscriber implements EventSubscriberInterface
     /**
      * @throws TransportExceptionInterface
      */
-    public function confirmOldEmail(NewEmailConfirmEvent $event): void
+    public function confirmOldEmail(OldEmailConfirmEvent $event): void
     {
         $emailHistory = $event->getEmailHistory();
         if (empty($emailHistory->getOldEmailConfirmAt())) {
