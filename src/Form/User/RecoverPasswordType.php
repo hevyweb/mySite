@@ -8,7 +8,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
- * @extends AbstractType<string>
+ * @psalm-suppress MissingTemplateParam
  */
 class RecoverPasswordType extends AbstractType
 {

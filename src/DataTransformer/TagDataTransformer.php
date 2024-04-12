@@ -4,6 +4,7 @@ namespace App\DataTransformer;
 
 use App\Entity\Tag;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\DataTransformerInterface;
 
@@ -16,6 +17,9 @@ readonly class TagDataTransformer implements DataTransformerInterface
     {
     }
 
+    /**
+     * @param mixed|Collection<int, Tag> $value
+     */
     public function transform(mixed $value): string
     {
         if (!empty($value)) {
@@ -25,6 +29,9 @@ readonly class TagDataTransformer implements DataTransformerInterface
         return '';
     }
 
+    /**
+     * @return ArrayCollection<int, Tag>
+     */
     public function reverseTransform(mixed $value): ArrayCollection
     {
         if (!empty($value)) {
@@ -37,11 +44,20 @@ readonly class TagDataTransformer implements DataTransformerInterface
         return $this->createEmptyCollection();
     }
 
+    /**
+     * @return array<string>
+     */
     private function cleanInputData(string $tagString): array
     {
         return array_unique(array_filter(array_map('trim', explode(',', $tagString))));
     }
 
+    /**
+     * @param Tag[]         $existingTags
+     * @param array<string> $names
+     *
+     * @return ArrayCollection<int, Tag>
+     */
     private function extendTagCollection(array $existingTags, array $names): ArrayCollection
     {
         $tags = $this->createEmptyCollection();
@@ -68,6 +84,9 @@ readonly class TagDataTransformer implements DataTransformerInterface
         return new ArrayCollection();
     }
 
+    /**
+     * @param Tag[] $existingTags
+     */
     private function findInCollection(array $existingTags, string $name): ?Tag
     {
         foreach ($existingTags as $tag) {

@@ -7,7 +7,6 @@ use App\Entity\Article;
 use App\Entity\ArticleTranslation;
 use App\Form\ArticleTranslationType;
 use App\Form\ArticleType;
-use App\Repository\ArticleRepository;
 use App\Service\ArrayService;
 use App\Service\FileSystem\FileManagementInterface;
 use App\Traits\FlashMessageTrait;
@@ -45,14 +44,14 @@ class ArticleController extends AbstractController
     public function index(#[MapQueryString] ?SearchArticle $searchArticle = new SearchArticle()): Response
     {
         return $this->render('article/index.html.twig', [
-            'articles' => $this->getArticleRepository()->search($searchArticle),
+            'articles' => $this->entityManager->getRepository(Article::class)->search($searchArticle),
             'title' => $this->translator->trans('Articles', [], 'article'),
             'currentFilters' => [
                 'search' => $searchArticle->search,
                 'sorting' => $searchArticle->sorting,
                 'dir' => $searchArticle->dir,
             ],
-            'lastPage' => ceil($this->getArticleRepository()->getCount($searchArticle) / $searchArticle->limit),
+            'lastPage' => ceil($this->entityManager->getRepository(Article::class)->getCount($searchArticle) / $searchArticle->limit),
             'currentPage' => $searchArticle->page,
             'tagFiltering' => $searchArticle->tag,
         ]);
@@ -148,11 +147,8 @@ class ArticleController extends AbstractController
 
     public function update(Request $request): Response
     {
-        /**
-         * @var Article $article
-         */
         $locale = $request->get('locale');
-        $article = $this->getArticleRepository()->findOneBySlug($request->get('slug'));
+        $article = $this->entityManager->getRepository(Article::class)->findOneBySlug($request->get('slug'));
         if (!$article) {
             throw $this->createNotFoundException();
         }
@@ -194,7 +190,7 @@ class ArticleController extends AbstractController
     {
         $ids = $this->arrayService->getIntegerIds($request->get('id'));
         if (count($ids)) {
-            $articles = $this->getArticleRepository()->findBy(['id' => $ids]);
+            $articles = $this->entityManager->getRepository(Article::class)->findBy(['id' => $ids]);
             if (count($articles)) {
                 foreach ($articles as $article) {
                     $this->removeImage($article);
@@ -251,10 +247,5 @@ class ArticleController extends AbstractController
             ->add('article', ArticleType::class)
             ->add('translation', ArticleTranslationType::class)
             ->getForm();
-    }
-
-    private function getArticleRepository(): ArticleRepository
-    {
-        return $this->entityManager->getRepository(Article::class);
     }
 }

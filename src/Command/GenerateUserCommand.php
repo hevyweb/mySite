@@ -4,9 +4,7 @@ namespace App\Command;
 
 use App\Entity\Role;
 use App\Entity\User;
-use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -86,16 +84,12 @@ class GenerateUserCommand extends Command
 
     protected function assignUniqueEmail(User $user): User
     {
+        $userRepository = $this->entityManager->getRepository(User::class);
         do {
             $email = 'Change-me'.uniqid();
-        } while ($this->getUserRepository()->findOneBy(['email' => $email]));
+        } while ($userRepository->findOneBy(['email' => $email]));
 
         return $user->setEmail($email);
-    }
-
-    private function getUserRepository(): UserRepository
-    {
-        return $this->entityManager->getRepository(User::class);
     }
 
     /**
@@ -103,11 +97,6 @@ class GenerateUserCommand extends Command
      */
     private function assignRoles(User $user): void
     {
-        /**
-         * @var Role             $adminRole
-         * @var Role             $userRole
-         * @var EntityRepository $roleRepository
-         */
         $roleRepository = $this->entityManager->getRepository(Role::class);
         $adminRole = $roleRepository->findOneBy(['code' => 'ROLE_ADMIN']);
         $userRole = $roleRepository->findOneBy(['code' => 'ROLE_USER']);

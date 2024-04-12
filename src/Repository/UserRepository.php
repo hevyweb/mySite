@@ -25,6 +25,9 @@ class UserRepository extends EntityRepository implements UserLoaderInterface
         return $this->find($identifier);
     }
 
+    /**
+     * @return User[]
+     */
     public function getAdmins(): array
     {
         return $this->createQueryBuilder('u')
@@ -44,6 +47,9 @@ class UserRepository extends EntityRepository implements UserLoaderInterface
             ->getSingleScalarResult();
     }
 
+    /**
+     * @return User[]
+     */
     public function search(UserSearch $userSearch): array
     {
         return $this->createBasicSearchQuery($userSearch)

@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\ArticleTranslation;
+use App\Form\Constraint\UniqueTranslation;
 use App\Service\Language;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -15,11 +16,12 @@ use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\Validator\Constraints\Image;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
- * @extends AbstractType<string>
+ * @psalm-suppress MissingTemplateParam
  */
 class ArticleTranslationType extends AbstractType
 {
@@ -72,8 +74,9 @@ class ArticleTranslationType extends AbstractType
             ->add('image', FileType::class, [
                 'label' => $this->translator->trans('Image', [], 'article'),
                 'mapped' => false,
-                'required' => false,
+                'required' => true,
                 'constraints' => [
+                    new Image(),
                     new File([
                         'mimeTypes' => [
                             'image/jpeg',
@@ -91,7 +94,7 @@ class ArticleTranslationType extends AbstractType
             ])
         ;
 
-        $builder->addEventListener(FormEvents::PRE_SET_DATA, \Closure::fromCallable([$this, 'buildLocale']));
+        $builder->addEventListener(FormEvents::PRE_SET_DATA, $this->buildLocale(...));
     }
 
     private function buildLocale(FormEvent $event): void
@@ -103,9 +106,15 @@ class ArticleTranslationType extends AbstractType
                 'attr' => [
                     'class' => 'form-select',
                 ],
+                'constraints' => [
+                    new UniqueTranslation(),
+                ],
             ]);
     }
 
+    /**
+     * @return array<string, string>
+     */
     public function getAvailableLocales(ArticleTranslation $articleTranslation): array
     {
         $availableLocales = array_flip($this->language->buildLanguages());

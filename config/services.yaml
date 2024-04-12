@@ -53,3 +53,8 @@ services:
 
     Symfony\Component\HttpFoundation\Request:
         public: true
+
+    Symfony\Component\Security\Core\User\UserInterface: '@App\Entity\User'
+
+    App\Form\ConstraintValidator\UniqueTranslationValidator:
+        public: true

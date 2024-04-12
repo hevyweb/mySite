@@ -18,7 +18,7 @@ use Symfony\Component\Validator\Constraints\Regex;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
- * @extends AbstractType<string>
+ * @psalm-suppress MissingTemplateParam
  */
 class RegistrationType extends AbstractType
 {

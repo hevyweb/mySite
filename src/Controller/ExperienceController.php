@@ -124,7 +124,7 @@ class ExperienceController extends AbstractController
         $ids = $this->arrayService->getIntegerIds($request->get('id'));
         if (count($ids)) {
             /**
-             * @var [] $experiences
+             * @var Experience[] $experiences
              */
             $experiences = $this->entityManager->getRepository(Experience::class)->findBy(['id' => $ids]);
             if (count($experiences)) {

@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity]
 class Page
@@ -30,11 +31,11 @@ class Page
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(name: 'created_by_id', nullable: false)]
-    private ?User $createdBy;
+    private ?UserInterface $createdBy;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(name: 'updated_by_id')]
-    private ?User $updatedBy;
+    private ?UserInterface $updatedBy;
 
     #[ORM\Column(type: 'string', length: 255)]
     private ?string $route;
@@ -104,24 +105,24 @@ class Page
         return $this;
     }
 
-    public function getCreatedBy(): ?User
+    public function getCreatedBy(): ?UserInterface
     {
         return $this->createdBy;
     }
 
-    public function setCreatedBy(?User $createdBy): self
+    public function setCreatedBy(?UserInterface $createdBy): self
     {
         $this->createdBy = $createdBy;
 
         return $this;
     }
 
-    public function getUpdatedBy(): ?User
+    public function getUpdatedBy(): ?UserInterface
     {
         return $this->updatedBy;
     }
 
-    public function setUpdatedBy(?User $updatedBy): self
+    public function setUpdatedBy(?UserInterface $updatedBy): self
     {
         $this->updatedBy = $updatedBy;
 

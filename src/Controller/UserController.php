@@ -18,12 +18,10 @@ use App\Form\User\EditUserType;
 use App\Form\User\RecoverPasswordType;
 use App\Form\User\RegistrationType;
 use App\Form\User\UserPasswordsType;
-use App\Repository\UserRepository;
 use App\Service\StringService;
 use App\Traits\FlashMessageTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -32,8 +30,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -63,9 +59,9 @@ class UserController extends AbstractController
     public function index(#[MapQueryString] ?UserSearch $userSearch = new UserSearch()): Response
     {
         return $this->render('user/index.html.twig', [
-            'users' => $this->getUserRepository()->search($userSearch),
+            'users' => $this->entityManager->getRepository(User::class)->search($userSearch),
             'title' => 'Users',
-            'totalPages' => ceil($this->getUserRepository()->total($userSearch) / $userSearch->limit),
+            'totalPages' => ceil($this->entityManager->getRepository(User::class)->total($userSearch) / $userSearch->limit),
             'page' => $userSearch->page,
             'filterVariables' => ['search' => $userSearch->search],
         ]);
@@ -398,15 +394,14 @@ class UserController extends AbstractController
         return $this->redirectToRoute('home');
     }
 
-    private function getUserFromRequest(Request $request): UserInterface|User|PasswordAuthenticatedUserInterface
+    private function getUserFromRequest(Request $request): User
     {
         $userId = (int) $request->get('id');
         if (empty($userId)) {
             return $this->getUser();
         }
 
-        $userRepository = $this->entityManager->getRepository(User::class);
-        $user = $userRepository->find($userId);
+        $user = $this->entityManager->getRepository(User::class)->find($userId);
 
         if (empty($user)) {
             throw new UserNotFoundException('User with id "'.$userId.'" not found.');
@@ -415,6 +410,9 @@ class UserController extends AbstractController
         return $user;
     }
 
+    /**
+     * @return string[]
+     */
     private function getUserTabs(): array
     {
         $tabs = [
@@ -492,11 +490,6 @@ class UserController extends AbstractController
         return new ArrayCollection();
     }
 
-    private function getUserRepository(): EntityRepository|UserRepository
-    {
-        return $this->entityManager->getRepository(User::class);
-    }
-
     public function removeTokenByUsername(string $userName): void
     {
         $rememberMeTokens = $this->entityManager->getRepository(RememberMeToken::class)
@@ -507,5 +500,15 @@ class UserController extends AbstractController
             }
             $this->entityManager->flush();
         }
+    }
+
+    public function getUser(): ?User
+    {
+        $user = parent::getUser();
+        if (!$user instanceof User) {
+            throw new \Exception('Wrong user entity provided.');
+        }
+
+        return $user;
     }
 }

@@ -14,7 +14,7 @@ class FirstLettersExtension extends AbstractExtension
         ];
     }
 
-    public function getFirstLetters($value): string
+    public function getFirstLetters(string $value): string
     {
         $words = explode(' ', $value);
 

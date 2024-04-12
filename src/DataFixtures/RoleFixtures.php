@@ -9,6 +9,9 @@ use Faker\Factory as FakerFactory;
 
 class RoleFixtures extends Fixture
 {
+    /**
+     * @use LoadPredefinedDataTrait<Role>
+     */
     use LoadPredefinedDataTrait;
 
     public function load(ObjectManager $manager): void

@@ -33,6 +33,8 @@ class ArticleRepository extends ServiceEntityRepository
 
     /**
      * @psalm-suppress PossiblyUnusedParam
+     *
+     * @return Article[]
      */
     public function search(SearchArticle $searchArticle): array
     {
@@ -99,6 +101,8 @@ class ArticleRepository extends ServiceEntityRepository
 
     /**
      * @psalm-suppress PossiblyUnusedParam
+     *
+     * @return Article[]
      */
     public function getTopArticles(int $count, string $locale): array
     {
@@ -112,6 +116,8 @@ class ArticleRepository extends ServiceEntityRepository
 
     /**
      * @psalm-suppress PossiblyUnusedParam
+     *
+     * @return Article[]
      */
     public function getBlogArticles(int $count, int $page, string $locale): array
     {

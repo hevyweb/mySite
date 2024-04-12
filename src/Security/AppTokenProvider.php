@@ -3,6 +3,8 @@
 namespace App\Security;
 
 use App\Entity\RememberMeToken;
+use DateTime;
+use DateTimeInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Security\Core\Authentication\RememberMe\PersistentTokenInterface;
@@ -15,7 +17,7 @@ readonly class AppTokenProvider implements TokenProviderInterface
     {
     }
 
-    public function loadTokenBySeries(string $series): RememberMeToken|PersistentTokenInterface
+    public function loadTokenBySeries(string $series): RememberMeToken
     {
         $rememberMeToken = $this->entityManager->getRepository(RememberMeToken::class)->findOneBy(['series' => $series]);
 
@@ -39,6 +41,12 @@ readonly class AppTokenProvider implements TokenProviderInterface
 
     public function updateToken(string $series, string $tokenValue, \DateTime|\DateTimeInterface $lastUsed): void
     {
+        if (!$lastUsed instanceof \DateTime) {
+            // this is a symfony bug: parent interface gives DateTimeInterface but PersistentTokenInterface
+            // wants DateTime
+            throw new \Exception('Wrong instance of last used.');
+        }
+
         $rememberMeToken = $this->loadTokenBySeries($series);
         $rememberMeToken->setLastUsed($lastUsed);
         $rememberMeToken->setValue($tokenValue);
@@ -54,7 +62,7 @@ readonly class AppTokenProvider implements TokenProviderInterface
             ->setLastUsed($token->getLastUsed())
             ->setClass($token->getClass())
             ->setSeries($token->getSeries())
-            ->setUsername($token->getUsername());
+            ->setUsername($token->getUserIdentifier());
         $this->entityManager->persist($rememberMeToken);
         $this->entityManager->flush();
     }

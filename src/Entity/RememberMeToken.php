@@ -101,6 +101,6 @@ class RememberMeToken implements PersistentTokenInterface
 
     public function getUserIdentifier(): string
     {
-        return 'id';
+        return $this->username;
     }
 }

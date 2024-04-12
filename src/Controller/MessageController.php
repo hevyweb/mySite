@@ -47,9 +47,6 @@ class MessageController extends AbstractController
 
     public function view(Request $request): Response
     {
-        /**
-         * @var Message $message
-         */
         $message = $this->entityManager->getRepository(Message::class)->find(
             (int) $request->get('id')
         );

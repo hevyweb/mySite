@@ -18,9 +18,15 @@ class Article
     #[ORM\Column(type: 'string', length: 255)]
     private string $slug;
 
+    /**
+     * @var Collection<int, Tag>
+     */
     #[ORM\ManyToMany(targetEntity: Tag::class, mappedBy: 'article', cascade: ['persist', 'remove'])]
     private Collection $tags;
 
+    /**
+     * @var Collection<int, ArticleTranslation>
+     */
     #[ORM\OneToMany(mappedBy: 'article', targetEntity: ArticleTranslation::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $articleTranslations;
 

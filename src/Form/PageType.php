@@ -17,7 +17,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
- * @extends AbstractType<string>
+ * @psalm-suppress MissingTemplateParam
  */
 class PageType extends AbstractType
 {
@@ -78,6 +78,9 @@ class PageType extends AbstractType
         ;
     }
 
+    /**
+     * @return array<string, array<string, string>>
+     */
     public function buildRouteList(): array
     {
         $routes = array_keys($this->router->getRouteCollection()->all());

@@ -23,7 +23,7 @@ readonly class File
         return $file->move($dir, $fileName);
     }
 
-    public function generateUniqueFilename(string $ext, $dir): string
+    public function generateUniqueFilename(string $ext, string $dir): string
     {
         do {
             $fileName = $this->strings->generateRandomSlug().'.'.$ext;
@@ -32,7 +32,7 @@ readonly class File
         return $fileName;
     }
 
-    public function remove($fileName, $dir): void
+    public function remove(string $fileName, string $dir): void
     {
         $filePath = $this->getFilePath($dir, $fileName);
 
@@ -46,7 +46,7 @@ readonly class File
         return rtrim($dir, '/').DIRECTORY_SEPARATOR.$fileName;
     }
 
-    public function checkAndCreateFolder($dir): void
+    public function checkAndCreateFolder(string $dir): void
     {
         if (!is_dir($dir) && !mkdir($dir)) {
             throw new DirectoryCannotBeCreatedException('Directory "'.$dir.'" can not be created.');

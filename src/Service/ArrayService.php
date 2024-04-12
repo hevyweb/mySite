@@ -4,7 +4,10 @@ namespace App\Service;
 
 class ArrayService
 {
-    public function getIntegerIds($requestVariable): array
+    /**
+     * @return array<int>
+     */
+    public function getIntegerIds(mixed $requestVariable): array
     {
         if (!is_array($requestVariable)) {
             return [];

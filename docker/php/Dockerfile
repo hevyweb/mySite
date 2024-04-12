@@ -16,4 +16,5 @@ RUN apt-get install -y imagemagick
 RUN apt-get install -y libmagickwand-dev
 RUN apt-get install -y --no-install-recommends php-dev
 RUN apt-get install -y build-essential
+RUN apt-get install -y unzip
 RUN pecl install imagick

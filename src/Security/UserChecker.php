@@ -2,6 +2,7 @@
 
 namespace App\Security;
 
+use App\Entity\User;
 use App\Exception\UserBannedException;
 use App\Exception\UserNotActiveException;
 use Symfony\Component\Security\Core\User\UserCheckerInterface;
@@ -9,8 +10,12 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 class UserChecker implements UserCheckerInterface
 {
-    public function checkPreAuth(UserInterface $user): void
+    public function checkPreAuth(UserInterface|User $user): void
     {
+        if (!$user instanceof User) {
+            throw new \Exception('Wrong user instance provided.');
+        }
+
         if (!$user->getActive()) {
             throw new UserNotActiveException('Your user account is not active. Please confirm your email.');
         }

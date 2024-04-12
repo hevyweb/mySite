@@ -20,6 +20,9 @@ class Tag
     #[Groups(['search'])]
     private ?string $name = null;
 
+    /**
+     * @var Collection<int, Article>
+     */
     #[ORM\ManyToMany(targetEntity: Article::class, inversedBy: 'tags')]
     private Collection $article;
 

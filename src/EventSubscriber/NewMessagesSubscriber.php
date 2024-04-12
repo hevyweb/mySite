@@ -38,9 +38,6 @@ readonly class NewMessagesSubscriber implements EventSubscriberInterface
      */
     public function sendNotification(NewMessagesEvent $event): void
     {
-        /**
-         * @var User[] $adminUsers
-         */
         $adminUsers = $this->entityManager->getRepository(User::class)->getAdmins();
         if (count($adminUsers)) {
             $email = $this->templatedEmail
@@ -51,8 +48,9 @@ readonly class NewMessagesSubscriber implements EventSubscriberInterface
                     'newMessages' => $event->getNewMessages(),
                 ]);
             while (count($adminUsers)) {
+                $user = array_shift($adminUsers);
+
                 try {
-                    $user = array_shift($adminUsers);
                     $email->to(new Address($user->getEmail(), $user->getFullName()));
                     break;
                 } catch (RfcComplianceException $exception) {

@@ -29,7 +29,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(type: 'date', nullable: true)]
     #[Assert\Type('\DateTimeInterface')]
-    private ?\DateTime $birthday;
+    private ?\DateTimeInterface $birthday;
 
     #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $sex;
@@ -46,6 +46,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'string', length: 64)]
     private ?string $password;
 
+    /**
+     * @var Collection<int, Role>
+     */
     #[ORM\ManyToMany(targetEntity: Role::class)]
     #[ORM\JoinTable(name: 'user_role')]
     #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
@@ -58,7 +61,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $recovery;
 
     #[ORM\Column(type: 'datetime', nullable: true)]
-    private ?\DateTime $recoveredAt;
+    private ?\DateTimeInterface $recoveredAt;
 
     #[ORM\Column(type: 'boolean', nullable: false)]
     private bool $active = false;
@@ -67,7 +70,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?\DateTimeImmutable $createdAt;
 
     #[ORM\Column(type: 'datetime', nullable: true)]
-    private ?\DateTime $updatedAt;
+    private ?\DateTimeInterface $updatedAt;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     private ?User $updatedBy;
@@ -75,6 +78,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'string', length: 64, nullable: true)]
     private ?string $emailConfirm;
 
+    /**
+     * @var Collection<int, EmailHistory>
+     */
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: EmailHistory::class, orphanRemoval: true)]
     private Collection $emailHistories;
 
@@ -118,12 +124,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->getFirstName().' '.$this->getLastName();
     }
 
-    public function getBirthday(): ?\DateTime
+    public function getBirthday(): ?\DateTimeInterface
     {
         return $this->birthday;
     }
 
-    public function setBirthDay(?\DateTime $birthday): self
+    public function setBirthDay(?\DateTimeInterface $birthday): self
     {
         $this->birthday = $birthday;
 
@@ -142,6 +148,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    /**
+     * @param ArrayCollection<int, Role> $roles
+     *
+     * @return $this
+     */
     public function setRoles(ArrayCollection $roles): self
     {
         $this->roles = $roles;
@@ -165,7 +176,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function removeRole(string $role): self
+    public function removeRole(Role $role): self
     {
         $this->roles->removeElement($role);
 

@@ -6,9 +6,15 @@ use App\Entity\Page;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Twig\Environment;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
+/**
+ * @template TValue
+ */
 class PageExtension extends AbstractExtension
 {
     public function __construct(
@@ -26,6 +32,13 @@ class PageExtension extends AbstractExtension
         ];
     }
 
+    /**
+     * @param array<string, TValue> $context
+     *
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
+     */
     public function getPageContent(Environment $environment, array $context): string
     {
         /**

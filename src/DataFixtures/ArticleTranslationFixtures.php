@@ -10,6 +10,9 @@ use Faker\Factory as FakerFactory;
 
 class ArticleTranslationFixtures extends Fixture implements DependentFixtureInterface
 {
+    /**
+     * @param array<string> $locales
+     */
     public function __construct(private readonly array $locales)
     {
     }
@@ -19,7 +22,6 @@ class ArticleTranslationFixtures extends Fixture implements DependentFixtureInte
      */
     public function load(ObjectManager $manager): void
     {
-        $manager->getConnection()->getConfiguration()->setSQLLogger(null);
         $fakers['en'] = FakerFactory::create();
         $fakers['ua'] = FakerFactory::create('uk_UA');
         for ($n = 0; $n < 100; ++$n) {

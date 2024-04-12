@@ -26,6 +26,8 @@ class TagRepository extends ServiceEntityRepository
 
     /**
      * @psalm-suppress PossiblyUnusedParam
+     *
+     * @return Tag[]
      */
     public function search(string $name): array
     {

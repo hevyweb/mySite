@@ -2,9 +2,11 @@
 
 namespace App\Entity;
 
+use App\Repository\ArticleTranslationRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[UniqueEntity(
     fields: ['articleId', 'locale'],
@@ -12,7 +14,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
     errorPath: 'locale',
     groups: ['article']
 )]
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: ArticleTranslationRepository::class)]
 class ArticleTranslation
 {
     #[ORM\Id]
@@ -42,16 +44,16 @@ class ArticleTranslation
     #[ORM\Column(length: 2)]
     private ?string $locale = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
-    private ?User $createdBy = null;
+    private ?UserInterface $createdBy = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
-    private ?User $updatedBy = null;
+    private ?UserInterface $updatedBy = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $updatedAt = null;
@@ -148,12 +150,12 @@ class ArticleTranslation
         return $this;
     }
 
-    public function getCreatedBy(): ?User
+    public function getCreatedBy(): ?UserInterface
     {
         return $this->createdBy;
     }
 
-    public function setCreatedBy(?User $createdBy): static
+    public function setCreatedBy(?UserInterface $createdBy): static
     {
         $this->createdBy = $createdBy;
 
@@ -172,12 +174,12 @@ class ArticleTranslation
         return $this;
     }
 
-    public function getUpdatedBy(): ?User
+    public function getUpdatedBy(): ?UserInterface
     {
         return $this->updatedBy;
     }
 
-    public function setUpdatedBy(?User $updatedBy): static
+    public function setUpdatedBy(?UserInterface $updatedBy): static
     {
         $this->updatedBy = $updatedBy;
 
@@ -213,5 +215,9 @@ class ArticleTranslation
         $this->id = null;
         $this->draft = true;
         $this->createdAt = new \DateTimeImmutable();
+        $this->createdBy = null;
+        $this->updatedAt = new \DateTime();
+        $this->updatedBy = null;
+        $this->hit = 0;
     }
 }
