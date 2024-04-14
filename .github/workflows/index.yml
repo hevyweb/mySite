@@ -1,0 +1,65 @@
+name: Quality check
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  create-basic-system:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+
+      - name: Copy default config
+        run: cp .env.dist .env
+
+      - name: Start containers
+        run: docker-compose -f "docker-compose.yml" up -d --build
+
+      - name: Composer install
+        run: docker-compose exec fpm composer install
+
+      - name: Yarn install
+        run: docker-compose exec fpm yarn install
+
+      - name: Build front end
+        run: docker-compose exec fpm yarn encore dev
+
+      - name: Add empty tables to the DB
+        run: php bin/console doctrine:migrations:migrate
+
+  php-cs-fixer:
+    timeout-minutes: 10
+    needs: [create-basic-system]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run PHP-CS-fixer
+        run: docker-compose exec fpm composer csfixer
+
+  psalm:
+    timeout-minutes: 10
+    needs: [ create-basic-system ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run PHP-CS-fixer
+        run: docker-compose exec fpm composer psalm
+
+  php-stan:
+    timeout-minutes: 10
+    needs: [ create-basic-system ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run PHP-CS-fixer
+        run: docker-compose exec fpm composer phpStan
+
+  shut-down:
+    timeout-minutes: 1
+    needs: [ php-cs-fixer,  psalm, php-stan]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Stop containers
+        if: always()
+        run: docker-compose -f "docker-compose.yml" down
