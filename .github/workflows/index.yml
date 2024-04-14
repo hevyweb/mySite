@@ -37,7 +37,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Run PHP-CS-fixer
-        run: docker-compose exec fpm composer csfixer
+        run: docker-compose -f "docker-compose.yml" exec -T fpm composer csfixer
 
   psalm:
     timeout-minutes: 10
@@ -45,7 +45,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Run PHP-CS-fixer
-        run: docker-compose exec fpm composer psalm
+        run: docker-compose -f "docker-compose.yml" exec -T fpm composer psalm
 
   php-stan:
     timeout-minutes: 10
@@ -53,11 +53,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Run PHP-CS-fixer
-        run: docker-compose exec fpm composer phpStan
+        run: docker-compose -f "docker-compose.yml" exec -T fpm composer phpStan
 
   shut-down:
     timeout-minutes: 1
-    needs: [ php-cs-fixer,  psalm, php-stan]
+    needs: [ php-cs-fixer, psalm, php-stan ]
     runs-on: ubuntu-latest
     steps:
       - name: Stop containers
