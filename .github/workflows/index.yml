@@ -31,35 +31,15 @@ jobs:
       - name: Add empty tables to the DB
         run: docker-compose -f "docker-compose.yml" exec -T fpm php bin/console doctrine:migrations:migrate
 
-  php-cs-fixer:
-    timeout-minutes: 10
-    needs: [create-basic-system]
-    runs-on: ubuntu-latest
-    steps:
       - name: Run PHP-CS-fixer
         run: docker-compose -f "docker-compose.yml" exec -T fpm composer csfixer
 
-  psalm:
-    timeout-minutes: 10
-    needs: [ create-basic-system ]
-    runs-on: ubuntu-latest
-    steps:
       - name: Run PHP-CS-fixer
         run: docker-compose -f "docker-compose.yml" exec -T fpm composer psalm
 
-  php-stan:
-    timeout-minutes: 10
-    needs: [ create-basic-system ]
-    runs-on: ubuntu-latest
-    steps:
       - name: Run PHP-CS-fixer
         run: docker-compose -f "docker-compose.yml" exec -T fpm composer phpStan
 
-  shut-down:
-    timeout-minutes: 1
-    needs: [ php-cs-fixer, psalm, php-stan ]
-    runs-on: ubuntu-latest
-    steps:
       - name: Stop containers
         if: always()
         run: docker-compose -f "docker-compose.yml" down

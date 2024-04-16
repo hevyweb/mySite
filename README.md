@@ -1,16 +1,22 @@
-# About me
+# Blog
+___
+[![Quality check](https://github.com/hevyweb/mySite/actions/workflows/index.yml/badge.svg?branch=main)](https://github.com/hevyweb/mySite/actions/workflows/index.yml)
+## About me
+___
 My name is Dmytro Dzyuba. I live in Ukraine. I'm a PHP developer since 2009. Almost all my carrier I've been working 
 with [symfony framework](https://symfony.com/) starting from version 1. I did a lot of version migrations, so I know 
 about all key features of symfony. I decided to start this project and got it live to http://dmytrodzyuba.com. 
 The main goal was to show my expertise in symfony. All my previous works are under NDA. I'm not able to post anything.
 The second goal is to get more and more knowledge of symfony's feature that are not used often. From my experience 
 if some feature has been already set on the project and no need to update it, that brings a white spot in knowledge.
-# About the project
+## About the project
+___
 I was fired from my previous company in June 2023. A war in Ukraine made a lot of western companies leave the Ukrainian 
 market to avoid risks. The IT market shrunk and degraded. It was a really hard time to find a decent job. I started 
 this project approximately i June and first result was in August 2023. Basically this project is a blog, where I can 
 post my articles in multi-language. Also, I added a contact form and a page where I can post my career path.
-# Installation
+## Installation
+___
 This project has docker configs. Before installing it you need:
 - [Docker](https://www.docker.com/)
 - [Git](https://git-scm.com/)
@@ -52,7 +58,8 @@ php bin/console doctrine:migrations:migrate
 ```
 php bin/console app:generate:user -u admin -p admin
 ```
-# Quality check
+## Quality check
+___
 In this project I added 3 quality check tools:
 ### PHP-CS-FIXER
 [PHP-CS-FIXER](https://github.com/PHP-CS-Fixer/PHP-CS-Fixer) is a tool that allows to check weather code style follows
@@ -85,5 +92,6 @@ To be added in the future
 ### Testing
 To be added in the future
 
-# FAQ
+## FAQ
+___
 If you have any questions or comments please send them via this contact form http://www.dmytrodzyuba.com/contact_me
