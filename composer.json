@@ -109,7 +109,7 @@
             "php vendor/vimeo/psalm/psalm --no-cache --no-reflection-cache --no-file-cache"
         ],
         "csfixer": [
-            "php vendor/friendsofphp/php-cs-fixer/php-cs-fixer check"
+            "php vendor/friendsofphp/php-cs-fixer/php-cs-fixer check --config=\".php-cs-fixer.php\" --show-progress=\"none\""
         ],
         "phpStan": [
             "php vendor/phpstan/phpstan/phpstan analyse src tests --memory-limit=256M"
