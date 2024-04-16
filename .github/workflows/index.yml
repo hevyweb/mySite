@@ -34,10 +34,10 @@ jobs:
       - name: Run PHP-CS-fixer
         run: docker-compose -f "docker-compose.yml" exec -T fpm composer csfixer
 
-      - name: Run PHP-CS-fixer
+      - name: Run Psalm
         run: docker-compose -f "docker-compose.yml" exec -T fpm composer psalm
 
-      - name: Run PHP-CS-fixer
+      - name: Run PHPStan
         run: docker-compose -f "docker-compose.yml" exec -T fpm composer phpStan
 
       - name: Stop containers
