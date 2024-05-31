@@ -17,7 +17,9 @@
         <meta property="article:modified_time"  content="{{ translation.updatedAt|date('c') }}" />
     {% endif %}
     <meta property="article:author"         content="{{ translation.createdBy.getFullName() }}" />
-    <meta property="article:tag"            content="{{ article.tags|join(', ') }}" />
+    {% for tag in article.tags %}
+        <meta property="article:tag"            content="{{ tag.name }}" />
+    {% endfor %}
 {% endblock %}
 {% block content %}
 {% include 'common/title.html.twig' with {title: translation.title} %}
