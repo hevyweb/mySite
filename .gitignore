@@ -6,7 +6,6 @@
 /var
 /vendor
 .env
-.env.test
 
 npm-debug.log
 yarn-error.log

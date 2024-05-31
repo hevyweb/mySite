@@ -39,7 +39,7 @@ class RoleFixtures extends Fixture
 
     private function loadPredefinedRoles(ObjectManager $manager): void
     {
-        $roles = $this->loadCSV(Role::class, __DIR__.'/data/db_role.csv');
+        $roles = $this->loadCSV(Role::class, __DIR__.'/data/role.csv');
         foreach ($roles as $role) {
             $manager->persist($role);
             $this->setReference('role_'.$role->getCode(), $role);

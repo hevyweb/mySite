@@ -14,6 +14,18 @@ services:
     networks:
       - net
 
+  test-db:
+    image: bitnami/mariadb:10.6.17
+    volumes:
+      - mariadb_data:/bitnami/mariadb
+    environment:
+      - "MARIADB_ROOT_PASSWORD=${TEST_MYSQL_ROOT_PASSWORD}"
+      - "MARIADB_DATABASE=${TEST_MYSQL_DATABASE}"
+      - "MARIADB_USER=${TEST_MYSQL_USER}"
+      - "MARIADB_PASSWORD=${TEST_MYSQL_PASSWORD}"
+    networks:
+      - net
+
   fpm:
     build: docker/php
     volumes:
@@ -54,4 +66,6 @@ networks:
 
 volumes:
   mariadb_data:
+    driver: "local"
+  test_DB:
     driver: "local"
