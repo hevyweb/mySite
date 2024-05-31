@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="content-type" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="refresh" content="no-cache">
+    {% block meta %}{% endblock %}
     <title>{{ title }}</title>
     {% block stylesheets %}
         {{ encore_entry_link_tags('css/app') }}

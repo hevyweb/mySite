@@ -1,5 +1,24 @@
 {% extends 'base.html.twig' %}
 {% trans_default_domain 'article' %}
+{% block meta %}
+<meta property="og:url"                 content="{{ url('blog-view', {'slug': article.slug}) }}" />
+    <meta property="og:locale"              content="{{ translation.locale }}" />
+{% for alt in article.articleTranslations %}
+    {% if (alt.id != translation.id) %}
+<meta property="og:locale:alternate" content="{{ alt.locale }}" />
+    {% endif %}
+{% endfor %}
+    <meta property="og:type"                content="article" />
+    <meta property="og:title"               content="{{ translation.title }}" />
+    <meta property="og:description"         content="{{ translation.preview }}" />
+    <meta property="og:image"               content="{{ absolute_url('/blog/' ~ translation.image) }}" />
+    <meta property="article:published_time" content="{{ translation.createdAt|date('c') }}" />
+    {% if translation.updatedAt %}
+        <meta property="article:modified_time"  content="{{ translation.updatedAt|date('c') }}" />
+    {% endif %}
+    <meta property="article:author"         content="{{ translation.createdBy.getFullName() }}" />
+    <meta property="article:tag"            content="{{ article.tags|join(', ') }}" />
+{% endblock %}
 {% block content %}
 {% include 'common/title.html.twig' with {title: translation.title} %}
 <div class="blog">
