@@ -12,12 +12,30 @@ class LocaleSubscriber implements EventSubscriberInterface
     {
         $request = $event->getRequest();
         $locale = $request->query->get('_locale');
+        if (empty($locale)) {
+            $locale = $this->detectUserLocale();
+        }
         if (!empty($locale)) {
             $request->getSession()->set('locale', $locale);
         }
         if ($request->getSession()->has('locale')) {
             $event->getRequest()->setLocale($request->getSession()->get('locale'));
         }
+    }
+
+    private function detectUserLocale(): ?string
+    {
+        if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
+            $parts = explode(';', strtolower($_SERVER['HTTP_ACCEPT_LANGUAGE']));
+            $userLocales = explode(',', $parts[0]);
+            foreach ($userLocales as $locale) {
+                if ('uk' == $locale || 'ru' == $locale) {
+                    return 'ua';
+                }
+            }
+        }
+
+        return null;
     }
 
     public static function getSubscribedEvents(): array

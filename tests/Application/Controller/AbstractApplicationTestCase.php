@@ -11,7 +11,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 abstract class AbstractApplicationTestCase extends WebTestCase
 {
-    const DEFAULT_ADMIN_ID = 42;
+    public const DEFAULT_ADMIN_ID = 42;
 
     protected KernelBrowser $client;
 
