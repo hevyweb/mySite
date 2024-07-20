@@ -505,6 +505,10 @@ class UserController extends AbstractController
     public function getUser(): ?User
     {
         $user = parent::getUser();
+        if (empty($user)) {
+            return null;
+        }
+
         if (!$user instanceof User) {
             throw new \Exception('Wrong user entity provided.');
         }
