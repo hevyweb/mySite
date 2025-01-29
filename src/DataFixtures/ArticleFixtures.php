@@ -4,12 +4,13 @@ namespace App\DataFixtures;
 
 use App\Entity\Article;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory as FakerFactory;
 use Faker\Generator;
 
-class ArticleFixtures extends Fixture implements DependentFixtureInterface
+class ArticleFixtures extends Fixture implements DependentFixtureInterface, FixtureGroupInterface
 {
     private Generator $faker;
 
@@ -48,5 +49,10 @@ class ArticleFixtures extends Fixture implements DependentFixtureInterface
             UserFixtures::class,
             TagFixture::class,
         ];
+    }
+
+    public static function getGroups(): array
+    {
+        return ['default'];
     }
 }

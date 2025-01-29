@@ -39,32 +39,7 @@
 <body>
 {% include 'common/pop_up_messages.html.twig' %}
 {% block html %}
-<header id="header" role="banner" class="mb-4">
-    <div class="navbar">
-        <div class="container-fluid">
-            <a href="{{ url('home') }}" class="navbar-brand">
-                <img src="{{ absolute_url('/logo.png') }}" alt="{% trans %}Dmytro Dzyuba{% endtrans %}">
-                <span class="navbar-title">{% trans %}Dmytro Dzyuba{% endtrans %}</span>
-            </a>
-            {% block user %}
-                <div class="user-control align-top">
-                    {% include 'common/language_switch.html.twig' | raw %}
-                    {% if is_granted('ROLE_ADMIN') %}
-                        <a class="bottom-btn" href="{{ url('admin-dashboard') }}" title="{% trans from 'dashboard' %}Admin panel{% endtrans %}">
-                            <i class="fa-solid fa-shield-halved"></i>
-                        </a>
-                    {% endif %}
-                    <button class="navbar-toggler btn d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-expanded="false" aria-controls="navbarCollapse">
-                        <i class="fa-solid fa-bars"></i>
-                    </button>
-                </div>
-            {% endblock %}
-        </div>
-    </div>
-    <div class="main-menu navbar-light">
-        {% include 'common/menu.html.twig' %}
-    </div>
-</header>
+{% include 'common/_header.html.twig' %}
 {% block main %}
     <main role="main">
         <section id="main">

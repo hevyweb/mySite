@@ -3,7 +3,6 @@
 <!-- https://phpunit.readthedocs.io/en/latest/configuration.html -->
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
-         backupGlobals="false"
          colors="true"
          bootstrap="tests/bootstrap.php"
 >
@@ -14,7 +13,9 @@
         <server name="SHELL_VERBOSITY" value="-1" />
         <server name="SYMFONY_PHPUNIT_REMOVE" value="" />
         <server name="SYMFONY_PHPUNIT_VERSION" value="9.5" />
+        <env name="KERNEL_CLASS" value="App\Kernel"/>
     </php>
+
 
     <testsuites>
         <testsuite name="Unit">
@@ -30,10 +31,8 @@
         </include>
     </source>
 
-    <coverage includeUncoveredFiles="true"
-              pathCoverage="false"
-              ignoreDeprecatedCodeUnits="true"
-              disableCodeCoverageIgnore="true">
+    <coverage ignoreDeprecatedCodeUnits="true"
+        disableCodeCoverageIgnore="true">
         <report>
             <clover outputFile="var/coverage/clover.xml"/>
             <html outputDirectory="var/coverage/html-coverage" lowUpperBound="50" highLowerBound="90"/>

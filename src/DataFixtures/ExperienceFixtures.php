@@ -4,11 +4,12 @@ namespace App\DataFixtures;
 
 use App\Entity\Experience;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory as FakerFactory;
 use Faker\Generator;
 
-class ExperienceFixtures extends Fixture
+class ExperienceFixtures extends Fixture implements FixtureGroupInterface
 {
     public function load(ObjectManager $manager): void
     {
@@ -38,5 +39,10 @@ class ExperienceFixtures extends Fixture
         $manager->flush();
         $manager->clear();
         gc_collect_cycles();
+    }
+
+    public static function getGroups(): array
+    {
+        return ['default'];
     }
 }

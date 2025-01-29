@@ -3,6 +3,7 @@
 namespace App\Form\User;
 
 use App\Entity\User;
+use App\Type\Gender;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\BirthdayType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -10,6 +11,7 @@ use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -33,6 +35,7 @@ class EditUserType extends AbstractType
                 ],
                 'constraints' => [
                     new NotBlank(),
+                    new Email(),
                     new Length([
                         'max' => 64,
                     ]),
@@ -78,8 +81,8 @@ class EditUserType extends AbstractType
             ])
             ->add('sex', ChoiceType::class, [
                 'choices' => [
-                    $this->translator->trans('Male', [], 'user') => 1,
-                    $this->translator->trans('Female', [], 'user') => 2,
+                    $this->translator->trans('Male', [], 'user') => Gender::MALE,
+                    $this->translator->trans('Female', [], 'user') => Gender::FEMALE
                 ],
                 'required' => false,
                 'label' => $this->translator->trans('Sex', [], 'user'),

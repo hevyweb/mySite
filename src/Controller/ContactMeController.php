@@ -46,7 +46,7 @@ class ContactMeController extends AbstractController
                 $message->setCreatedAt(new \DateTimeImmutable());
                 $this->entityManager->persist($message);
                 $this->entityManager->flush();
-                $this->addFlash(self::$success, $this->translator->trans('Thanks for the message. I\'ll do my best to reach out to you as soon as possible.', [], 'contactme'));
+                $this->addFlash(self::SUCCESS, $this->translator->trans('Thanks for the message. I\'ll do my best to reach out to you as soon as possible.', [], 'contactme'));
 
                 return $this->redirectToRoute('home');
             }

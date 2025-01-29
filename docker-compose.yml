@@ -18,6 +18,8 @@ services:
     image: bitnami/mariadb:10.6.17
     volumes:
       - test_DB:/bitnami/mariadb
+    ports:
+      - "3307:${TEST_MYSQL_PORT}"
     environment:
       - "MARIADB_ROOT_PASSWORD=${TEST_MYSQL_ROOT_PASSWORD}"
       - "MARIADB_DATABASE=${TEST_MYSQL_DATABASE}"
@@ -31,6 +33,7 @@ services:
     volumes:
       - './:/var/www/html'
       - './docker/php/php.ini:/opt/bitnami/php/etc/php.ini'
+      - './docker/php/xdebug.ini:/opt/bitnami/php/etc/conf.d/xdebug.ini'
     ports:
       - '9000:9000'
     working_dir: '/var/www/html'

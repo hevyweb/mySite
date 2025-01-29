@@ -4,10 +4,11 @@ namespace App\DataFixtures;
 
 use App\Entity\Role;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory as FakerFactory;
 
-class RoleFixtures extends Fixture
+class RoleFixtures extends Fixture implements FixtureGroupInterface
 {
     /**
      * @use LoadPredefinedDataTrait<Role>
@@ -18,7 +19,6 @@ class RoleFixtures extends Fixture
     {
         $faker = FakerFactory::create();
 
-        $this->loadPredefinedRoles($manager);
         $roles = ['admin', 'user'];
 
         for ($n = 0; $n < 10; ++$n) {
@@ -37,14 +37,8 @@ class RoleFixtures extends Fixture
         $manager->clear();
     }
 
-    private function loadPredefinedRoles(ObjectManager $manager): void
+    public static function getGroups(): array
     {
-        $roles = $this->loadCSV(Role::class, __DIR__.'/data/role.csv');
-        foreach ($roles as $role) {
-            $manager->persist($role);
-            $this->setReference('role_'.$role->getCode(), $role);
-        }
-
-        $manager->flush();
+        return ['default'];
     }
 }

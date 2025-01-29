@@ -3,12 +3,15 @@
 namespace App\Form\User;
 
 use App\Entity\User;
+use App\Form\Constraint\CurrentPassword;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Sequentially;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
@@ -22,7 +25,26 @@ class UserPasswordsType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder->add('plainPassword', RepeatedType::class, [
+        $builder
+            ->add('currentPassword', PasswordType::class, [
+                'label' => $this->translator->trans('Current password', [], 'user'),
+                'mapped' => false,
+                'attr' => [
+                    'maxlength' => 32,
+                ],
+                'constraints' => [
+                    new Sequentially([
+                        'constraints' => [
+                            new NotBlank(),
+                            new Length([
+                                'max' => 32,
+                            ]),
+                            new CurrentPassword(),
+                        ],
+                    ]),
+                ],
+            ])
+            ->add('newPassword', RepeatedType::class, [
             'type' => PasswordType::class,
             'invalid_message' => $this->translator->trans('The password fields must match.', [], 'user'),
             'first_options' => [
@@ -39,15 +61,11 @@ class UserPasswordsType extends AbstractType
             ],
             'constraints' => [
                 new NotBlank(),
+                new Length([
+                    'max' => 32,
+                ]),
             ],
             'required' => true,
-        ]);
-    }
-
-    public function configureOptions(OptionsResolver $resolver): void
-    {
-        $resolver->setDefaults([
-            'data_class' => User::class,
         ]);
     }
 }

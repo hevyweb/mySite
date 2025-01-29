@@ -1,6 +1,11 @@
 {% use 'form_div_layout.html.twig' %}
-{% block form_row %}
-    <div class="control-group">
-
-    </div>
+{% block form_errors %}
+    <ul class="form_validation_errors">
+        {% for error in errors %}
+        <li class="form_validation_error">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            {{ error.getMessage() }}
+        </li>
+        {% endfor %}
+    </ul>
 {% endblock %}

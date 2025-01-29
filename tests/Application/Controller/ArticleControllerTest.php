@@ -2,31 +2,31 @@
 
 namespace App\Tests\Application\Controller;
 
-class ArticleControllerTest extends AbstractApplicationTestCase
+class ArticleControllerTeeest extends AbstractApplicationTestCase
 {
-    public function testTranslate()
+    public function testTranslate(): void
     {
         $url = $this->rout->generate('article-translate');
     }
 
-    public function testUpdate()
+    public function testUpdate(): void
     {
         $url = $this->rout->generate('article-edit');
     }
 
-    public function testIndex()
+    public function testIndex(): void
     {
         $url = $this->rout->generate('article-list');
         $this->client->request('GET', $url);
         $this->assertResponseIsSuccessful();
     }
 
-    public function testDelete()
+    public function testDelete(): void
     {
         $url = $this->rout->generate('article-delete');
     }
 
-    public function testCreate()
+    public function testCreate(): void
     {
         $url = $this->rout->generate('article-create');
     }

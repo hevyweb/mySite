@@ -137,7 +137,7 @@ class ExperienceController extends AbstractController
                         $this->logger->debug('Experience "'.$experience->getName().'" removed.');
                     } catch (FileNotFoundException $exception) {
                         $this->logger->error($exception->getMessage());
-                        $this->addFlash(self::$success, $this->translator->trans('Can not remove image of the company.', [], 'experience'));
+                        $this->addFlash(self::SUCCESS, $this->translator->trans('Can not remove image of the company.', [], 'experience'));
 
                         return $this->redirectToRoute('experience-list');
                     }

@@ -128,7 +128,7 @@ class ArticleController extends AbstractController
             $this->cloneImage($articleTranslation, $newArticleTranslation);
         } catch (FileException $e) {
             $this->logger->error($e->getMessage());
-            $this->addFlash(self::$error, $this->translator->trans('Error occurred. Not able to copy the image.'));
+            $this->addFlash(self::ERROR, $this->translator->trans('Error occurred. Not able to copy the image.'));
 
             return $this->redirectToRoute('article-edit', [
                 'slug' => $articleTranslation->getArticle()->getSlug(),
@@ -233,7 +233,7 @@ class ArticleController extends AbstractController
                 }
             } catch (FileNotFoundException $exception) {
                 $this->logger->error($exception->getMessage());
-                $this->addFlash(self::$success, $this->translator->trans('Can not remove image of the article.', [], 'article'));
+                $this->addFlash(self::SUCCESS, $this->translator->trans('Can not remove image of the article.', [], 'article'));
             }
         }
     }

@@ -5,22 +5,28 @@ namespace App\EventSubscriber;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
+use function Symfony\Component\DependencyInjection\Loader\Configurator\env;
 
 class LocaleSubscriber implements EventSubscriberInterface
 {
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            // must be registered before (i.e. with a higher priority than) the default Locale listener
+            KernelEvents::REQUEST => [['onKernelRequest', 20]],
+        ];
+    }
+
     public function onKernelRequest(RequestEvent $event): void
     {
         $request = $event->getRequest();
-        $locale = $request->query->get('_locale');
-        if (empty($locale)) {
-            $locale = $this->detectUserLocale();
-        }
-        if (!empty($locale)) {
-            $request->getSession()->set('locale', $locale);
-        }
-        if ($request->getSession()->has('locale')) {
-            $event->getRequest()->setLocale($request->getSession()->get('locale'));
-        }
+        $locale = 
+            $request->query->get('_locale') 
+            ?? $request->getSession()->get('locale')
+            ?? $this->detectUserLocale();
+
+        $request->getSession()->set('locale', $locale);
+        $request->setLocale($locale);
     }
 
     private function detectUserLocale(): ?string
@@ -35,14 +41,6 @@ class LocaleSubscriber implements EventSubscriberInterface
             }
         }
 
-        return null;
-    }
-
-    public static function getSubscribedEvents(): array
-    {
-        return [
-            // must be registered before (i.e. with a higher priority than) the default Locale listener
-            KernelEvents::REQUEST => [['onKernelRequest', 20]],
-        ];
+        return $_SERVER['DEFAULT_LOCALE'];
     }
 }

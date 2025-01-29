@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\DTO\UserSearch;
 use App\Entity\EmailHistory;
-use App\Entity\RememberMeToken;
 use App\Entity\Role;
 use App\Entity\User;
 use App\Event\NewEmailConfirmEvent;
@@ -85,7 +84,7 @@ class UserController extends AbstractController
                 ->setUpdatedAt(new \DateTime())
                 ->setUpdatedBy($this->getUser());
             $this->entityManager->flush();
-            $this->addFlash(self::$success, $this->translator->trans('User data updated.', [], 'user'));
+            $this->addFlash(self::SUCCESS, $this->translator->trans('User data updated.', [], 'user'));
         }
 
         return $this->render('user/edit.html.twig', [
@@ -93,35 +92,27 @@ class UserController extends AbstractController
             'form' => $userEditForm->createView(),
             'submit' => $this->translator->trans('Save'),
             'user' => $user,
-            'tabs' => $this->getUserTabs(),
+            'tabs' => $this->getUserTabs($user),
         ]);
     }
 
     public function editUserPassword(Request $request, UserPasswordHasherInterface $passwordHasher, Security $security): Response
     {
         $user = $this->getUserFromRequest($request);
-
-        $userEditForm = $this->createForm(UserPasswordsType::class, $user, [
-            'action' => $this->generateUrl('user-edit-password', [
-                'id' => $user->getId() != $this->getUser()->getId() ? $user->getId() : null,
-            ]),
+        $userEditForm = $this->createForm(UserPasswordsType::class, null, [
+            'action' => $this->generateUrl('user-edit-password'),
         ]);
 
         $userEditForm->handleRequest($request);
         if ($userEditForm->isSubmitted() && $userEditForm->isValid()) {
+            $user->setPlainPassword($userEditForm->getData()['newPassword']);
             $password = $passwordHasher->hashPassword($user, $user->getPlainPassword());
             $user->setPassword($password);
             $user
                 ->setUpdatedAt(new \DateTime())
                 ->setUpdatedBy($this->getUser());
             $this->entityManager->flush();
-            $this->addFlash(self::$success, $this->translator->trans('User password changed.', [], 'user'));
-
-            if ($user->getId() == $this->getUser()->getId()) {
-                return $security->logout(false);
-            } else {
-                $this->removeTokenByUsername($user->getUsername());
-            }
+            $this->addFlash(self::SUCCESS, $this->translator->trans('User password changed.', [], 'user'));
         }
 
         return $this->render('user/passwords.html.twig', [
@@ -129,7 +120,7 @@ class UserController extends AbstractController
             'form' => $userEditForm->createView(),
             'submit' => $this->translator->trans('Save'),
             'user' => $user,
-            'tabs' => $this->getUserTabs(),
+            'tabs' => $this->getUserTabs($user),
         ]);
     }
 
@@ -155,7 +146,7 @@ class UserController extends AbstractController
                 ->setUpdatedAt(new \DateTime())
                 ->setUpdatedBy($this->getUser());
 
-            $this->addFlash(self::$success, $this->translator->trans('Saved successfully'));
+            $this->addFlash(self::SUCCESS, $this->translator->trans('Saved successfully'));
             $this->entityManager->flush();
         }
 
@@ -163,7 +154,7 @@ class UserController extends AbstractController
             'title' => $this->translator->trans('User Roles', [], 'user'),
             'user' => $user,
             'roles' => $existingRoles,
-            'tabs' => $this->getUserTabs(),
+            'tabs' => $this->getUserTabs($user),
         ]);
     }
 
@@ -244,7 +235,7 @@ class UserController extends AbstractController
 
             $this->entityManager->flush();
 
-            $this->addFlash(self::$success, $this->translator->trans(
+            $this->addFlash(self::SUCCESS, $this->translator->trans(
                 'Your email is confirmed. Enter your username "%username%" and password that you created during registration to login.',
                 [
                     '%username%' => $user->getUsername(),
@@ -301,7 +292,7 @@ class UserController extends AbstractController
                     $this->logger->warning($exception->getMessage());
                 }
             }
-            $this->addFlash(self::$success,
+            $this->addFlash(self::SUCCESS,
                 $this->translator->trans(
                     'We have sent an email with a password reset request to the email address provided.',
                     [],
@@ -337,7 +328,7 @@ class UserController extends AbstractController
         } else {
             usleep(mt_rand(0, self::ANTI_BRUT_FORCE_COOL_DOWN));
         }
-        $this->addFlash(self::$success, $this->translator->trans(
+        $this->addFlash(self::SUCCESS, $this->translator->trans(
             'A new password has been sent to your email.',
             [],
             'user'
@@ -360,10 +351,10 @@ class UserController extends AbstractController
                 $emailHistory->setNewEmailConfirmAt(new \DateTimeImmutable());
             }
             if (!$this->changeEmail($emailHistory)) {
-                $this->addFlash(self::$success, $this->translator->trans('Old email successfully confirmed.', [], 'user'));
+                $this->addFlash(self::SUCCESS, $this->translator->trans('Old email successfully confirmed.', [], 'user'));
             }
         } else {
-            $this->addFlash(self::$error, $this->translator->trans('The confirmation link is expired.'));
+            $this->addFlash(self::ERROR, $this->translator->trans('The confirmation link is expired.'));
         }
         $this->entityManager->flush();
 
@@ -384,10 +375,10 @@ class UserController extends AbstractController
                 $emailHistory->setOldEmailConfirmAt(new \DateTimeImmutable());
             }
             if (!$this->changeEmail($emailHistory)) {
-                $this->addFlash(self::$success, $this->translator->trans('Old email successfully confirmed.'));
+                $this->addFlash(self::SUCCESS, $this->translator->trans('Old email successfully confirmed.'));
             }
         } else {
-            $this->addFlash(self::$error, $this->translator->trans('The confirmation link is expired.', [], 'user'));
+            $this->addFlash(self::ERROR, $this->translator->trans('The confirmation link is expired.', [], 'user'));
         }
         $this->entityManager->flush();
 
@@ -413,15 +404,18 @@ class UserController extends AbstractController
     /**
      * @return string[]
      */
-    private function getUserTabs(): array
+    private function getUserTabs(User $user): array
     {
         $tabs = [
-            'general' => 'General',
-            'password' => 'Password',
+            'general' => ['text' => 'General', 'iconClass' => 'fa-regular fa-address-card'],
         ];
+        
+        if ($user === $this->getUser()) {
+            $tabs['password'] = ['text' => 'Password', 'iconClass' => 'fa-solid fa-shield'];
+        }
 
         if ($this->getUser()->hasRole(Role::ROLE_ADMIN)) {
-            $tabs['roles'] = 'Roles';
+            $tabs['roles'] = ['text' => 'Roles', 'iconClass' => 'fa-solid fa-user-nurse'];
         }
 
         return $tabs;
@@ -472,7 +466,7 @@ class UserController extends AbstractController
                 ->setUpdatedBy($this->getUser())
                 ->setUpdatedAt(new \DateTime());
 
-            $this->addFlash(self::$success, $this->translator->trans('Email has been successfully changed.'));
+            $this->addFlash(self::SUCCESS, $this->translator->trans('Email has been successfully changed.'));
 
             return true;
         }
@@ -488,18 +482,6 @@ class UserController extends AbstractController
     private function createEmptyCollection(): ArrayCollection
     {
         return new ArrayCollection();
-    }
-
-    public function removeTokenByUsername(string $userName): void
-    {
-        $rememberMeTokens = $this->entityManager->getRepository(RememberMeToken::class)
-            ->findBy(['username' => $userName]);
-        if (!empty($rememberMeTokens)) {
-            foreach ($rememberMeTokens as $rememberMeToken) {
-                $this->entityManager->remove($rememberMeToken);
-            }
-            $this->entityManager->flush();
-        }
     }
 
     public function getUser(): ?User

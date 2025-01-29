@@ -1,11 +1,23 @@
 {% trans_default_domain 'user' %}
-
+{% if is_granted('ROLE_ADMIN') %}
+    {% set vars = {'id': id} %}
+{% else %}
+    {% set vars = {} %}
+{% endif %}
 <div class="tabs">
     <ul class="nav nav-tabs">
     {% for key, value in tabs %}
         <li class="nav-item">
-            <a href="{{  path('user-edit-' ~ key, {'id': id}) }}" class="nav-link {{ key == current_tab ? 'active' : '' }}" aria-current="page">{{ value|trans }}</a>
+            <a href="{{ url('user-edit-' ~ key, vars) }}" class="nav-link {{ key == current_tab ? 'active' : '' }}" aria-current="page">
+                <i class="{{ value.iconClass }}"></i>
+                <span class="tab-text">{{ value.text|trans }}</span>
+            </a>
         </li>
     {% endfor %}
+        <li class="nav-item">
+            <a href="{{ url('user-logout') }}" class="nav-link" title="{% trans from 'messages' %}Logout{% endtrans %}">
+                <i class="fa-solid fa-right-from-bracket"></i>
+            </a>
+        </li>
     </ul>
 </div>

@@ -1,7 +1,6 @@
 Please sign in: Ласкаво просимо
 Username: Логін
 Password: Пароль
-Remember me: Запам'ятати
 Sign in: Вхід
 Email: Імейл
 First name: Ім'я
@@ -61,3 +60,7 @@ Email has been successfully changed: Емейл успішно змінено
 Old email successfully confirmed.: Старий імейл вдало підтверджено.
 New email successfully confirmed.: Новий імейл вдало підтверджено.
 You are going to change your current email to: Ви збираєтеся змінити свій поточний імейл на
+User profile: Дані користувача
+Current password: Поточний пароль
+Current password is incorrect.: Поточний пароль - неправильний.
+User password changed.: Пароль користувача змінено.

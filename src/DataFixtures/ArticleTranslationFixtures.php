@@ -4,11 +4,12 @@ namespace App\DataFixtures;
 
 use App\Entity\ArticleTranslation;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory as FakerFactory;
 
-class ArticleTranslationFixtures extends Fixture implements DependentFixtureInterface
+class ArticleTranslationFixtures extends Fixture implements DependentFixtureInterface, FixtureGroupInterface
 {
     /**
      * @param array<string> $locales
@@ -61,5 +62,10 @@ class ArticleTranslationFixtures extends Fixture implements DependentFixtureInte
             UserFixtures::class,
             ArticleFixtures::class,
         ];
+    }
+
+    public static function getGroups(): array
+    {
+        return ['default'];
     }
 }

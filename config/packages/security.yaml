@@ -27,9 +27,9 @@ security:
         ROLE_ADMIN: ROLE_USER
     access_control:
     # User authentication required
-        - { path: ^/user/$, roles: ROLE_USER }
+        - { path: ^/user/(general|password)$, roles: IS_AUTHENTICATED_FULLY }
         - { path: ^/logout, roles: ROLE_USER }
     # admin area
         - { path: ^/administrator, roles: ROLE_ADMIN }
-        - { path: ^/user/(general|password|roles)/\d+$, roles: ROLE_ADMIN }
+        - { path: ^/user/(general|roles)/\d+$, roles: ROLE_ADMIN }
         - { path: ^/user/roles$, roles: ROLE_ADMIN }

@@ -34,14 +34,9 @@
                     </a>
                 </div>
             {% endif %}
-            <div class="p-2">
-                <label for="remember_me">
-                    <input type="checkbox" id="remember_me" name="_remember_me"> {% trans %}Remember me{% endtrans %}
-                </label>
-            </div>
         </div>
         <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}" />
-        <button class="btn btn-lg btn-primary" type="submit">
+        <button class="btn btn-lg btn-primary" type="submit" id="user-login">
             {% trans %}Sign in{% endtrans %}
         </button>
     </form>

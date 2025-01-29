@@ -4,14 +4,17 @@ namespace App\DataFixtures;
 
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory as FakerFactory;
-use Faker\Generator;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-class UserFixtures extends Fixture implements DependentFixtureInterface
+class UserFixtures extends Fixture implements DependentFixtureInterface, FixtureGroupInterface
 {
+    const NUM_USERS = 10;
+
     public function __construct(private readonly UserPasswordHasherInterface $passwordHasher)
     {
     }
@@ -23,53 +26,32 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
     {
         $faker = FakerFactory::create();
         $fakerUA = FakerFactory::create('uk_UA');
-        for ($n = 0; $n < 10; ++$n) {
-            $user = new User();
-            $user->setBirthDay($faker->dateTimeBetween('-60 years', '-18 years'))
-                ->setEmail($faker->email)
-                ->setFirstName($fakerUA->firstName())
-                ->setLastName($fakerUA->lastName())
-                ->setSex($faker->numberBetween(0, 1))
-                ->setUsername($faker->userName)
-                ->setPlainPassword('admin')
-                ->setPassword($this->passwordHasher->hashPassword($user, 'admin'))
-                ->setActive($faker->boolean(90))
-                ->setEnabled($faker->boolean(90))
-                ->addRole($this->getReference('role_'.$n))
-                ->setCreatedAt(new \DateTimeImmutable($faker->dateTimeBetween()->format('c')))
-            ;
-            $manager->persist($user);
+        for ($n = 0; $n < self::NUM_USERS; ++$n) {
+            try {
+                $user = new User();
+                $user->setBirthDay($faker->dateTimeBetween('-60 years', '-18 years'))
+                    ->setEmail($faker->email)
+                    ->setFirstName($fakerUA->firstName())
+                    ->setLastName($fakerUA->lastName())
+                    ->setSex($faker->numberBetween(0, 1))
+                    ->setUsername($faker->userName)
+                    ->setPlainPassword('admin')
+                    ->setPassword($this->passwordHasher->hashPassword($user, 'admin'))
+                    ->setActive($faker->boolean(90))
+                    ->setEnabled($faker->boolean(90))
+                    ->addRole($this->getReference('role_' . $n))
+                    ->setCreatedAt(new \DateTimeImmutable($faker->dateTimeBetween()->format('c')));
+                $manager->persist($user);
+                $manager->flush();
+                $manager->clear();
+            } catch (UniqueConstraintViolationException $exception) {
+                //this exception means faker generated not unique username or email.
+                $n--;
+                continue;
+            }
+            
+            $this->setReference('user_'.$n, $user);
         }
-        gc_collect_cycles();
-        $manager->flush();
-        $manager->clear();
-
-        $this->createAdminUser($manager, $faker);
-    }
-
-    /**
-     * @throws \Exception
-     */
-    private function createAdminUser(ObjectManager $manager, Generator $faker): void
-    {
-        $user = new User();
-        $user->setBirthDay($faker->dateTimeBetween('-60 years', '-18 years'))
-            ->setEmail($faker->email)
-            ->setFirstName($faker->firstName())
-            ->setLastName($faker->lastName())
-            ->setSex($faker->numberBetween(0, 1))
-            ->setUsername('admin')
-            ->setPlainPassword('admin')
-            ->setPassword($this->passwordHasher->hashPassword($user, 'admin'))
-            ->setActive(true)
-            ->setEnabled(true)
-            ->setCreatedAt(new \DateTimeImmutable($faker->dateTimeBetween()->format('c')));
-
-        $user->addRole($this->getReference('role_ROLE_ADMIN'));
-
-        $this->setReference('user_admin', $user);
-        $manager->persist($user);
-        $manager->flush();
     }
 
     public function getDependencies(): array
@@ -77,5 +59,10 @@ class UserFixtures extends Fixture implements DependentFixtureInterface
         return [
             RoleFixtures::class,
         ];
+    }
+
+    public static function getGroups(): array
+    {
+        return ['default'];
     }
 }

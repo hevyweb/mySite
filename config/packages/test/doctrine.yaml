@@ -1,0 +1,14 @@
+doctrine:
+  dbal:
+    driver: 'pdo_mysql'
+    server_version: '%env(TEST_MYSQL_VERSION)%'
+    charset: utf8mb4
+    default_table_options:
+      charset: utf8mb4
+      collate: utf8mb4_unicode_ci
+    url: '%env(resolve:DATABASE_URL)%'
+    schema_filter: ~^(?!rememberme_token)~
+    use_savepoints: true
+  orm:
+    enable_lazy_ghost_objects: true
+    report_fields_where_declared: true

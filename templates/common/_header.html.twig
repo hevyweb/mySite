@@ -1,0 +1,32 @@
+{% block header %}
+<header id="header" role="banner" class="mb-4">
+    <div class="navbar">
+        <div class="container-fluid">
+            <a href="{{ url('home') }}" class="navbar-brand">
+                <img src="{{ absolute_url('/logo.png') }}" alt="{% trans %}Dmytro Dzyuba{% endtrans %}">
+                <span class="navbar-title">{% trans %}Dmytro Dzyuba{% endtrans %}</span>
+            </a>
+            {% block user %}
+                <div class="user-control align-top">
+                    {% include 'common/language_switch.html.twig' | raw %}
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <a class="bottom-btn" id="user-admin-page" href="{{ url('admin-dashboard') }}" title="{% trans from 'dashboard' %}Admin panel{% endtrans %}">
+                            <i class="fa-solid fa-shield-halved"></i>
+                        </a>
+                    {% elseif is_granted('IS_AUTHENTICATED_FULLY') %}
+                        <a class="bottom-btn" id="user-profile" href="{{ url('user-edit-general') }}" title="{% trans from 'user' %}User profile{% endtrans %}">
+                            <i class="fa-solid fa-user"></i>
+                        </a>
+                    {% endif %}
+                    <button class="navbar-toggler btn d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-expanded="false" aria-controls="navbarCollapse">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                </div>
+            {% endblock %}
+        </div>
+    </div>
+    <div class="main-menu navbar-light">
+        {% include 'common/menu.html.twig' %}
+    </div>
+</header>
+{% endblock %}

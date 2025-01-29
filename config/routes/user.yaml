@@ -9,10 +9,8 @@ user-edit-general:
     id: null
 
 user-edit-password:
-  path: /user/password/{id}
+  path: /user/password
   controller: App\Controller\UserController::editUserPassword
-  defaults:
-    id: null
 
 user-edit-roles:
   path: /user/roles/{id}

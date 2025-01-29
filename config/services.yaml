@@ -28,8 +28,6 @@ services:
         resource: '../src/Controller/'
         tags: ['controller.service_arguments']
 
-    App\Security\AppTokenProvider: ~
-
     Symfony\Component\Mime\Address:
         class: Symfony\Component\Mime\Address
         arguments:
