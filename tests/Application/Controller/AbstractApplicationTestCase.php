@@ -9,7 +9,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 abstract class AbstractApplicationTestCase extends WebTestCase
 {
@@ -25,7 +24,7 @@ abstract class AbstractApplicationTestCase extends WebTestCase
         $this->router = $this->getContainer()->get(RouterInterface::class);
     }
 
-    protected function logInUser(?string $userName = UserFixtures::REGULAR_USER): UserInterface
+    protected function logInUser(?string $userName = UserFixtures::REGULAR_USER): User
     {
         $user = $this->getUser($userName);
         $this->client->loginUser($user);
@@ -33,12 +32,12 @@ abstract class AbstractApplicationTestCase extends WebTestCase
         return $user;
     }
     
-    protected function logInAdmin(?string $adminUserName = UserFixtures::ADMIN_USER): UserInterface
+    protected function logInAdmin(?string $adminUserName = UserFixtures::ADMIN_USER): User
     {
         return $this->logInUser($adminUserName);
     }
 
-    protected function getUser(string $userName): UserInterface
+    protected function getUser(string $userName): User
     {
         /**
          * @var EntityManagerInterface $em

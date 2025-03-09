@@ -7,115 +7,245 @@ use App\Entity\User;
 use App\Exception\UserNotFoundException;
 use App\Type\Gender;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\KernelBrowser;
+use Symfony\Component\DomCrawler\Field\ChoiceFormField;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Symfony\Component\Routing\RouterInterface;
 
 class UserControllerTest extends AbstractApplicationTestCase
 {
-    public static function InvalidCredentialsDataProvider(): array
+    public static function InvalidCredentialsDataProvider(): \Generator
     {
-        return [
-            'empty' => ['', ''],
-            'invalid username' => ['user_not_exist', 'test'],
-            'invalid password' => ['user', 'invalid password'],
-            'empty password' => ['user', ''],
-            'empty user' => ['', 'user'],
-            'sql injection' => ['user', '1\' OR \'1\' =\'1'],
+        yield 'empty' => ['', ''];
+        yield 'null values' => [null, null];
+        yield 'invalid username' => ['user_not_exist', 'test'];
+        yield 'invalid password' => ['user', 'invalid password'];
+        yield 'empty password' => ['user', ''];
+        yield 'empty user' => ['', 'user'];
+        yield 'sql injection' => ['user', '1\' OR \'1\' =\'1'];
+    }
+
+    public static function invalidUserDataProvider(): \Generator
+    {
+        yield 'blank email' => [
+            ['edit_user[email]' => ''],
+            'This value should not be blank.',
+        ];
+
+        yield 'invalid email' => [
+            ['edit_user[email]' => 'invalid email address'],
+            'This value is not a valid email address.',
+        ];
+
+        yield 'very long email' => [
+            ['edit_user[email]' => str_repeat('a', 59) . '@a.com'],
+            'This value is too long. It should have 64 characters or less.',
+        ];
+
+        yield 'blank first name' => [
+            ['edit_user[firstName]' => ''],
+            'This value should not be blank.',
+        ];
+
+        yield 'First name is too short' => [
+            ['edit_user[firstName]' => 'a'],
+            'This value is too short. It should have 2 characters or more.',
+        ];
+
+        yield 'first name too long' => [
+            ['edit_user[firstName]' => str_repeat('a', 33)],
+            'This value is too long. It should have 32 characters or less.',
+        ];
+
+        yield 'blank last name' => [
+            ['edit_user[lastName]' => ''],
+            'This value should not be blank.',
+        ];
+
+        yield 'Last name is too short' => [
+            ['edit_user[lastName]' => 'a'],
+            'This value is too short. It should have 2 characters or more.',
+        ];
+
+        yield 'last name too long' => [
+            ['edit_user[lastName]' => str_repeat('a', 33)],
+            'This value is too long. It should have 32 characters or less.',
+        ];
+
+        yield 'invalid birth date' => [
+            ['edit_user[birthday]' => '27.13.1659'],
+            'Please enter a valid birthdate.',
+        ];
+
+        yield 'Birthday out of the date range' => [
+            ['edit_user[birthday]' => (new \DateTime('-101 year'))->format('d.m.Y')],
+            'You cannot be older than 100 years.'
+        ];
+
+        yield 'Birthday is too close' => [
+            ['edit_user[birthday]' => (new \DateTime('-6 year'))->format('d.m.Y')],
+            'You must be at least 7 years old.'
         ];
     }
 
-    public static function invalidUserDataProvider(): array
+    public static function passwordChangeFailureDataProvider(): \Generator
     {
-        return [
-            'blank email' => [
-                ['edit_user[email]' => ''],
-                'This value should not be blank.',
+        yield 'empty current password' => [
+            ['user_passwords[currentPassword]' => null],
+            'This value should not be blank.',
+        ];
+
+        yield 'too big current password' => [
+            ['user_passwords[currentPassword]' => str_repeat('a', 33)],
+            'This value is too long. It should have 32 characters or less.',
+        ];
+
+        yield 'incorrect current password' => [
+            ['user_passwords[currentPassword]' => 'this is not a password'],
+            'Current password is incorrect.'
+        ];
+
+        yield 'empty new password' => [
+            [
+                'user_passwords[newPassword][first]' => null,
+                'user_passwords[newPassword][second]' => null,
             ],
-            'invalid email' => [
-                ['edit_user[email]' => 'invalid email address'],
-                'This value is not a valid email address.',
+            'This value should not be blank.',
+        ];
+
+        yield 'too long new password' => [
+            [
+                'user_passwords[newPassword][first]' => str_repeat('a', 33),
+                'user_passwords[newPassword][second]' => str_repeat('a', 33),
             ],
-            'very long email' => [
-                ['edit_user[email]' => str_repeat('a', 59) . '@a.com'],
-                'This value is too long. It should have 64 characters or less.',
+            'This value is too long. It should have 32 characters or less.',
+        ];
+
+        yield 'passwords do not match' => [
+            [
+                'user_passwords[newPassword][first]' => str_repeat('a', 32),
+                'user_passwords[newPassword][second]' => str_repeat('b', 32),
             ],
-            'blank first name' => [
-                ['edit_user[firstName]' => ''],
-                'This value should not be blank.',
-            ],
-            'First name is too short' => [
-                ['edit_user[firstName]' => 'a'],
-                'This value is too short. It should have 2 characters or more.',
-            ],
-            'first name too long' => [
-                ['edit_user[firstName]' => str_repeat('a', 33)],
-                'This value is too long. It should have 32 characters or less.',
-            ],
-            'blank last name' => [
-                ['edit_user[lastName]' => ''],
-                'This value should not be blank.',
-            ],
-            'Last name is too short' => [
-                ['edit_user[lastName]' => 'a'],
-                'This value is too short. It should have 2 characters or more.',
-            ],
-            'last name too long' => [
-                ['edit_user[lastName]' => str_repeat('a', 33)],
-                'This value is too long. It should have 32 characters or less.',
-            ],
-            'invalid birth date' => [
-                ['edit_user[birthday]' => '27.13.1659'],
-                'Please enter a valid birthdate.',
-            ],
-            'Birthday out of the date range' => [
-                ['edit_user[birthday]' => (new \DateTime('-101 year'))->format('d.m.Y')],
-                'You cannot be older than 100 years.'
-            ],
-            'Birthday is too close' => [
-                ['edit_user[birthday]' => (new \DateTime('-6 year'))->format('d.m.Y')],
-                'You must be at least 7 years old.'
-            ],
+            'The password fields must match.',
         ];
     }
 
-    public static function passwordChangeFailureDataProvider(): array
+    public static function registerFailureDataProvider(): \Generator
     {
-        return [
-            'empty current password' => [
-                ['user_passwords[currentPassword]' => null],
-                'This value should not be blank.',
+        yield 'Username is missing' => [
+            ['registration[username]' => null],
+            'This value should not be blank.',
+        ];
+
+        yield 'Username is too short' => [
+            ['registration[username]' => 'a'],
+            'This value is too short. It should have 3 characters or more.',
+        ];
+
+        yield 'Username is too long' => [
+            ['registration[username]' => str_repeat('a', 33)],
+            'This value is too long. It should have 32 characters or less.',
+        ];
+
+        yield 'Username has illegal characters' => [
+            ['registration[username]' => 'test space'],
+            'Username should contain only letters, numbers, minus sign or underscore.',
+        ];
+
+        yield 'Email is missing' => [
+            ['registration[email]' => null],
+            'This value should not be blank.',
+        ];
+
+        yield 'Email is incorrect' => [
+            ['registration[email]' => 'dummy value'],
+            'This value is not a valid email address.',
+        ];
+
+        yield 'Email is too long' => [
+            ['registration[email]' => str_repeat('a', 56) . '@fake.com'],
+            'This value is too long. It should have 64 characters or less.',
+        ];
+
+        yield 'Email is already registered' => [
+            ['registration[email]' => 'user@fake.com'],
+            'This email has been already registered.',
+        ];
+
+        yield 'Password is empty' => [
+            [
+                'registration[password][first]' => null,
+                'registration[password][second]' => null,
             ],
-            'too big current password' => [
-                ['user_passwords[currentPassword]' => str_repeat('a', 33)],
-                'This value is too long. It should have 32 characters or less.',
+            'This value should not be blank.',
+        ];
+
+        yield 'Passwords do not match' => [
+            [
+                'registration[password][first]' => 'first',
+                'registration[password][second]' => 'second',
             ],
-            'incorrect current password' => [
-                ['user_passwords[currentPassword]' => 'this is not a password'],
-                'Current password is incorrect.'
+            'The password fields must match.',
+        ];
+
+        yield 'Password is too long' => [
+            [
+                'registration[password][first]' => str_repeat('a', 33),
+                'registration[password][second]' => str_repeat('a', 33),
             ],
-            'empty new password' => [
-                [
-                    'user_passwords[newPassword][first]' => null,
-                    'user_passwords[newPassword][second]' => null,
-                ],
-                'This value should not be blank.',
+            'This value is too long. It should have 32 characters or less.',
+        ];
+
+        yield 'Password is too short' => [
+            [
+                'registration[password][first]' => str_repeat('a', 7),
+                'registration[password][second]' => str_repeat('a', 7),
             ],
-            'too long new password' => [
-                [
-                    'user_passwords[newPassword][first]' => str_repeat('a', 33),
-                    'user_passwords[newPassword][second]' => str_repeat('a', 33),
-                ],
-                'This value is too long. It should have 32 characters or less.',
-            ],
-            'passwords do not match' => [
-                [
-                    'user_passwords[newPassword][first]' => str_repeat('a', 32),
-                    'user_passwords[newPassword][second]' => str_repeat('b', 32),
-                ],
-                'The password fields must match.',
-            ],
+            'This value is too short. It should have 8 characters or more.',
+        ];
+
+        yield 'First name is empty' => [
+            ['registration[firstName]' => null],
+            'This value should not be blank.',
+        ];
+
+        yield 'First name is too short' => [
+            ['registration[firstName]' => 'a'],
+            'This value is too short. It should have 2 characters or more.',
+        ];
+
+        yield 'First name is too long' => [
+            ['registration[firstName]' => str_repeat('a', 33)],
+            'This value is too long. It should have 32 characters or less.',
+        ];
+
+        yield 'Last name is empty' => [
+            ['registration[lastName]' => null],
+            'This value should not be blank.',
+        ];
+
+        yield 'Last name is too short' => [
+            ['registration[lastName]' => 'a'],
+            'This value is too short. It should have 2 characters or more.',
+        ];
+
+        yield 'Last name is too long' => [
+            ['registration[lastName]' => str_repeat('a', 33)],
+            'This value is too long. It should have 32 characters or less.',
+        ];
+
+        yield 'Invalid birthday' => [
+            ['registration[birthday]' => '99.32.2029'],
+            'Please enter a valid birthdate.',
+        ];
+
+        yield 'Birthday out of the date range' => [
+            ['registration[birthday]' => (new \DateTime('-101 year'))->format('d.m.Y')],
+            'You cannot be older than 100 years.',
+        ];
+
+        yield 'Birthday is too close' => [
+            ['registration[birthday]' => (new \DateTime('-6 year'))->format('d.m.Y')],
+            'You must be at least 7 years old.',
         ];
     }
 
@@ -134,9 +264,8 @@ class UserControllerTest extends AbstractApplicationTestCase
 
     /**
      * @dataProvider InvalidCredentialsDataProvider
-     *
      */
-    public function testLoginFailed($username, $password): void
+    public function testLoginFailed(?string $username, ?string $password): void
     {
         $this->client->request('GET', $this->router->generate('user-login'));
         $this->client->submitForm('user-login', [
@@ -150,9 +279,6 @@ class UserControllerTest extends AbstractApplicationTestCase
 
     public function testEditUserData(): void
     {
-        /**
-         * @var User $user
-         */
         $this->logInUser();
         $this->client->request('GET', $this->router->generate('user-edit-general'));
 
@@ -174,6 +300,7 @@ class UserControllerTest extends AbstractApplicationTestCase
     }
 
     /**
+     * @param array<string, string|null> $invalidData
      * @dataProvider invalidUserDataProvider
      */
     public function testEditUserDataError(array $invalidData, string $errorMessage): void
@@ -236,7 +363,7 @@ class UserControllerTest extends AbstractApplicationTestCase
         $this->assertInputValueSame('edit_user[firstName]', 'New firstname');
         $this->assertInputValueSame('edit_user[lastName]', 'New lastname');
         $this->assertInputValueSame('edit_user[birthday]', '01.01.1961');
-        $this->assertFormValue('form[name="edit_user"]', 'edit_user[sex]', Gender::FEMALE);
+        $this->assertFormValue('form[name="edit_user"]', 'edit_user[sex]', (string) Gender::FEMALE);
     }
 
     public function testPasswordChangesSuccess(): void
@@ -260,6 +387,7 @@ class UserControllerTest extends AbstractApplicationTestCase
     }
 
     /**
+     * @param array<string, string|null> $invalidData
      * @dataProvider passwordChangeFailureDataProvider
      */
     public function testPasswordChangeFailure(array $invalidData, string $errorMessage): void
@@ -278,7 +406,7 @@ class UserControllerTest extends AbstractApplicationTestCase
         $this->client->submitForm('Save', $data);
         $this->assertSelectorTextContains('.form_validation_error', $errorMessage);
     }
-    
+
     public function testRoleChange(): void
     {
         $user = $this->getUser('user');
@@ -286,20 +414,24 @@ class UserControllerTest extends AbstractApplicationTestCase
         $this->client->request('GET', $this->router->generate('user-edit-roles', ['id' => $user->getId()]));
 
         $form = $this->client->getCrawler()->selectButton('Set roles')->form();
-        
+
         foreach ($form->get('roles') as $checkbox) {
+            $this->assertTrue($checkbox instanceof ChoiceFormField);
+            /**
+             * @var ChoiceFormField $checkbox
+             */
             $checkbox->tick();
         }
 
         $this->client->submit($form);
 
         $user = $this->getUser('user');
-        
+
         $this->assertSelectorTextContains('.toast-body', 'Saved successfully');
-        
+
         $this->assertTrue($user->hasRole(Role::ROLE_ADMIN));
     }
-    
+
     public function testRegisterSuccess(): void
     {
         $this->client->request('GET', $this->router->generate('user-registration'));
@@ -318,9 +450,7 @@ class UserControllerTest extends AbstractApplicationTestCase
         ];
 
         $this->client->submitForm('Sign up', $data);
-        /**
-         * @var User $user
-         */
+
         try {
             $user = $this->getUser('new-user');
         } catch (UserNotFoundException $exception) {
@@ -338,6 +468,7 @@ class UserControllerTest extends AbstractApplicationTestCase
     }
 
     /**
+     * @param array<string, string|null> $invalidData
      * @dataProvider registerFailureDataProvider
      */
     public function testRegisterFailure(array $invalidData, string $errorMessage): void
@@ -354,115 +485,13 @@ class UserControllerTest extends AbstractApplicationTestCase
             'registration[birthday]' => '24.02.1999',
             'registration[sex]' => Gender::FEMALE,
         ];
-        
+
         $data = array_merge($validaData, $invalidData);
 
         $this->client->submitForm('Sign up', $data);
         $this->assertSelectorTextContains('.form_validation_error', $errorMessage);
     }
-    
-    public static function registerFailureDataProvider(): array
-    {
-        return [
-            'Username is missing' => [ 
-                ['registration[username]' => null],
-                'This value should not be blank.',
-            ],
-            'Username is too short' => [
-                ['registration[username]' => 'a'],
-                'This value is too short. It should have 3 characters or more.',
-            ],
-            'Username is too long' => [
-                ['registration[username]' => str_repeat('a', 33)],
-                'This value is too long. It should have 32 characters or less.',
-            ],
-            'Username has illegal characters' => [
-                ['registration[username]' => 'test space'],
-                'Username should contain only letters, numbers, minus sign or underscore.',
-            ],
-            'Email is missing' => [
-                ['registration[email]' => null],
-                'This value should not be blank.',
-            ],
-            'Email is incorrect' => [
-                ['registration[email]' => 'dummy value'],
-                'This value is not a valid email address.',
-            ],
-            'Email is too long' => [
-                ['registration[email]' => str_repeat('a', 56).'@fake.com'],
-                'This value is too long. It should have 64 characters or less.',
-            ],
-            'Email is already registered' => [
-                ['registration[email]' => 'user@fake.com'],
-                'This email has been already registered.',
-            ],
-            'Password is empty' => [
-                [
-                    'registration[password][first]' => null,
-                    'registration[password][second]' => null,
-                ],
-                'This value should not be blank.',
-            ],
-            'Passwords do not match' => [
-                [
-                    'registration[password][first]' => 'first',
-                    'registration[password][second]' => 'second',
-                ],
-                'The password fields must match.',
-            ],
-            'Password is too long' => [
-                [
-                    'registration[password][first]' => str_repeat('a',33),
-                    'registration[password][second]' => str_repeat('a',33),
-                ],
-                'This value is too long. It should have 32 characters or less.',
-            ],
-            'Password is too short' => [
-                [
-                    'registration[password][first]' => str_repeat('a',7),
-                    'registration[password][second]' => str_repeat('a',7),
-                ],
-                'This value is too short. It should have 8 characters or more.',
-            ],
-            'First name is empty' => [
-                ['registration[firstName]' => null],
-                'This value should not be blank.',
-            ],
-            'First name is too short' => [
-                ['registration[firstName]' => 'a'],
-                'This value is too short. It should have 2 characters or more.',
-            ],
-            'First name is too long' => [
-                ['registration[firstName]' => str_repeat('a', 33)],
-                'This value is too long. It should have 32 characters or less.',
-            ],
-            'Last name is empty' => [
-                ['registration[lastName]' => null],
-                'This value should not be blank.',
-            ],
-            'Last name is too short' => [
-                ['registration[lastName]' => 'a'],
-                'This value is too short. It should have 2 characters or more.',
-            ],
-            'Last name is too long' => [
-                ['registration[lastName]' => str_repeat('a', 33)],
-                'This value is too long. It should have 32 characters or less.',
-            ],
-            'Invalid birthday' => [
-                ['registration[birthday]' => '99.32.2029'],
-                'Please enter a valid birthdate.',
-            ],
-            'Birthday out of the date range' => [
-                ['registration[birthday]' => (new \DateTime('-101 year'))->format('d.m.Y')],
-                'You cannot be older than 100 years.'
-            ],
-            'Birthday is too close' => [
-                ['registration[birthday]' => (new \DateTime('-6 year'))->format('d.m.Y')],
-                'You must be at least 7 years old.'
-            ],
-        ];
-    }
-    
+
     public function testSetWrongGenderOnRegister(): void
     {
         $this->client->request('GET', $this->router->generate('user-registration'));
@@ -485,14 +514,14 @@ class UserControllerTest extends AbstractApplicationTestCase
 
         $this->assertSelectorTextContains('.form_validation_error', 'The selected choice is invalid.');
     }
-    
+
     public function testRegisterLoggedInUser(): void
     {
         $this->logInUser();
         $this->client->request('GET', $this->router->generate('user-registration'));
         $this->assertResponseRedirects($this->router->generate('user-edit-general'));
     }
-    
+
     public function testLogOutUser(): void
     {
         $this->logInUser();
@@ -501,29 +530,28 @@ class UserControllerTest extends AbstractApplicationTestCase
         $session = $this->client->getRequest()->getSession();
         $this->assertFalse($session->has('_security_main'), 'User is logged in');
     }
-    
+
     public function testConfirmEmail(): void
     {
         $token = str_repeat('a', 64);
-        /**
-         * @var User $user
-         * @var EntityManagerInterface $entityManager
-         */
         $user = $this->getUser('user');
         $user->setActive(false)
             ->setEmailConfirm($token);
         $entityManager = $this->getContainer()->get(EntityManagerInterface::class);
+        /**
+         * @var EntityManagerInterface $entityManager
+         */
         $entityManager->flush();
-        
+
         $this->client->request('GET', $this->router->generate('user-confirm-email', [
             'token' => $token,
         ]));
-        
+
         $entityManager->refresh($user);
         $this->assertTrue($user->getActive());
         $this->assertNull($user->getEmailConfirm());
     }
-    
+
     public function testConfirmEmailUserLoggedIn(): void
     {
         $this->logInUser();
@@ -531,10 +559,10 @@ class UserControllerTest extends AbstractApplicationTestCase
         $this->client->request('GET', $this->router->generate('user-confirm-email', [
             'token' => $token,
         ]));
-        
+
         $this->assertResponseRedirects($this->router->generate('user-edit-general'));
     }
-    
+
     public function testConfirmEmailInvalidCode(): void
     {
         $token = str_repeat('a', 64);
@@ -543,19 +571,16 @@ class UserControllerTest extends AbstractApplicationTestCase
         ]));
         $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
     }
-    
+
     public function testRecoverPasswordWhenLoggedIn(): void
     {
         $this->logInUser();
         $this->client->request('GET', $this->router->generate('user-recover-password'));
         $this->assertResponseRedirects($this->router->generate('user-edit-general'));
     }
-    
+
     public function testRecoverPasswordSuccess(): void
     {
-        /**
-         * @var User $user
-         */
         $this->client->request('GET', $this->router->generate('user-recover-password'));
         $this->client->submitForm('Recover password', [
             'recover_password[email]' => 'user@fake.com',
@@ -565,19 +590,18 @@ class UserControllerTest extends AbstractApplicationTestCase
         $this->assertNotNull($user->getRecovery());
         $this->assertNotNull($user->getRecoveredAt());
     }
-    
+
     public function testResetPasswordSuccess(): void
     {
         $token = str_repeat('aA-zA123', 8);
 
-        /**
-         * @var User $user
-         * @var EntityManagerInterface $em
-         */
         $user = $this->getUser('user');
         $user->setRecovery($token);
         $user->setRecoveredAt(new \DateTime());
         $em = $this->getContainer()->get(EntityManagerInterface::class);
+        /**
+         * @var EntityManagerInterface $em
+         */
         $em->flush();
         $oldPassword = $user->getPassword();
         $updateDate = $user->getUpdatedAt();
@@ -585,18 +609,15 @@ class UserControllerTest extends AbstractApplicationTestCase
         $this->client->request('GET', $this->router->generate('user-reset-password', ['token' => $token]));
         $this->assertResponseRedirects($this->router->generate('home'));
         $em->refresh($user);
-        
+
         $this->assertTrue($oldPassword !== $user->getPassword());
         $this->assertTrue($updateDate !== $user->getUpdatedAt());
         $this->assertNull($user->getRecovery());
         $this->assertNull($user->getRecoveredAt());
     }
-    
+
     public function testConfirmEmailChangeSuccess(): void
     {
-        /**
-         * @var User $user
-         */
         $this->logInUser();
         $token = str_repeat('aA-zA123', 8);
         $em = $this->getContainer()->get(EntityManagerInterface::class);
