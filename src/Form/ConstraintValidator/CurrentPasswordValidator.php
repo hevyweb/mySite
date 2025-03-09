@@ -2,6 +2,7 @@
 
 namespace App\Form\ConstraintValidator;
 
+use App\Entity\User;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Validator\Constraint;
@@ -9,6 +10,8 @@ use Symfony\Component\Validator\ConstraintValidator;
 
 class CurrentPasswordValidator extends ConstraintValidator
 {
+    private string $message = 'Current password is incorrect.';
+
     public function __construct(
         private readonly Security $security,
         private readonly UserPasswordHasherInterface $hasher,
@@ -18,8 +21,12 @@ class CurrentPasswordValidator extends ConstraintValidator
 
     public function validate(mixed $value, Constraint $constraint): void
     {
-        if (!$this->hasher->isPasswordValid($this->security->getUser(), $value ?? '')) {
-            $this->context->buildViolation($constraint->message)
+        /**
+         * @var User $user
+         */
+        $user = $this->security->getUser();
+        if (!$this->hasher->isPasswordValid($user, $value ?? '')) {
+            $this->context->buildViolation($this->message)
                 ->setTranslationDomain('user')
                 ->addViolation();
         }

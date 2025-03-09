@@ -3,17 +3,17 @@
 namespace App\Tests\Application\Controller;
 
 use App\Entity\Role;
+use App\Entity\User;
+use App\Exception\UserNotFoundException;
 use App\Type\Gender;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\RouterInterface;
 
 class UserControllerTest extends AbstractApplicationTestCase
 {
-    protected KernelBrowser $client;
-
-    protected RouterInterface $router;
-
     public static function InvalidCredentialsDataProvider(): array
     {
         return [
@@ -45,6 +45,10 @@ class UserControllerTest extends AbstractApplicationTestCase
                 ['edit_user[firstName]' => ''],
                 'This value should not be blank.',
             ],
+            'First name is too short' => [
+                ['edit_user[firstName]' => 'a'],
+                'This value is too short. It should have 2 characters or more.',
+            ],
             'first name too long' => [
                 ['edit_user[firstName]' => str_repeat('a', 33)],
                 'This value is too long. It should have 32 characters or less.',
@@ -53,6 +57,10 @@ class UserControllerTest extends AbstractApplicationTestCase
                 ['edit_user[lastName]' => ''],
                 'This value should not be blank.',
             ],
+            'Last name is too short' => [
+                ['edit_user[lastName]' => 'a'],
+                'This value is too short. It should have 2 characters or more.',
+            ],
             'last name too long' => [
                 ['edit_user[lastName]' => str_repeat('a', 33)],
                 'This value is too long. It should have 32 characters or less.',
@@ -60,6 +68,14 @@ class UserControllerTest extends AbstractApplicationTestCase
             'invalid birth date' => [
                 ['edit_user[birthday]' => '27.13.1659'],
                 'Please enter a valid birthdate.',
+            ],
+            'Birthday out of the date range' => [
+                ['edit_user[birthday]' => (new \DateTime('-101 year'))->format('d.m.Y')],
+                'You cannot be older than 100 years.'
+            ],
+            'Birthday is too close' => [
+                ['edit_user[birthday]' => (new \DateTime('-6 year'))->format('d.m.Y')],
+                'You must be at least 7 years old.'
             ],
         ];
     }
@@ -103,12 +119,6 @@ class UserControllerTest extends AbstractApplicationTestCase
         ];
     }
 
-    public function setUp(): void
-    {
-        $this->client = static::createClient();
-        $this->router = $this->getContainer()->get(RouterInterface::class);
-    }
-
     public function testLoginSuccess(): void
     {
         $this->client->request('GET', $this->router->generate('user-login'));
@@ -140,6 +150,9 @@ class UserControllerTest extends AbstractApplicationTestCase
 
     public function testEditUserData(): void
     {
+        /**
+         * @var User $user
+         */
         $this->logInUser();
         $this->client->request('GET', $this->router->generate('user-edit-general'));
 
@@ -152,11 +165,12 @@ class UserControllerTest extends AbstractApplicationTestCase
         ]);
 
         $this->assertSelectorTextContains('.toast-body', 'User data updated.');
-        $this->assertInputValueSame('edit_user[email]', 'test@email.com');
-        $this->assertInputValueSame('edit_user[firstName]', 'New firstname');
-        $this->assertInputValueSame('edit_user[lastName]', 'New lastname');
-        $this->assertInputValueSame('edit_user[birthday]', '01.01.1961');
-        $this->assertFormValue('form[name="edit_user"]', 'edit_user[sex]', Gender::FEMALE);
+        $user = $this->getUser('user');
+        $this->assertEquals('user@fake.com', $user->getEmail());
+        $this->assertEquals('New firstname', $user->getFirstName());
+        $this->assertEquals('New lastname', $user->getLastName());
+        $this->assertEquals('01.01.1961', $user->getBirthday()->format('d.m.Y'));
+        $this->assertEquals(Gender::FEMALE, $user->getSex());
     }
 
     /**
@@ -284,5 +298,316 @@ class UserControllerTest extends AbstractApplicationTestCase
         $this->assertSelectorTextContains('.toast-body', 'Saved successfully');
         
         $this->assertTrue($user->hasRole(Role::ROLE_ADMIN));
+    }
+    
+    public function testRegisterSuccess(): void
+    {
+        $this->client->request('GET', $this->router->generate('user-registration'));
+
+        $data = [
+            'registration[username]' => 'new-user',
+            'registration[email]' => 'new-user-email@fake.com',
+            'registration[password][first]' => 'password',
+            'registration[password][second]' => 'password',
+            'registration[firstName]' => 'First name',
+            'registration[lastName]' => 'Last name',
+            'registration[birthday]' => (new \DateTime('-7 years'))
+                ->sub(new \DateInterval('P1M'))
+                ->format('d.m.Y'),
+            'registration[sex]' => Gender::FEMALE,
+        ];
+
+        $this->client->submitForm('Sign up', $data);
+        /**
+         * @var User $user
+         */
+        try {
+            $user = $this->getUser('new-user');
+        } catch (UserNotFoundException $exception) {
+            $this->fail('User is not saved.');
+        }
+        $this->assertEquals($data['registration[username]'], $user->getUsername());
+        $this->assertEquals($data['registration[email]'], $user->getEmail());
+        $this->assertEquals($data['registration[firstName]'], $user->getFirstName());
+        $this->assertEquals($data['registration[lastName]'], $user->getLastName());
+        $this->assertEquals($data['registration[birthday]'], $user->getBirthday()->format('d.m.Y'));
+        $this->assertEquals($data['registration[sex]'], $user->getSex());
+        $hasher = $this->getContainer()->get(UserPasswordHasherInterface::class);
+
+        $this->assertTrue($hasher->isPasswordValid($user, 'password'));
+    }
+
+    /**
+     * @dataProvider registerFailureDataProvider
+     */
+    public function testRegisterFailure(array $invalidData, string $errorMessage): void
+    {
+        $this->client->request('GET', $this->router->generate('user-registration'));
+
+        $validaData = [
+            'registration[username]' => 'new-user',
+            'registration[email]' => 'new-user-email@fake.com',
+            'registration[password][first]' => 'password',
+            'registration[password][second]' => 'password',
+            'registration[firstName]' => 'First name',
+            'registration[lastName]' => 'Last name',
+            'registration[birthday]' => '24.02.1999',
+            'registration[sex]' => Gender::FEMALE,
+        ];
+        
+        $data = array_merge($validaData, $invalidData);
+
+        $this->client->submitForm('Sign up', $data);
+        $this->assertSelectorTextContains('.form_validation_error', $errorMessage);
+    }
+    
+    public static function registerFailureDataProvider(): array
+    {
+        return [
+            'Username is missing' => [ 
+                ['registration[username]' => null],
+                'This value should not be blank.',
+            ],
+            'Username is too short' => [
+                ['registration[username]' => 'a'],
+                'This value is too short. It should have 3 characters or more.',
+            ],
+            'Username is too long' => [
+                ['registration[username]' => str_repeat('a', 33)],
+                'This value is too long. It should have 32 characters or less.',
+            ],
+            'Username has illegal characters' => [
+                ['registration[username]' => 'test space'],
+                'Username should contain only letters, numbers, minus sign or underscore.',
+            ],
+            'Email is missing' => [
+                ['registration[email]' => null],
+                'This value should not be blank.',
+            ],
+            'Email is incorrect' => [
+                ['registration[email]' => 'dummy value'],
+                'This value is not a valid email address.',
+            ],
+            'Email is too long' => [
+                ['registration[email]' => str_repeat('a', 56).'@fake.com'],
+                'This value is too long. It should have 64 characters or less.',
+            ],
+            'Email is already registered' => [
+                ['registration[email]' => 'user@fake.com'],
+                'This email has been already registered.',
+            ],
+            'Password is empty' => [
+                [
+                    'registration[password][first]' => null,
+                    'registration[password][second]' => null,
+                ],
+                'This value should not be blank.',
+            ],
+            'Passwords do not match' => [
+                [
+                    'registration[password][first]' => 'first',
+                    'registration[password][second]' => 'second',
+                ],
+                'The password fields must match.',
+            ],
+            'Password is too long' => [
+                [
+                    'registration[password][first]' => str_repeat('a',33),
+                    'registration[password][second]' => str_repeat('a',33),
+                ],
+                'This value is too long. It should have 32 characters or less.',
+            ],
+            'Password is too short' => [
+                [
+                    'registration[password][first]' => str_repeat('a',7),
+                    'registration[password][second]' => str_repeat('a',7),
+                ],
+                'This value is too short. It should have 8 characters or more.',
+            ],
+            'First name is empty' => [
+                ['registration[firstName]' => null],
+                'This value should not be blank.',
+            ],
+            'First name is too short' => [
+                ['registration[firstName]' => 'a'],
+                'This value is too short. It should have 2 characters or more.',
+            ],
+            'First name is too long' => [
+                ['registration[firstName]' => str_repeat('a', 33)],
+                'This value is too long. It should have 32 characters or less.',
+            ],
+            'Last name is empty' => [
+                ['registration[lastName]' => null],
+                'This value should not be blank.',
+            ],
+            'Last name is too short' => [
+                ['registration[lastName]' => 'a'],
+                'This value is too short. It should have 2 characters or more.',
+            ],
+            'Last name is too long' => [
+                ['registration[lastName]' => str_repeat('a', 33)],
+                'This value is too long. It should have 32 characters or less.',
+            ],
+            'Invalid birthday' => [
+                ['registration[birthday]' => '99.32.2029'],
+                'Please enter a valid birthdate.',
+            ],
+            'Birthday out of the date range' => [
+                ['registration[birthday]' => (new \DateTime('-101 year'))->format('d.m.Y')],
+                'You cannot be older than 100 years.'
+            ],
+            'Birthday is too close' => [
+                ['registration[birthday]' => (new \DateTime('-6 year'))->format('d.m.Y')],
+                'You must be at least 7 years old.'
+            ],
+        ];
+    }
+    
+    public function testSetWrongGenderOnRegister(): void
+    {
+        $this->client->request('GET', $this->router->generate('user-registration'));
+
+        $select = $this->client->getCrawler()->filter('#registration_sex')->getNode(0);
+        $invalidOption = $select->ownerDocument->createElement('option', 'invalid gender');
+        $invalidOption->setAttribute('value', '3');
+        $select->appendChild($invalidOption);
+
+        $this->client->submitForm('Sign up', [
+            'registration[username]' => 'new-user',
+            'registration[email]' => 'new-user-email@fake.com',
+            'registration[password][first]' => 'password',
+            'registration[password][second]' => 'password',
+            'registration[firstName]' => 'First name',
+            'registration[lastName]' => 'Last name',
+            'registration[birthday]' => '24.02.1999',
+            'registration[sex]' => 3,
+        ]);
+
+        $this->assertSelectorTextContains('.form_validation_error', 'The selected choice is invalid.');
+    }
+    
+    public function testRegisterLoggedInUser(): void
+    {
+        $this->logInUser();
+        $this->client->request('GET', $this->router->generate('user-registration'));
+        $this->assertResponseRedirects($this->router->generate('user-edit-general'));
+    }
+    
+    public function testLogOutUser(): void
+    {
+        $this->logInUser();
+        $this->client->request('GET', $this->router->generate('user-logout'));
+        $this->assertResponseRedirects($this->router->generate('home'));
+        $session = $this->client->getRequest()->getSession();
+        $this->assertFalse($session->has('_security_main'), 'User is logged in');
+    }
+    
+    public function testConfirmEmail(): void
+    {
+        $token = str_repeat('a', 64);
+        /**
+         * @var User $user
+         * @var EntityManagerInterface $entityManager
+         */
+        $user = $this->getUser('user');
+        $user->setActive(false)
+            ->setEmailConfirm($token);
+        $entityManager = $this->getContainer()->get(EntityManagerInterface::class);
+        $entityManager->flush();
+        
+        $this->client->request('GET', $this->router->generate('user-confirm-email', [
+            'token' => $token,
+        ]));
+        
+        $entityManager->refresh($user);
+        $this->assertTrue($user->getActive());
+        $this->assertNull($user->getEmailConfirm());
+    }
+    
+    public function testConfirmEmailUserLoggedIn(): void
+    {
+        $this->logInUser();
+        $token = str_repeat('a', 64);
+        $this->client->request('GET', $this->router->generate('user-confirm-email', [
+            'token' => $token,
+        ]));
+        
+        $this->assertResponseRedirects($this->router->generate('user-edit-general'));
+    }
+    
+    public function testConfirmEmailInvalidCode(): void
+    {
+        $token = str_repeat('a', 64);
+        $this->client->request('GET', $this->router->generate('user-confirm-email', [
+            'token' => $token,
+        ]));
+        $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
+    }
+    
+    public function testRecoverPasswordWhenLoggedIn(): void
+    {
+        $this->logInUser();
+        $this->client->request('GET', $this->router->generate('user-recover-password'));
+        $this->assertResponseRedirects($this->router->generate('user-edit-general'));
+    }
+    
+    public function testRecoverPasswordSuccess(): void
+    {
+        /**
+         * @var User $user
+         */
+        $this->client->request('GET', $this->router->generate('user-recover-password'));
+        $this->client->submitForm('Recover password', [
+            'recover_password[email]' => 'user@fake.com',
+        ]);
+        $this->assertResponseRedirects($this->router->generate('home'));
+        $user = $this->getUser('user');
+        $this->assertNotNull($user->getRecovery());
+        $this->assertNotNull($user->getRecoveredAt());
+    }
+    
+    public function testResetPasswordSuccess(): void
+    {
+        $token = str_repeat('aA-zA123', 8);
+
+        /**
+         * @var User $user
+         * @var EntityManagerInterface $em
+         */
+        $user = $this->getUser('user');
+        $user->setRecovery($token);
+        $user->setRecoveredAt(new \DateTime());
+        $em = $this->getContainer()->get(EntityManagerInterface::class);
+        $em->flush();
+        $oldPassword = $user->getPassword();
+        $updateDate = $user->getUpdatedAt();
+
+        $this->client->request('GET', $this->router->generate('user-reset-password', ['token' => $token]));
+        $this->assertResponseRedirects($this->router->generate('home'));
+        $em->refresh($user);
+        
+        $this->assertTrue($oldPassword !== $user->getPassword());
+        $this->assertTrue($updateDate !== $user->getUpdatedAt());
+        $this->assertNull($user->getRecovery());
+        $this->assertNull($user->getRecoveredAt());
+    }
+    
+    public function testConfirmEmailChangeSuccess(): void
+    {
+        /**
+         * @var User $user
+         */
+        $this->logInUser();
+        $token = str_repeat('aA-zA123', 8);
+        $em = $this->getContainer()->get(EntityManagerInterface::class);
+        $em->flush();
+        $this->client->request('GET', $this->router->generate('user-new-email-confirm', ['token' => $token]));
+        $user = $this->getUser('user');
+
+        $this->assertEquals('user@fake.com', $user->getEmail());
+        $this->client->request('GET', $this->router->generate('user-old-email-confirm', ['token' => $token]));
+        $user = $this->getUser('user');
+
+        $this->assertEquals('test2@fake.com', $user->getEmail());
     }
 }

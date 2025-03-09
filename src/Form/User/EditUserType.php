@@ -12,7 +12,9 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Email;
+use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
 use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\LessThanOrEqual;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -30,6 +32,7 @@ class EditUserType extends AbstractType
         $builder
             ->add('email', EmailType::class, [
                 'label' => $this->translator->trans('Email', [], 'user'),
+                'help' => $this->translator->trans('After changing your email address, you will receive an email to both your old and new email addresses. The changes will only be applied after you confirm both emails.', [], 'user'),
                 'attr' => [
                     'maxlength' => 64,
                 ],
@@ -45,11 +48,13 @@ class EditUserType extends AbstractType
                 'label' => $this->translator->trans('First name', [], 'user'),
                 'required' => true,
                 'attr' => [
+                    'minlength' => 2,
                     'maxlength' => 32,
                 ],
                 'constraints' => [
                     new NotBlank(),
                     new Length([
+                        'min' => 2,
                         'max' => 32,
                     ]),
                 ],
@@ -58,11 +63,13 @@ class EditUserType extends AbstractType
                 'label' => $this->translator->trans('Last name', [], 'user'),
                 'required' => true,
                 'attr' => [
+                    'minlength' => 2,
                     'maxlength' => 32,
                 ],
                 'constraints' => [
                     new NotBlank(),
                     new Length([
+                        'min' => 2,
                         'max' => 32,
                     ]),
                 ],
@@ -78,6 +85,16 @@ class EditUserType extends AbstractType
                 'required' => false,
                 'format' => $_SERVER['DEFAULT_DATE_FORMAT'],
                 'label' => $this->translator->trans('Birthday', [], 'user'),
+                'constraints' => [
+                    new GreaterThanOrEqual([
+                        'value' => '-100 years',
+                        'message' => $this->translator->trans('You cannot be older than 100 years.', [], 'user'),
+                    ]),
+                    new LessThanOrEqual([
+                        'value' => '-7 years',
+                        'message' => $this->translator->trans('You must be at least 7 years old.', [], 'user'),
+                    ]),
+                ],
             ])
             ->add('sex', ChoiceType::class, [
                 'choices' => [

@@ -81,6 +81,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface, Fixture
             ->setCreatedAt(new \DateTimeImmutable((new \DateTime('2025-01-01 00:00:00'))->format('c')));
 
         $user->addRole($this->getReference('role_ROLE_USER'));
+        $this->setReference('test_user', $user);
         return $user;
     }
 

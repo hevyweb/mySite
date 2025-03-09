@@ -36,7 +36,7 @@ class ContactMeController extends AbstractController
         if ($form->isSubmitted()) {
             $token = $request->get('contact_me')['_token'];
             if (!$this->isCsrfTokenValid('message', $token)) {
-                $this->addFlash($this::$error, $this->translator->trans('Some error happened. Please try again.'));
+                $this->addFlash(self::ERROR, $this->translator->trans('Some error happened. Please try again.'));
                 $this->csrfTokenManager->refreshToken('message');
                 $this->csrfTokenManager->removeToken('message');
 

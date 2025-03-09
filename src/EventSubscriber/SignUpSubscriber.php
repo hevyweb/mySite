@@ -35,7 +35,7 @@ readonly class SignUpSubscriber implements EventSubscriberInterface
         $user = $event->getUser();
 
         $email = $this->templatedEmail
-            ->to(new Address($user->getEmail(), $user->getFullName()()))
+            ->to(new Address($user->getEmail(), $user->getFullName()))
             ->from($this->from)
             ->subject($this->translator->trans('Sign up'))
             ->htmlTemplate('email/confirm-email.html.twig')

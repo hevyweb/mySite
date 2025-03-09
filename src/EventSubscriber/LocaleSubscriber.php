@@ -5,7 +5,6 @@ namespace App\EventSubscriber;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
-use function Symfony\Component\DependencyInjection\Loader\Configurator\env;
 
 class LocaleSubscriber implements EventSubscriberInterface
 {

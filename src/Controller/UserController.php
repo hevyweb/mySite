@@ -44,7 +44,7 @@ class UserController extends AbstractController
 
     public const RECOVERY_COOL_DOWN = 86400; // 24 hours
 
-    public const ANTI_BRUT_FORCE_COOL_DOWN = 2000;
+    public const ANTI_BRUT_FORCE_COOL_DOWN = 2000000; //microseconds
 
     public function __construct(
         private readonly TranslatorInterface $translator,
@@ -52,7 +52,8 @@ class UserController extends AbstractController
         private readonly EntityManagerInterface $entityManager,
         private readonly EventDispatcherInterface $dispatcher,
         private readonly StringService $strings,
-    ) {
+    )
+    {
     }
 
     public function index(#[MapQueryString] ?UserSearch $userSearch = new UserSearch()): Response
@@ -96,7 +97,94 @@ class UserController extends AbstractController
         ]);
     }
 
-    public function editUserPassword(Request $request, UserPasswordHasherInterface $passwordHasher, Security $security): Response
+    private function getUserFromRequest(Request $request): User
+    {
+        $userId = (int)$request->get('id');
+        if (empty($userId)) {
+            return $this->getUser();
+        }
+
+        $user = $this->entityManager->getRepository(User::class)->find($userId);
+
+        if (empty($user)) {
+            throw new UserNotFoundException('User with id "' . $userId . '" not found.');
+        }
+
+        return $user;
+    }
+
+    public function getUser(): ?User
+    {
+        $user = parent::getUser();
+        if (empty($user)) {
+            return null;
+        }
+
+        if (!$user instanceof User) {
+            throw new \Exception('Wrong user entity provided.');
+        }
+
+        return $user;
+    }
+
+    private function checkEmailChanged(string $oldEmail, User $user): void
+    {
+        if ($oldEmail != $user->getEmail()) {
+            $emailHistory = $user->getEmailHistories()->filter(
+                fn(EmailHistory $emailHistory) => !$emailHistory->getNewEmailConfirmAt() || !$emailHistory->getOldEmailConfirmAt()
+            );
+
+            if (!$emailHistory->count()) {
+                $emailHistory = new EmailHistory();
+                $emailHistory->setCreatedAt(new \DateTimeImmutable())
+                    ->setOldConfirmationToken($this->strings->generateRandomSlug(64))
+                    ->setOldEmail($oldEmail)
+                    ->setUser($user);
+                $user->addEmailHistory($emailHistory);
+            } else {
+                $emailHistory = $emailHistory->first();
+            }
+
+            $emailHistory
+                ->setNewConfirmationToken($this->strings->generateRandomSlug(64))
+                ->setNewEmailConfirmAt(null)
+                ->setNewEmail($user->getEmail());
+
+            if (!$this->getUser()->hasRole(Role::ROLE_ADMIN)) {
+                $user->setEmail($oldEmail);
+                $this->entityManager->persist($emailHistory);
+                $this->entityManager->flush();
+                $this->dispatcher->dispatch(new NewEmailConfirmEvent($emailHistory));
+                $this->dispatcher->dispatch(new OldEmailConfirmEvent($emailHistory));
+            } else {
+                $emailHistory->setCompleted(true);
+                $this->entityManager->persist($emailHistory);
+                $this->entityManager->flush();
+            }
+        }
+    }
+
+    /**
+     * @return array<string, array{text: string, iconClass: string}>
+     */
+    private function getUserTabs(User $user): array
+    {
+        $tabs = [
+            'general' => ['text' => 'General', 'iconClass' => 'fa-regular fa-address-card'],
+        ];
+
+        if ($user === $this->getUser()) {
+            $tabs['password'] = ['text' => 'Password', 'iconClass' => 'fa-solid fa-shield'];
+        }
+
+        if ($this->getUser()->hasRole(Role::ROLE_ADMIN)) {
+            $tabs['roles'] = ['text' => 'Roles', 'iconClass' => 'fa-solid fa-user-nurse'];
+        }
+
+        return $tabs;
+    }
+
+    public function editUserPassword(Request $request, UserPasswordHasherInterface $passwordHasher): Response
     {
         $user = $this->getUserFromRequest($request);
         $userEditForm = $this->createForm(UserPasswordsType::class, null, [
@@ -105,8 +193,7 @@ class UserController extends AbstractController
 
         $userEditForm->handleRequest($request);
         if ($userEditForm->isSubmitted() && $userEditForm->isValid()) {
-            $user->setPlainPassword($userEditForm->getData()['newPassword']);
-            $password = $passwordHasher->hashPassword($user, $user->getPlainPassword());
+            $password = $passwordHasher->hashPassword($user, $userEditForm->get('newPassword')->getData());
             $user->setPassword($password);
             $user
                 ->setUpdatedAt(new \DateTime())
@@ -158,6 +245,16 @@ class UserController extends AbstractController
         ]);
     }
 
+    /**
+     * This is a crutch for psalm, because it does not line generic collections.
+     *
+     * @return ArrayCollection<int, Role>
+     */
+    private function createEmptyCollection(): ArrayCollection
+    {
+        return new ArrayCollection();
+    }
+
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
         if ($this->getUser()) {
@@ -197,11 +294,10 @@ class UserController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $userRole = $this->entityManager->getRepository(Role::class)->findOneBy(['code' => Role::ROLE_USER]);
-
-            $password = $passwordHasher->hashPassword($user, $user->getPlainPassword());
+            $password = $passwordHasher->hashPassword($user, $form->get('password')->getData());
             $user->setPassword($password)
                 ->addRole($userRole)
-                ->setEmailConfirm(md5(uniqid()).md5(uniqid()))
+                ->setEmailConfirm(md5(uniqid()) . md5(uniqid()))
                 ->setCreatedAt(new \DateTimeImmutable());
             $this->entityManager->persist($user);
             $this->entityManager->flush();
@@ -214,15 +310,13 @@ class UserController extends AbstractController
         return $this->render('user/register.html.twig', [
             'title' => $this->translator->trans('Sign up'),
             'form' => $form->createView(),
-            'submit' => $this->translator->trans('Sign up'),
-        ]
-        );
+        ]);
     }
 
     public function confirmEmail(string $token): Response
     {
         if ($this->getUser()) {
-            return $this->redirectToRoute('user-edit-general', ['id' => $this->getUser()->getId()]);
+            return $this->redirectToRoute('user-edit-general');
         }
 
         $user = $this->entityManager->getRepository(User::class)
@@ -254,44 +348,43 @@ class UserController extends AbstractController
     public function recoverPassword(Request $request): Response
     {
         if ($this->getUser()) {
-            return $this->redirectToRoute('user-edit-password', ['id' => $this->getUser()->getId()]);
+            return $this->redirectToRoute('user-edit-general');
         }
         $form = $this->createForm(RecoverPasswordType::class);
+        $form->handleRequest($request);
 
-        if ($this->isCsrfTokenValid('recover_password', $request->request->get('_csrf_token'))) {
-            $form->handleRequest($request);
-            if ($form->isSubmitted() && $form->isValid()) {
-                $userRepository = $this->entityManager->getRepository(User::class);
-                try {
-                    $email = $form->get('email')->getData();
-                    $user = $userRepository->findOneBy(['email' => $email]);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $userRepository = $this->entityManager->getRepository(User::class);
+            try {
+                $email = $form->get('email')->getData();
+                $user = $userRepository->findOneBy(['email' => $email]);
 
-                    if (!$user) {
-                        usleep(mt_rand(0, self::ANTI_BRUT_FORCE_COOL_DOWN));
-                        throw new UserNotFoundException($this->translator->trans('User not found.', [], 'user'));
-                    }
-
-                    if (null !== $user->getRecoveredAt()
-                        && $user->getRecoveredAt()->diff(new \DateTime())->s <= self::RECOVERY_COOL_DOWN) {
-                        throw new BrutForceException('User "'.$user->getUsername().'" is trying to recover the password too often.');
-                    }
-                    $user->setRecoveredAt(new \DateTime());
-                    $user->setRecovery($this->strings->generateRandomSlug(64));
-                    $this->entityManager->flush();
-                    $event = new RecoverPasswordEvent($user);
-
-                    $this->dispatcher->dispatch($event);
-                } catch (NotFoundHttpException $exception) {
-                    // we should not display to user any warning to prevent email phishing.
-                    $this->logger->warning(
-                        'Some one is trying to recover password for non existing user "'.($email ?? 'empty email').'". Original message: '.
-                        $exception->getMessage()
-                    );
-                } catch (BrutForceException $exception) {
-                    // we should not display to user any warning to prevent email phishing.
-                    $this->logger->warning($exception->getMessage());
+                if (!$user) {
+                    usleep(mt_rand(0, self::ANTI_BRUT_FORCE_COOL_DOWN));
+                    throw new UserNotFoundException($this->translator->trans('User not found.', [], 'user'));
                 }
+
+                if (null !== $user->getRecoveredAt()
+                    && $user->getRecoveredAt()->diff(new \DateTime())->s <= self::RECOVERY_COOL_DOWN) {
+                    throw new BrutForceException('User "' . $user->getUsername() . '" is trying to recover the password too often.');
+                }
+                $user->setRecoveredAt(new \DateTime());
+                $user->setRecovery($this->strings->generateRandomSlug(64));
+                $this->entityManager->flush();
+                $event = new RecoverPasswordEvent($user);
+
+                $this->dispatcher->dispatch($event);
+            } catch (NotFoundHttpException $exception) {
+                // we should not display to user any warning to prevent email phishing.
+                $this->logger->warning(
+                    'Some one is trying to recover password for non existing user "' . ($email ?? 'empty email') . '". Original message: ' .
+                    $exception->getMessage()
+                );
+            } catch (BrutForceException $exception) {
+                // we should not display to user any warning to prevent email phishing.
+                $this->logger->warning($exception->getMessage());
             }
+
             $this->addFlash(self::SUCCESS,
                 $this->translator->trans(
                     'We have sent an email with a password reset request to the email address provided.',
@@ -311,11 +404,13 @@ class UserController extends AbstractController
     public function resetPassword(
         string $token,
         UserPasswordHasherInterface $passwordHasher,
-    ): Response {
+    ): Response
+    {
         $user = $this->entityManager->getRepository(User::class)->findOneBy(['recovery' => $token]);
         if ($user) {
-            $user->setPlainPassword($this->strings->generateRandomString())
-                ->setPassword($passwordHasher->hashPassword($user, $user->getPlainPassword()))
+            $newPassword = $this->strings->generateRandomString();
+            $user
+                ->setPassword($passwordHasher->hashPassword($user, $newPassword))
                 ->setUpdatedAt(new \DateTime())
                 ->setUpdatedBy($user)
                 ->setRecovery(null)
@@ -323,7 +418,7 @@ class UserController extends AbstractController
 
             $this->entityManager->flush();
 
-            $event = new ResetPasswordEvent($user, $user->getPlainPassword());
+            $event = new ResetPasswordEvent($user, $newPassword);
             $this->dispatcher->dispatch($event);
         } else {
             usleep(mt_rand(0, self::ANTI_BRUT_FORCE_COOL_DOWN));
@@ -361,6 +456,23 @@ class UserController extends AbstractController
         return $this->redirectToRoute('home');
     }
 
+    private function changeEmail(EmailHistory $emailHistory): bool
+    {
+        if ($emailHistory->getNewEmailConfirmAt() && $emailHistory->getOldEmailConfirmAt()) {
+            $emailHistory->setCompleted(true);
+            $this->getUser()
+                ->setEmail($emailHistory->getNewEmail())
+                ->setUpdatedBy($this->getUser())
+                ->setUpdatedAt(new \DateTime());
+
+            $this->addFlash(self::SUCCESS, $this->translator->trans('Email has been successfully changed.'));
+
+            return true;
+        }
+
+        return false;
+    }
+
     public function confirmOldEmail(string $token): Response
     {
         $emailHistory = $this->entityManager->getRepository(EmailHistory::class)
@@ -383,118 +495,5 @@ class UserController extends AbstractController
         $this->entityManager->flush();
 
         return $this->redirectToRoute('home');
-    }
-
-    private function getUserFromRequest(Request $request): User
-    {
-        $userId = (int) $request->get('id');
-        if (empty($userId)) {
-            return $this->getUser();
-        }
-
-        $user = $this->entityManager->getRepository(User::class)->find($userId);
-
-        if (empty($user)) {
-            throw new UserNotFoundException('User with id "'.$userId.'" not found.');
-        }
-
-        return $user;
-    }
-
-    /**
-     * @return string[]
-     */
-    private function getUserTabs(User $user): array
-    {
-        $tabs = [
-            'general' => ['text' => 'General', 'iconClass' => 'fa-regular fa-address-card'],
-        ];
-        
-        if ($user === $this->getUser()) {
-            $tabs['password'] = ['text' => 'Password', 'iconClass' => 'fa-solid fa-shield'];
-        }
-
-        if ($this->getUser()->hasRole(Role::ROLE_ADMIN)) {
-            $tabs['roles'] = ['text' => 'Roles', 'iconClass' => 'fa-solid fa-user-nurse'];
-        }
-
-        return $tabs;
-    }
-
-    private function checkEmailChanged(string $oldEmail, User $user): void
-    {
-        if ($oldEmail != $user->getEmail()) {
-            $emailHistory = $user->getEmailHistories()->filter(fn (EmailHistory $emailHistory) => !$emailHistory->getNewEmailConfirmAt() || !$emailHistory->getOldEmailConfirmAt()
-            );
-
-            if (!$emailHistory->count()) {
-                $emailHistory = new EmailHistory();
-                $emailHistory->setCreatedAt(new \DateTimeImmutable())
-                    ->setOldConfirmationToken($this->strings->generateRandomSlug(64))
-                    ->setOldEmail($oldEmail)
-                    ->setUser($user);
-                $user->addEmailHistory($emailHistory);
-            } else {
-                $emailHistory = $emailHistory->first();
-            }
-
-            $emailHistory
-                ->setNewConfirmationToken($this->strings->generateRandomSlug(64))
-                ->setNewEmailConfirmAt(null)
-                ->setNewEmail($user->getEmail());
-
-            if (!$this->getUser()->hasRole(Role::ROLE_ADMIN)) {
-                $user->setEmail($oldEmail);
-                $this->entityManager->persist($emailHistory);
-                $this->entityManager->flush();
-                $this->dispatcher->dispatch(new NewEmailConfirmEvent($emailHistory));
-                $this->dispatcher->dispatch(new OldEmailConfirmEvent($emailHistory));
-            } else {
-                $emailHistory->setCompleted(true);
-                $this->entityManager->persist($emailHistory);
-                $this->entityManager->flush();
-            }
-        }
-    }
-
-    private function changeEmail(EmailHistory $emailHistory): bool
-    {
-        if ($emailHistory->getNewEmailConfirmAt() && $emailHistory->getOldEmailConfirmAt()) {
-            $emailHistory->setCompleted(true);
-            $this->getUser()
-                ->setEmail($emailHistory->getNewEmail())
-                ->setUpdatedBy($this->getUser())
-                ->setUpdatedAt(new \DateTime());
-
-            $this->addFlash(self::SUCCESS, $this->translator->trans('Email has been successfully changed.'));
-
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * This is a crutch for psalm, because it does not line generic collections.
-     *
-     * @return ArrayCollection<int, Role>
-     */
-    private function createEmptyCollection(): ArrayCollection
-    {
-        return new ArrayCollection();
-    }
-
-    public function getUser(): ?User
-    {
-        $user = parent::getUser();
-        if (empty($user)) {
-            return null;
-        }
-
-        if (!$user instanceof User) {
-            throw new \Exception('Wrong user entity provided.');
-        }
-
-        return $user;
     }
 }

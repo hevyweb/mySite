@@ -4,6 +4,7 @@ namespace App\Tests\Application\Controller;
 
 use App\DataFixtures\Tests\UserFixtures;
 use App\Entity\User;
+use App\Exception\UserNotFoundException;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -16,17 +17,25 @@ abstract class AbstractApplicationTestCase extends WebTestCase
 
     protected KernelBrowser $client;
 
-    protected RouterInterface $rout;
-    
-    protected function logInUser(?string $userName = UserFixtures::REGULAR_USER): void
+    protected RouterInterface $router;
+
+    public function setUp(): void
+    {
+        $this->client = static::createClient();
+        $this->router = $this->getContainer()->get(RouterInterface::class);
+    }
+
+    protected function logInUser(?string $userName = UserFixtures::REGULAR_USER): UserInterface
     {
         $user = $this->getUser($userName);
         $this->client->loginUser($user);
+        
+        return $user;
     }
     
-    protected function logInAdmin(?string $adminUserName = UserFixtures::ADMIN_USER): void
+    protected function logInAdmin(?string $adminUserName = UserFixtures::ADMIN_USER): UserInterface
     {
-        $this->logInUser($adminUserName);
+        return $this->logInUser($adminUserName);
     }
 
     protected function getUser(string $userName): UserInterface
@@ -41,7 +50,7 @@ abstract class AbstractApplicationTestCase extends WebTestCase
         $user = $repository->findOneByUsername($userName);
 
         if (!$user) {
-            throw new \RuntimeException('Users has not been loaded before running tests.');
+            throw new UserNotFoundException('Users has not been loaded before running tests.');
         }
 
         return $user;

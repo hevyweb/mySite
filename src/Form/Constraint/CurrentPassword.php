@@ -7,8 +7,7 @@ use Symfony\Component\Validator\Constraint;
 
 class CurrentPassword extends Constraint
 {
-    public string $message = 'Current password is incorrect.';
-
+    protected string $message;
     public function validatedBy(): string
     {
         return CurrentPasswordValidator::class;

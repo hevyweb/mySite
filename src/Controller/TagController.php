@@ -13,15 +13,8 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class TagController extends AbstractController
 {
-    public function __construct(private EntityManagerInterface $entityManager)
+    public function __construct(private readonly EntityManagerInterface $entityManager)
     {
-    }
-
-    public function index(): Response
-    {
-        return $this->render('tag/index.html.twig', [
-            'controller_name' => 'TagController',
-        ]);
     }
 
     public function search(Request $request): Response

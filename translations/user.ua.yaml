@@ -64,3 +64,6 @@ User profile: Дані користувача
 Current password: Поточний пароль
 Current password is incorrect.: Поточний пароль - неправильний.
 User password changed.: Пароль користувача змінено.
+You cannot be older than 100 years.: Вам не може бути більше 100 років.
+You must be at least 7 years old.: Вам повинно бути принаймні 7 років.
+After changing your email address, you will receive an email to both your old and new email addresses. The changes will only be applied after you confirm both emails.: "Після зміни емейл адреси ви отримаєте листа на обидві: стару і нову імейл адреси. Зміни будуть застосовані тільки після підтвердження обох листів."
