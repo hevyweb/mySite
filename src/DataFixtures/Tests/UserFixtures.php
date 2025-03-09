@@ -7,15 +7,14 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
-use Exception;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserFixtures extends Fixture implements DependentFixtureInterface, FixtureGroupInterface
 {
-    const REGULAR_USER = 'user';
-    
-    const ADMIN_USER = 'admin';
-    
+    public const REGULAR_USER = 'user';
+
+    public const ADMIN_USER = 'admin';
+
     public function __construct(private readonly UserPasswordHasherInterface $passwordHasher)
     {
     }
@@ -26,7 +25,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface, Fixture
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     public function load(ObjectManager $manager): void
     {
@@ -41,7 +40,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface, Fixture
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     private function createAdminUser(): User
     {
@@ -59,11 +58,12 @@ class UserFixtures extends Fixture implements DependentFixtureInterface, Fixture
             ->setCreatedAt(new \DateTimeImmutable((new \DateTime('2024-12-31 23:59:59'))->format('c')));
 
         $adminUser->addRole($this->getReference('role_ROLE_ADMIN'));
+
         return $adminUser;
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     private function createUser(): User
     {
@@ -82,6 +82,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface, Fixture
 
         $user->addRole($this->getReference('role_ROLE_USER'));
         $this->setReference('test_user', $user);
+
         return $user;
     }
 

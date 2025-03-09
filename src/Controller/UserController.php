@@ -23,7 +23,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapQueryString;
@@ -44,7 +43,7 @@ class UserController extends AbstractController
 
     public const RECOVERY_COOL_DOWN = 86400; // 24 hours
 
-    public const ANTI_BRUT_FORCE_COOL_DOWN = 2000000; //microseconds
+    public const ANTI_BRUT_FORCE_COOL_DOWN = 2000000; // microseconds
 
     public function __construct(
         private readonly TranslatorInterface $translator,
@@ -52,8 +51,7 @@ class UserController extends AbstractController
         private readonly EntityManagerInterface $entityManager,
         private readonly EventDispatcherInterface $dispatcher,
         private readonly StringService $strings,
-    )
-    {
+    ) {
     }
 
     public function index(#[MapQueryString] ?UserSearch $userSearch = new UserSearch()): Response
@@ -99,7 +97,7 @@ class UserController extends AbstractController
 
     private function getUserFromRequest(Request $request): User
     {
-        $userId = (int)$request->get('id');
+        $userId = (int) $request->get('id');
         if (empty($userId)) {
             return $this->getUser();
         }
@@ -107,7 +105,7 @@ class UserController extends AbstractController
         $user = $this->entityManager->getRepository(User::class)->find($userId);
 
         if (empty($user)) {
-            throw new UserNotFoundException('User with id "' . $userId . '" not found.');
+            throw new UserNotFoundException('User with id "'.$userId.'" not found.');
         }
 
         return $user;
@@ -131,7 +129,7 @@ class UserController extends AbstractController
     {
         if ($oldEmail != $user->getEmail()) {
             $emailHistory = $user->getEmailHistories()->filter(
-                fn(EmailHistory $emailHistory) => !$emailHistory->getNewEmailConfirmAt() || !$emailHistory->getOldEmailConfirmAt()
+                fn (EmailHistory $emailHistory) => !$emailHistory->getNewEmailConfirmAt() || !$emailHistory->getOldEmailConfirmAt()
             );
 
             if (!$emailHistory->count()) {
@@ -297,7 +295,7 @@ class UserController extends AbstractController
             $password = $passwordHasher->hashPassword($user, $form->get('password')->getData());
             $user->setPassword($password)
                 ->addRole($userRole)
-                ->setEmailConfirm(md5(uniqid()) . md5(uniqid()))
+                ->setEmailConfirm(md5(uniqid()).md5(uniqid()))
                 ->setCreatedAt(new \DateTimeImmutable());
             $this->entityManager->persist($user);
             $this->entityManager->flush();
@@ -366,7 +364,7 @@ class UserController extends AbstractController
 
                 if (null !== $user->getRecoveredAt()
                     && $user->getRecoveredAt()->diff(new \DateTime())->s <= self::RECOVERY_COOL_DOWN) {
-                    throw new BrutForceException('User "' . $user->getUsername() . '" is trying to recover the password too often.');
+                    throw new BrutForceException('User "'.$user->getUsername().'" is trying to recover the password too often.');
                 }
                 $user->setRecoveredAt(new \DateTime());
                 $user->setRecovery($this->strings->generateRandomSlug(64));
@@ -377,7 +375,7 @@ class UserController extends AbstractController
             } catch (NotFoundHttpException $exception) {
                 // we should not display to user any warning to prevent email phishing.
                 $this->logger->warning(
-                    'Some one is trying to recover password for non existing user "' . ($email ?? 'empty email') . '". Original message: ' .
+                    'Some one is trying to recover password for non existing user "'.($email ?? 'empty email').'". Original message: '.
                     $exception->getMessage()
                 );
             } catch (BrutForceException $exception) {
@@ -404,8 +402,7 @@ class UserController extends AbstractController
     public function resetPassword(
         string $token,
         UserPasswordHasherInterface $passwordHasher,
-    ): Response
-    {
+    ): Response {
         $user = $this->entityManager->getRepository(User::class)->findOneBy(['recovery' => $token]);
         if ($user) {
             $newPassword = $this->strings->generateRandomString();

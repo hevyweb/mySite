@@ -2,9 +2,9 @@
 
 namespace App\Type;
 
-class Gender 
+class Gender
 {
-    const MALE = 1;
-    
-    const FEMALE = 2;
+    public const MALE = 1;
+
+    public const FEMALE = 2;
 }

@@ -28,10 +28,10 @@ abstract class AbstractApplicationTestCase extends WebTestCase
     {
         $user = $this->getUser($userName);
         $this->client->loginUser($user);
-        
+
         return $user;
     }
-    
+
     protected function logInAdmin(?string $adminUserName = UserFixtures::ADMIN_USER): User
     {
         return $this->logInUser($adminUserName);

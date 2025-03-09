@@ -16,20 +16,20 @@ class RoleFixtures extends Fixture implements FixtureGroupInterface
 
     public function load(ObjectManager $manager): void
     {
-        //user role
+        // user role
         $userRole = new Role();
         $userRole->setLabel('User')
             ->setCode('ROLE_USER');
         $manager->persist($userRole);
 
-        //admin role
+        // admin role
         $adminRole = new Role();
         $adminRole->setLabel('Admin')
             ->setCode('ROLE_ADMIN');
         $manager->persist($adminRole);
         $manager->flush();
 
-        $this->setReference('role_' . $userRole->getCode(), $userRole);
-        $this->setReference('role_' . $adminRole->getCode(), $adminRole);
+        $this->setReference('role_'.$userRole->getCode(), $userRole);
+        $this->setReference('role_'.$adminRole->getCode(), $adminRole);
     }
 }

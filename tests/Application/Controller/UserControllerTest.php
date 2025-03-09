@@ -3,7 +3,6 @@
 namespace App\Tests\Application\Controller;
 
 use App\Entity\Role;
-use App\Entity\User;
 use App\Exception\UserNotFoundException;
 use App\Type\Gender;
 use Doctrine\ORM\EntityManagerInterface;
@@ -37,7 +36,7 @@ class UserControllerTest extends AbstractApplicationTestCase
         ];
 
         yield 'very long email' => [
-            ['edit_user[email]' => str_repeat('a', 59) . '@a.com'],
+            ['edit_user[email]' => str_repeat('a', 59).'@a.com'],
             'This value is too long. It should have 64 characters or less.',
         ];
 
@@ -78,12 +77,12 @@ class UserControllerTest extends AbstractApplicationTestCase
 
         yield 'Birthday out of the date range' => [
             ['edit_user[birthday]' => (new \DateTime('-101 year'))->format('d.m.Y')],
-            'You cannot be older than 100 years.'
+            'You cannot be older than 100 years.',
         ];
 
         yield 'Birthday is too close' => [
             ['edit_user[birthday]' => (new \DateTime('-6 year'))->format('d.m.Y')],
-            'You must be at least 7 years old.'
+            'You must be at least 7 years old.',
         ];
     }
 
@@ -101,7 +100,7 @@ class UserControllerTest extends AbstractApplicationTestCase
 
         yield 'incorrect current password' => [
             ['user_passwords[currentPassword]' => 'this is not a password'],
-            'Current password is incorrect.'
+            'Current password is incorrect.',
         ];
 
         yield 'empty new password' => [
@@ -162,7 +161,7 @@ class UserControllerTest extends AbstractApplicationTestCase
         ];
 
         yield 'Email is too long' => [
-            ['registration[email]' => str_repeat('a', 56) . '@fake.com'],
+            ['registration[email]' => str_repeat('a', 56).'@fake.com'],
             'This value is too long. It should have 64 characters or less.',
         ];
 
@@ -259,7 +258,6 @@ class UserControllerTest extends AbstractApplicationTestCase
         $this->assertResponseRedirects($this->router->generate('home'));
         $this->client->followRedirect();
         $this->assertSelectorExists('#user-profile');
-
     }
 
     /**
@@ -287,7 +285,7 @@ class UserControllerTest extends AbstractApplicationTestCase
             'edit_user[firstName]' => 'New firstname',
             'edit_user[lastName]' => 'New lastname',
             'edit_user[birthday]' => '01.01.1961',
-            'edit_user[sex]' => Gender::FEMALE
+            'edit_user[sex]' => Gender::FEMALE,
         ]);
 
         $this->assertSelectorTextContains('.toast-body', 'User data updated.');
@@ -301,6 +299,7 @@ class UserControllerTest extends AbstractApplicationTestCase
 
     /**
      * @param array<string, string|null> $invalidData
+     *
      * @dataProvider invalidUserDataProvider
      */
     public function testEditUserDataError(array $invalidData, string $errorMessage): void
@@ -313,7 +312,7 @@ class UserControllerTest extends AbstractApplicationTestCase
             'edit_user[firstName]' => 'New firstname',
             'edit_user[lastName]' => 'New lastname',
             'edit_user[birthday]' => '01.01.1961',
-            'edit_user[sex]' => Gender::FEMALE
+            'edit_user[sex]' => Gender::FEMALE,
         ];
 
         $data = array_merge($validData, $invalidData);
@@ -355,7 +354,7 @@ class UserControllerTest extends AbstractApplicationTestCase
             'edit_user[firstName]' => 'New firstname',
             'edit_user[lastName]' => 'New lastname',
             'edit_user[birthday]' => '01.01.1961',
-            'edit_user[sex]' => Gender::FEMALE
+            'edit_user[sex]' => Gender::FEMALE,
         ]);
 
         $this->assertSelectorTextContains('.toast-body', 'User data updated.');
@@ -388,6 +387,7 @@ class UserControllerTest extends AbstractApplicationTestCase
 
     /**
      * @param array<string, string|null> $invalidData
+     *
      * @dataProvider passwordChangeFailureDataProvider
      */
     public function testPasswordChangeFailure(array $invalidData, string $errorMessage): void
@@ -417,7 +417,7 @@ class UserControllerTest extends AbstractApplicationTestCase
 
         foreach ($form->get('roles') as $checkbox) {
             $this->assertTrue($checkbox instanceof ChoiceFormField);
-            /**
+            /*
              * @var ChoiceFormField $checkbox
              */
             $checkbox->tick();
@@ -469,6 +469,7 @@ class UserControllerTest extends AbstractApplicationTestCase
 
     /**
      * @param array<string, string|null> $invalidData
+     *
      * @dataProvider registerFailureDataProvider
      */
     public function testRegisterFailure(array $invalidData, string $errorMessage): void
@@ -538,7 +539,7 @@ class UserControllerTest extends AbstractApplicationTestCase
         $user->setActive(false)
             ->setEmailConfirm($token);
         $entityManager = $this->getContainer()->get(EntityManagerInterface::class);
-        /**
+        /*
          * @var EntityManagerInterface $entityManager
          */
         $entityManager->flush();
@@ -599,7 +600,7 @@ class UserControllerTest extends AbstractApplicationTestCase
         $user->setRecovery($token);
         $user->setRecoveredAt(new \DateTime());
         $em = $this->getContainer()->get(EntityManagerInterface::class);
-        /**
+        /*
          * @var EntityManagerInterface $em
          */
         $em->flush();

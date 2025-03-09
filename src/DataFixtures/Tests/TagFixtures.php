@@ -22,7 +22,7 @@ class TagFixtures extends Fixture implements FixtureGroupInterface
         $tagBanana->setName('Banana');
         $tagPlum = new Tag();
         $tagPlum->setName('Plum');
-        
+
         $manager->persist($tagApple);
         $manager->persist($tagBanana);
         $manager->persist($tagPlum);

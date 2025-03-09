@@ -15,8 +15,7 @@ class CurrentPasswordValidator extends ConstraintValidator
     public function __construct(
         private readonly Security $security,
         private readonly UserPasswordHasherInterface $hasher,
-    )
-    {
+    ) {
     }
 
     public function validate(mixed $value, Constraint $constraint): void

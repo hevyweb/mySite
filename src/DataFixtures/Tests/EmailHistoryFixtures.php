@@ -28,7 +28,7 @@ class EmailHistoryFixtures extends Fixture implements FixtureGroupInterface, Dep
             ->setOldConfirmationToken($token)
             ->setCompleted(false)
         ;
-        
+
         $manager->persist($emailHistory);
         $manager->flush();
     }

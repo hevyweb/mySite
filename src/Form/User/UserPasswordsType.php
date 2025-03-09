@@ -2,13 +2,11 @@
 
 namespace App\Form\User;
 
-use App\Entity\User;
 use App\Form\Constraint\CurrentPassword;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Sequentially;
@@ -45,27 +43,27 @@ class UserPasswordsType extends AbstractType
                 ],
             ])
             ->add('newPassword', RepeatedType::class, [
-            'type' => PasswordType::class,
-            'invalid_message' => $this->translator->trans('The password fields must match.', [], 'user'),
-            'first_options' => [
-                'label' => $this->translator->trans('New password', [], 'user'),
-                'attr' => [
-                    'autocomplete' => 'new-password',
+                'type' => PasswordType::class,
+                'invalid_message' => $this->translator->trans('The password fields must match.', [], 'user'),
+                'first_options' => [
+                    'label' => $this->translator->trans('New password', [], 'user'),
+                    'attr' => [
+                        'autocomplete' => 'new-password',
+                    ],
                 ],
-            ],
-            'second_options' => [
-                'label' => $this->translator->trans('Repeat new password', [], 'user'),
-                'attr' => [
-                    'autocomplete' => 'confirm-password',
+                'second_options' => [
+                    'label' => $this->translator->trans('Repeat new password', [], 'user'),
+                    'attr' => [
+                        'autocomplete' => 'confirm-password',
+                    ],
                 ],
-            ],
-            'constraints' => [
-                new NotBlank(),
-                new Length([
-                    'max' => 32,
-                ]),
-            ],
-            'required' => true,
-        ]);
+                'constraints' => [
+                    new NotBlank(),
+                    new Length([
+                        'max' => 32,
+                    ]),
+                ],
+                'required' => true,
+            ]);
     }
 }

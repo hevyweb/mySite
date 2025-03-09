@@ -99,7 +99,7 @@ class EditUserType extends AbstractType
             ->add('sex', ChoiceType::class, [
                 'choices' => [
                     $this->translator->trans('Male', [], 'user') => Gender::MALE,
-                    $this->translator->trans('Female', [], 'user') => Gender::FEMALE
+                    $this->translator->trans('Female', [], 'user') => Gender::FEMALE,
                 ],
                 'required' => false,
                 'label' => $this->translator->trans('Sex', [], 'user'),

@@ -13,7 +13,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserFixtures extends Fixture implements DependentFixtureInterface, FixtureGroupInterface
 {
-    const NUM_USERS = 10;
+    public const NUM_USERS = 10;
 
     public function __construct(private readonly UserPasswordHasherInterface $passwordHasher)
     {
@@ -39,17 +39,17 @@ class UserFixtures extends Fixture implements DependentFixtureInterface, Fixture
                     ->setPassword($this->passwordHasher->hashPassword($user, 'admin'))
                     ->setActive($faker->boolean(90))
                     ->setEnabled($faker->boolean(90))
-                    ->addRole($this->getReference('role_' . $n))
+                    ->addRole($this->getReference('role_'.$n))
                     ->setCreatedAt(new \DateTimeImmutable($faker->dateTimeBetween()->format('c')));
                 $manager->persist($user);
                 $manager->flush();
                 $manager->clear();
             } catch (UniqueConstraintViolationException $exception) {
-                //this exception means faker generated not unique username or email.
-                $n--;
+                // this exception means faker generated not unique username or email.
+                --$n;
                 continue;
             }
-            
+
             $this->setReference('user_'.$n, $user);
         }
     }

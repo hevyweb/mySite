@@ -8,21 +8,18 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\BirthdayType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints\Date;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\LessThanOrEqual;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Regex;
-use Symfony\Component\Validator\Constraints\Unique;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
@@ -48,7 +45,7 @@ class RegistrationType extends AbstractType
                     new NotBlank(),
                     new Length([
                         'max' => 32,
-                        'min' => 3
+                        'min' => 3,
                     ]),
                     new Regex([
                         'pattern' => '/^[\w\d\-_]+$/',
@@ -67,7 +64,7 @@ class RegistrationType extends AbstractType
                     new Email(),
                     new Length([
                         'max' => 64,
-                    ])
+                    ]),
                 ],
             ])
             ->add('password', RepeatedType::class, [
@@ -97,7 +94,7 @@ class RegistrationType extends AbstractType
                     'constraints' => [
                         new Length([
                             'max' => 32,
-                            'min' => 8
+                            'min' => 8,
                         ]),
                     ],
                 ],
@@ -176,7 +173,7 @@ class RegistrationType extends AbstractType
                 'label' => $this->translator->trans('Sign up'),
                 'attr' => [
                     'class' => 'btn btn-primary submit-btn',
-                ]
+                ],
             ]);
     }
 

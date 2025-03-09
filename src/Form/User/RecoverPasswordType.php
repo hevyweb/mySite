@@ -38,17 +38,17 @@ class RecoverPasswordType extends AbstractType
                     new Email(),
                     new Length([
                         'max' => 64,
-                    ])
+                    ]),
                 ],
             ])
             ->add('submit', SubmitType::class, [
                 'label' => $this->translator->trans('Recover password', [], 'user'),
                 'attr' => [
                     'class' => 'btn btn-primary submit-btn mt-3',
-                ]
+                ],
             ]);
     }
-    
+
     public function configureOptions(OptionsResolver $resolver): OptionsResolver
     {
         return $resolver->setDefaults([
