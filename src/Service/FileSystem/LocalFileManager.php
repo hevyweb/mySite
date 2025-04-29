@@ -4,7 +4,7 @@ namespace App\Service\FileSystem;
 
 use App\Service\FileSystem\File as FileService;
 use Symfony\Component\HttpFoundation\File\Exception\UploadException;
-use Symfony\Component\HttpFoundation\FileBag;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 readonly class LocalFileManager implements FileManagementInterface
 {
@@ -14,10 +14,10 @@ readonly class LocalFileManager implements FileManagementInterface
     ) {
     }
 
-    public function save(FileBag $fileBag, string $destination): string
+    public function save(UploadedFile $file, string $destination): string
     {
-        if ($fileBag->count()) {
-            $fileName = $this->fileService->saveFileTo($fileBag->getIterator()->current(), $destination)->getFilename();
+        if ($file->isFile()) {
+            $fileName = $this->fileService->saveFileTo($file, $destination)->getFilename();
             $this->antiVirus->sanitize($fileName, $destination);
 
             return $fileName;

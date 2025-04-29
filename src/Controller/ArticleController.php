@@ -8,6 +8,7 @@ use App\Entity\ArticleTranslation;
 use App\Form\ArticleTranslationType;
 use App\Form\ArticleType;
 use App\Service\ArrayService;
+use App\Service\Factory\FactoryInterface;
 use App\Service\FileSystem\FileManagementInterface;
 use App\Traits\FlashMessageTrait;
 use Doctrine\ORM\EntityManagerInterface;
@@ -18,10 +19,13 @@ use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapQueryString;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
@@ -38,6 +42,7 @@ class ArticleController extends AbstractController
         private readonly FileManagementInterface $fileManager,
         private readonly ParameterBagInterface $parameterBag,
         private readonly ArrayService $arrayService,
+        private readonly FactoryInterface $articleTranslationFactory,
     ) {
     }
 
@@ -59,22 +64,14 @@ class ArticleController extends AbstractController
 
     public function create(Request $request): Response
     {
-        $article = new Article();
-        $translation = new ArticleTranslation();
-        $translation->setLocale($request->getLocale());
-        $article->addArticleTranslation($translation);
+        $translation = $this->articleTranslationFactory->build();
 
-        $form = $this->buildForm($article, $translation);
+        $form = $this->buildForm($translation->getArticle(), $translation);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             try {
                 $this->setImage($form, $translation);
-                $translation
-                    ->setCreatedBy($this->getUser())
-                    ->setCreatedAt(new \DateTimeImmutable())
-                    ->setUpdatedBy($this->getUser())
-                    ->setUpdatedAt(new \DateTime());
-                $this->entityManager->persist($article);
+                $this->entityManager->persist($translation);
                 $this->entityManager->flush();
 
                 return $this->redirectToRoute('article-list');
@@ -88,7 +85,8 @@ class ArticleController extends AbstractController
             'title' => $this->translator->trans('Create an article', [], 'article'),
             'form' => $form->createView(),
             'submit' => $this->translator->trans('Save'),
-            'article' => $article,
+            'article' => $translation->getArticle(),
+            'translation' => $translation,
         ]);
     }
 
@@ -183,6 +181,7 @@ class ArticleController extends AbstractController
             'article' => $article,
             'form' => $form->createView(),
             'submit' => $this->translator->trans('Update'),
+            'translation' => $translation,
         ]);
     }
 
@@ -247,5 +246,43 @@ class ArticleController extends AbstractController
             ->add('article', ArticleType::class)
             ->add('translation', ArticleTranslationType::class)
             ->getForm();
+    }
+    
+    public function formUpdate(Request $request): JsonResponse
+    {
+        try {
+            $translation = $this->getTranslationObject($request);
+            $form = $this->buildForm($translation->getArticle(), $translation);
+            $form->handleRequest($request);
+            $translation->setDraft(true);
+            $this->entityManager->persist($translation);
+            $this->entityManager->flush();
+            return $this->json([
+                'message' => $this->translator->trans('Autosaved success.', [], 'article'),
+                'action' => $this->generateUrl('article-edit', [
+                    'slug' => $translation->getArticle()->getSlug(),
+                    'locale' => $translation->getLocale(),
+                ], UrlGeneratorInterface::ABSOLUTE_URL),
+                'url' => $this->generateUrl('article-form-update', ['id' => $translation->getId()],
+                    UrlGeneratorInterface::ABSOLUTE_URL),
+            ]);
+        } catch (HttpExceptionInterface $exception) {
+            return $this->json([
+                'error' => $exception->getMessage(),
+            ], Response::HTTP_BAD_REQUEST);
+        }
+    }
+    
+    private function getTranslationObject(Request $request): ArticleTranslation
+    {
+        $id = (int) $request->get('id');
+        if ($id) {
+            $translation = $this->entityManager->getRepository(ArticleTranslation::class)->find($id);
+            if (null === $translation) {
+                throw new NotFoundHttpException($this->translator->trans('Autosave failed because of invalid id.', [], 'article'));
+            }
+            return $translation;
+        }
+        return $this->articleTranslationFactory->build();
     }
 }

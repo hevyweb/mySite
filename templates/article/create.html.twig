@@ -17,6 +17,7 @@
         <div class="section-header text-center wow zoomIn" data-wow-delay="0.1s">
             <h2>{{ title|trans }}</h2>
         </div>
+        <div id="article-form-update" data-url="{{ url('article-form-update', {'id': translation.id}) }}"></div>
         <div class="tabs">
             <ul class="nav nav-tabs">
                 {% for locale in app_locales %}
@@ -42,10 +43,14 @@
                     {{ form_row(form.translation.body) }}
                     {{ form_row(form.translation.locale) }}
                     {{ form_row(form.article.tags) }}
-                    <div class="form-check form-switch mt-2 mb-2 p-0">
-                        {{ form_row(form.translation.draft) }}
+                    <div class="d-flex">
+                        <div class="form-check flex-fill form-switch mt-2 mb-2 p-0">
+                            {{ form_row(form.translation.draft) }}
+                        </div>
+                        <div class="align-right flex-fill mt-2 text-end">
+                            <button type="submit" class="btn btn-primary">{{ submit }}</button>
+                        </div>
                     </div>
-                    <button type="submit" class="btn btn-primary">{{ submit }}</button>
                 </div>
                 <div class="col-lg-4">
                     {% if form.vars.value.translation.image is not null %}

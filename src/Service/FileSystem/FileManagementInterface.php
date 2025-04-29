@@ -2,11 +2,11 @@
 
 namespace App\Service\FileSystem;
 
-use Symfony\Component\HttpFoundation\FileBag;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 interface FileManagementInterface
 {
-    public function save(FileBag $fileBag, string $destination): string;
+    public function save(UploadedFile $file, string $destination): string;
 
     public function copy(string $fileName, string $oldDestination, string $newDestination): string;
 

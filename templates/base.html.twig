@@ -30,7 +30,8 @@
     <script type="application/javascript">
         settings = {
             language: "{{ app.request.getLocale()|locale }}",
-            date_format: "{{ app.request.server.get('DATEPICKER_DATE_FORMAT') }}"
+            date_format: "{{ app.request.server.get('DATEPICKER_DATE_FORMAT') }}",
+            autosave: {{ autosave }}
         }
     </script>
     <link rel="shortcut icon" type="image/icon" href="{{ absolute_url('/favicon.ico') }}"/>

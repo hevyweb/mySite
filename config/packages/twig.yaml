@@ -6,3 +6,4 @@ twig:
     globals:
         app_locales: '%app_locales%'
         gg_recaptcha_site_key: '%env(GOOGLE_RECAPTCHA_SITE_KEY)%'
+        autosave: '%env(AUTOSAVE)%'

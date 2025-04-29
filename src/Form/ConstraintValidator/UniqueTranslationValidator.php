@@ -25,7 +25,7 @@ class UniqueTranslationValidator extends ConstraintValidator
 
         try {
             $existingArticleTranslation = $this->entityManager->getRepository(ArticleTranslation::class)
-                ->getTranslationBySlug($value, $article->get('slug')->getData());
+                ->getTranslationBySlug($value, $article->get('slug')->getData()??'');
 
             if ($newArticleTranslation->getId != $existingArticleTranslation->getId()) {
                 $this->context

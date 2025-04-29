@@ -61,7 +61,7 @@ class ArticleTranslationType extends AbstractType
                 'label' => $this->translator->trans('Preview', [], 'article'),
             ])
             ->add('draft', CheckboxType::class, [
-                'label' => $this->translator->trans('Translation enabled', [], 'article'),
+                'label' => $this->translator->trans('Draft', [], 'article'),
                 'required' => false,
                 'attr' => [
                     'class' => 'form-check-input',

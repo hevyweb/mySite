@@ -23,3 +23,8 @@ article-delete:
   path: /administrator/article/delete
   methods: [POST]
   controller: App\Controller\ArticleController::delete
+  
+article-form-update:
+  path: /administrator/article/form-update
+  methods: [POST]
+  controller: App\Controller\ArticleController::formUpdate
