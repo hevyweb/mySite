@@ -3,13 +3,10 @@
 namespace App\DataFixtures\Tests;
 
 use App\Entity\User;
-use DateTime;
-use DateTimeImmutable;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
-use Exception;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserFixtures extends Fixture implements DependentFixtureInterface, FixtureGroupInterface
@@ -28,7 +25,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface, Fixture
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     public function load(ObjectManager $manager): void
     {
@@ -43,12 +40,12 @@ class UserFixtures extends Fixture implements DependentFixtureInterface, Fixture
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     private function createAdminUser(): User
     {
         $adminUser = new User();
-        $adminUser->setBirthDay(new DateTime('24.02.2022'))
+        $adminUser->setBirthDay(new \DateTime('24.02.2022'))
             ->setEmail('admin@fake.com')
             ->setFirstName('John')
             ->setLastName('Smith')
@@ -58,7 +55,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface, Fixture
             ->setPassword($this->passwordHasher->hashPassword($adminUser, 'admin'))
             ->setActive(true)
             ->setEnabled(true)
-            ->setCreatedAt(new DateTimeImmutable((new DateTime('2024-12-31 23:59:59'))->format('c')));
+            ->setCreatedAt(new \DateTimeImmutable((new \DateTime('2024-12-31 23:59:59'))->format('c')));
 
         $adminUser->addRole($this->getReference('role_ROLE_ADMIN'));
         $this->setReference('test_admin', $adminUser);
@@ -67,12 +64,12 @@ class UserFixtures extends Fixture implements DependentFixtureInterface, Fixture
     }
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
     private function createUser(): User
     {
         $user = new User();
-        $user->setBirthDay(new DateTime('20.02.2014'))
+        $user->setBirthDay(new \DateTime('20.02.2014'))
             ->setEmail('user@fake.com')
             ->setFirstName('Jane')
             ->setLastName('Smith')
@@ -82,7 +79,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface, Fixture
             ->setPassword($this->passwordHasher->hashPassword($user, 'user'))
             ->setActive(true)
             ->setEnabled(true)
-            ->setCreatedAt(new DateTimeImmutable((new DateTime('2025-01-01 00:00:00'))->format('c')));
+            ->setCreatedAt(new \DateTimeImmutable((new \DateTime('2025-01-01 00:00:00'))->format('c')));
 
         $user->addRole($this->getReference('role_ROLE_USER'));
         $this->setReference('test_user', $user);

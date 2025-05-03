@@ -36,6 +36,9 @@ class ArticleController extends AbstractController
     use LoggerAwareTrait;
     use FlashMessageTrait;
 
+    /**
+     * @param FactoryInterface<ArticleTranslation> $articleTranslationFactory
+     */
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly TranslatorInterface $translator,
@@ -247,7 +250,7 @@ class ArticleController extends AbstractController
             ->add('translation', ArticleTranslationType::class)
             ->getForm();
     }
-    
+
     public function formUpdate(Request $request): JsonResponse
     {
         try {
@@ -257,6 +260,7 @@ class ArticleController extends AbstractController
             $translation->setDraft(true);
             $this->entityManager->persist($translation);
             $this->entityManager->flush();
+
             return $this->json([
                 'message' => $this->translator->trans('Autosaved success.', [], 'article'),
                 'action' => $this->generateUrl('article-edit', [
@@ -272,7 +276,7 @@ class ArticleController extends AbstractController
             ], Response::HTTP_BAD_REQUEST);
         }
     }
-    
+
     private function getTranslationObject(Request $request): ArticleTranslation
     {
         $id = (int) $request->get('id');
@@ -281,8 +285,10 @@ class ArticleController extends AbstractController
             if (null === $translation) {
                 throw new NotFoundHttpException($this->translator->trans('Autosave failed because of invalid id.', [], 'article'));
             }
+
             return $translation;
         }
+
         return $this->articleTranslationFactory->build();
     }
 }

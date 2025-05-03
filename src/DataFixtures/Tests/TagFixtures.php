@@ -28,7 +28,7 @@ class TagFixtures extends Fixture implements FixtureGroupInterface
         $manager->persist($tagPlum);
 
         $manager->flush();
-        
+
         $this->addReference('tag_apple', $tagApple);
         $this->addReference('tag_banana', $tagBanana);
         $this->addReference('tag_plum', $tagPlum);

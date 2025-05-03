@@ -32,7 +32,7 @@
     </source>
 
     <coverage ignoreDeprecatedCodeUnits="true"
-        disableCodeCoverageIgnore="true">
+        disableCodeCoverageIgnore="false">
         <report>
             <clover outputFile="var/coverage/clover.xml"/>
             <html outputDirectory="var/coverage/html-coverage" lowUpperBound="50" highLowerBound="90"/>

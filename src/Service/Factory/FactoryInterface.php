@@ -2,7 +2,15 @@
 
 namespace App\Service\Factory;
 
-interface FactoryInterface 
+/**
+ * Create interface for factory pattern.
+ *
+ * @template TEntityObject
+ */
+interface FactoryInterface
 {
-    public function build();
+    /**
+     * @return TEntityObject
+     */
+    public function build(): mixed;
 }

@@ -1,8 +1,8 @@
 parameters:
     registration_enabled: '%env(REGISTRATION_ENABLED)%'
-    locale: 'en'
+    locale: '%env(DEFAULT_LOCALE)%'
     app_locales:
-        - en
+        - '%env(DEFAULT_LOCALE)%'
         - ua
     images_article: '%kernel.project_dir%/public/blog'
     images_experience: '%kernel.project_dir%/public/company'

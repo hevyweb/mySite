@@ -90,7 +90,10 @@ composer phpStan
 To be added in the future
 
 ### Testing
-To be added in the future
+I added both unit and integration tests in this project. To run them all:
+```bash
+php bin/phpunit tests
+```
 
 ## FAQ
 ___
