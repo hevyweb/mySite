@@ -22,11 +22,6 @@
         <extension name=".twig" checker="/vendor/psalm/plugin-symfony/src/Twig/TemplateFileAnalyzer.php"/>
     </fileExtensions>
     <issueHandlers>
-        <MissingFile> <!-- https://github.com/psalm/psalm-plugin-symfony/issues/205 -->
-            <errorLevel type="suppress">
-                <file name="config/preload.php" />
-            </errorLevel>
-        </MissingFile>
         <PossiblyUnusedMethod>
             <errorLevel type="suppress">
                 <directory name="src/Entity" />

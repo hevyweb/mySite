@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Role;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
@@ -13,7 +14,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserFixtures extends Fixture implements DependentFixtureInterface, FixtureGroupInterface
 {
-    public const NUM_USERS = 10;
+    public const int NUM_USERS = 10;
 
     public function __construct(private readonly UserPasswordHasherInterface $passwordHasher)
     {
@@ -22,6 +23,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface, Fixture
     /**
      * @throws \Exception
      */
+    #[\Override]
     public function load(ObjectManager $manager): void
     {
         $faker = FakerFactory::create();
@@ -39,7 +41,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface, Fixture
                     ->setPassword($this->passwordHasher->hashPassword($user, 'admin'))
                     ->setActive($faker->boolean(90))
                     ->setEnabled($faker->boolean(90))
-                    ->addRole($this->getReference('role_'.$n))
+                    ->addRole($this->getReference('role_'.$n, Role::class))
                     ->setCreatedAt(new \DateTimeImmutable($faker->dateTimeBetween()->format('c')));
                 $manager->persist($user);
                 $manager->flush();
@@ -54,6 +56,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface, Fixture
         }
     }
 
+    #[\Override]
     public function getDependencies(): array
     {
         return [
@@ -61,6 +64,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface, Fixture
         ];
     }
 
+    #[\Override]
     public static function getGroups(): array
     {
         return ['default'];

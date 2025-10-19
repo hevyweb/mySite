@@ -2,7 +2,9 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Article;
 use App\Entity\ArticleTranslation;
+use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
@@ -21,6 +23,7 @@ class ArticleTranslationFixtures extends Fixture implements DependentFixtureInte
     /**
      * @throws \Exception
      */
+    #[\Override]
     public function load(ObjectManager $manager): void
     {
         $fakers['en'] = FakerFactory::create();
@@ -42,12 +45,12 @@ class ArticleTranslationFixtures extends Fixture implements DependentFixtureInte
                     ->setPreview($faker->text(256))
                     ->setCreatedAt(new \DateTimeImmutable($faker->dateTimeBetween->format('c')))
                     ->setUpdatedAt($faker->dateTimeBetween())
-                    ->setUpdatedBy($this->getReference('user_admin'))
-                    ->setCreatedBy($this->getReference('user_admin'))
+                    ->setUpdatedBy($this->getReference('user_admin', User::class))
+                    ->setCreatedBy($this->getReference('user_admin', User::class))
                     ->setDraft($faker->boolean())
                     ->setHit($faker->numberBetween(0, 999))
                     ->setImage('images/notfound.jpg')
-                    ->setArticle($this->getReference('article_'.$n));
+                    ->setArticle($this->getReference('article_'.$n, Article::class));
 
                 $manager->persist($articleTranslation);
                 $manager->flush();
@@ -56,6 +59,7 @@ class ArticleTranslationFixtures extends Fixture implements DependentFixtureInte
         }
     }
 
+    #[\Override]
     public function getDependencies(): array
     {
         return [
@@ -64,6 +68,7 @@ class ArticleTranslationFixtures extends Fixture implements DependentFixtureInte
         ];
     }
 
+    #[\Override]
     public static function getGroups(): array
     {
         return ['default'];

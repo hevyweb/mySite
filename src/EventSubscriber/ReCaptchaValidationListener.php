@@ -16,6 +16,7 @@ readonly class ReCaptchaValidationListener implements EventSubscriberInterface
     ) {
     }
 
+    #[\Override]
     public static function getSubscribedEvents(): array
     {
         return [

@@ -15,6 +15,7 @@ class TagFixture extends Fixture implements FixtureGroupInterface
     {
     }
 
+    #[\Override]
     public function load(ObjectManager $manager): void
     {
         $faker = FakerFactory::create();
@@ -29,6 +30,7 @@ class TagFixture extends Fixture implements FixtureGroupInterface
         $manager->clear();
     }
 
+    #[\Override]
     public static function getGroups(): array
     {
         return ['default'];

@@ -21,6 +21,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
  */
 class UserRepository extends EntityRepository implements UserLoaderInterface
 {
+    #[\Override]
     public function loadUserByIdentifier(string $identifier): ?UserInterface
     {
         return $this->find($identifier);

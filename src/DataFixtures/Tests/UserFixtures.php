@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures\Tests;
 
+use App\Entity\Role;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
@@ -19,6 +20,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface, Fixture
     {
     }
 
+    #[\Override]
     public static function getGroups(): array
     {
         return ['tests'];
@@ -27,6 +29,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface, Fixture
     /**
      * @throws \Exception
      */
+    #[\Override]
     public function load(ObjectManager $manager): void
     {
         $adminUser = $this->createAdminUser();
@@ -57,7 +60,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface, Fixture
             ->setEnabled(true)
             ->setCreatedAt(new \DateTimeImmutable((new \DateTime('2024-12-31 23:59:59'))->format('c')));
 
-        $adminUser->addRole($this->getReference('role_ROLE_ADMIN'));
+        $adminUser->addRole($this->getReference('role_ROLE_ADMIN', Role::class));
         $this->setReference('test_admin', $adminUser);
 
         return $adminUser;
@@ -81,12 +84,13 @@ class UserFixtures extends Fixture implements DependentFixtureInterface, Fixture
             ->setEnabled(true)
             ->setCreatedAt(new \DateTimeImmutable((new \DateTime('2025-01-01 00:00:00'))->format('c')));
 
-        $user->addRole($this->getReference('role_ROLE_USER'));
+        $user->addRole($this->getReference('role_ROLE_USER', Role::class));
         $this->setReference('test_user', $user);
 
         return $user;
     }
 
+    #[\Override]
     public function getDependencies(): array
     {
         return [

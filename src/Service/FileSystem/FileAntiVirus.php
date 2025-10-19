@@ -7,6 +7,7 @@ class FileAntiVirus implements FileAntiVirusInterface
     /**
      * @throws \ImagickException
      */
+    #[\Override]
     public function sanitize(string $fileName, string $destination): void
     {
         $filePath = $destination.DIRECTORY_SEPARATOR.$fileName;

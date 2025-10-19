@@ -7,6 +7,7 @@ use Twig\TwigFilter;
 
 class FirstLettersExtension extends AbstractExtension
 {
+    #[\Override]
     public function getFilters(): array
     {
         return [

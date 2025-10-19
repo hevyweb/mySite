@@ -25,6 +25,7 @@ readonly class AccessDeniedHandler implements AccessDeniedHandlerInterface
      * @throws RuntimeError
      * @throws LoaderError
      */
+    #[\Override]
     public function handle(Request $request, AccessDeniedException $accessDeniedException): ?Response
     {
         return new Response(

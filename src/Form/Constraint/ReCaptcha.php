@@ -9,6 +9,7 @@ class ReCaptcha extends Constraint
 {
     public string $message = 'Captcha validation error.';
 
+    #[\Override]
     public function validatedBy(): string
     {
         return ReCaptchaValidator::class;

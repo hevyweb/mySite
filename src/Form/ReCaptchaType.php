@@ -12,16 +12,19 @@ use Symfony\Component\Form\FormView;
  */
 class ReCaptchaType extends AbstractType
 {
+    #[\Override]
     public function buildView(FormView $view, FormInterface $form, array $options): void
     {
         $view->vars['attr']['style'] = 'display: none';
     }
 
+    #[\Override]
     public function getParent(): ?string
     {
         return TextareaType::class;
     }
 
+    #[\Override]
     public function getBlockPrefix(): string
     {
         return 'recaptcha';

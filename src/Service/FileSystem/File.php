@@ -2,8 +2,8 @@
 
 namespace App\Service\FileSystem;
 
+use App\Exception\DirectoryCannotBeCreatedException;
 use App\Service\StringService;
-use PHPUnit\Runner\DirectoryCannotBeCreatedException;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\File as SymfonyFile;

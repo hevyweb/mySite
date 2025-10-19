@@ -3,6 +3,7 @@
 namespace App\DataFixtures;
 
 use App\Entity\Article;
+use App\Entity\Tag;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
@@ -17,6 +18,7 @@ class ArticleFixtures extends Fixture implements DependentFixtureInterface, Fixt
     /**
      * @throws \Exception
      */
+    #[\Override]
     public function load(ObjectManager $manager): void
     {
         $this->faker = FakerFactory::create();
@@ -38,11 +40,12 @@ class ArticleFixtures extends Fixture implements DependentFixtureInterface, Fixt
     private function addTags(Article $article): void
     {
         for ($n = 0; $n < $this->faker->numberBetween(0, 3); ++$n) {
-            $tag = $this->getReference('tag_'.$this->faker->numberBetween(0, 99));
+            $tag = $this->getReference('tag_'.$this->faker->numberBetween(0, 99), Tag::class);
             $article->addTag($tag);
         }
     }
 
+    #[\Override]
     public function getDependencies(): array
     {
         return [
@@ -51,6 +54,7 @@ class ArticleFixtures extends Fixture implements DependentFixtureInterface, Fixt
         ];
     }
 
+    #[\Override]
     public static function getGroups(): array
     {
         return ['default'];

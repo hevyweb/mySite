@@ -42,6 +42,7 @@ readonly class NewEmailConfirmSubscriber implements EventSubscriberInterface
         }
     }
 
+    #[\Override]
     public static function getSubscribedEvents(): array
     {
         return [

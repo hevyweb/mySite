@@ -13,6 +13,7 @@ class ReCaptchaValidator extends ConstraintValidator
     {
     }
 
+    #[\Override]
     public function validate(mixed $value, Constraint|ReCaptchaConstraint $constraint): void
     {
         /**

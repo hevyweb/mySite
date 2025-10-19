@@ -11,6 +11,7 @@ use Faker\Generator;
 
 class ExperienceFixtures extends Fixture implements FixtureGroupInterface
 {
+    #[\Override]
     public function load(ObjectManager $manager): void
     {
         $faker = FakerFactory::create();
@@ -41,6 +42,7 @@ class ExperienceFixtures extends Fixture implements FixtureGroupInterface
         gc_collect_cycles();
     }
 
+    #[\Override]
     public static function getGroups(): array
     {
         return ['default'];

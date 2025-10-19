@@ -95,7 +95,7 @@ class UserController extends AbstractController
         ]);
     }
 
-    private function getUserFromRequest(Request $request): User
+    private function getUserFromRequest(Request $request): User|null
     {
         $userId = (int) $request->get('id');
         if (empty($userId)) {
@@ -111,6 +111,7 @@ class UserController extends AbstractController
         return $user;
     }
 
+    #[\Override]
     public function getUser(): ?User
     {
         $user = parent::getUser();

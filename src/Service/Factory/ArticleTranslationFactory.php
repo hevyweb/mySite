@@ -18,6 +18,7 @@ readonly class ArticleTranslationFactory implements FactoryInterface
     ) {
     }
 
+    #[\Override]
     public function build(): ArticleTranslation
     {
         $article = new Article();

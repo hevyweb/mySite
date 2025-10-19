@@ -9,11 +9,13 @@ use Doctrine\Persistence\ObjectManager;
 
 class RoleFixtures extends Fixture implements FixtureGroupInterface
 {
+    #[\Override]
     public static function getGroups(): array
     {
         return ['tests'];
     }
 
+    #[\Override]
     public function load(ObjectManager $manager): void
     {
         // user role

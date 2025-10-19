@@ -14,6 +14,7 @@ readonly class LocalFileManager implements FileManagementInterface
     ) {
     }
 
+    #[\Override]
     public function save(UploadedFile $file, string $destination): string
     {
         if ($file->isFile()) {
@@ -26,11 +27,13 @@ readonly class LocalFileManager implements FileManagementInterface
         }
     }
 
+    #[\Override]
     public function delete(string $fileName, string $destination): void
     {
         $this->fileService->remove($fileName, $destination);
     }
 
+    #[\Override]
     public function copy(string $fileName, string $oldDestination, string $newDestination): string
     {
         $oldPath = $oldDestination.DIRECTORY_SEPARATOR.$fileName;

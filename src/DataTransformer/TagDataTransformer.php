@@ -20,6 +20,7 @@ readonly class TagDataTransformer implements DataTransformerInterface
     /**
      * @param mixed|Collection<int, Tag> $value
      */
+    #[\Override]
     public function transform(mixed $value): string
     {
         if (!empty($value)) {
@@ -32,6 +33,7 @@ readonly class TagDataTransformer implements DataTransformerInterface
     /**
      * @return ArrayCollection<int, Tag>
      */
+    #[\Override]
     public function reverseTransform(mixed $value): ArrayCollection
     {
         if (!empty($value)) {

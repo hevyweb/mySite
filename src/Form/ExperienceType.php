@@ -30,6 +30,7 @@ class ExperienceType extends AbstractType
     ) {
     }
 
+    #[\Override]
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $experience = $builder->getData();
@@ -127,6 +128,7 @@ class ExperienceType extends AbstractType
         ;
     }
 
+    #[\Override]
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
@@ -134,6 +136,10 @@ class ExperienceType extends AbstractType
         ]);
     }
 
+    /**
+     * @psalm-suppress PossiblyUnusedMethod This is used as a validation callback.
+     * @see above
+     */
     public function compareDates(?\DateTime $toDate, ExecutionContext $executionContext): bool
     {
         if (!empty($toDate)) {

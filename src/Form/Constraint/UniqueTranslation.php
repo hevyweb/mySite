@@ -9,6 +9,7 @@ class UniqueTranslation extends Constraint
 {
     public static string $message = 'Article with such slug already exists.';
 
+    #[\Override]
     public function validatedBy(): string
     {
         return UniqueTranslationValidator::class;

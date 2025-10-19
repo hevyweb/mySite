@@ -160,6 +160,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    #[\Override]
     public function getRoles(): array
     {
         $roles = $this->roles->toArray();
@@ -194,6 +195,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return false;
     }
 
+    #[\Override]
     public function getPassword(): ?string
     {
         return $this->password;
@@ -253,6 +255,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * This is important if, at any given point, sensitive information like
      * the plain-text password is stored on this object.
      */
+    #[\Override]
     public function eraseCredentials(): void
     {
         $this->plainPassword = null;
@@ -354,14 +357,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    #[\Override]
     public function getUserIdentifier(): string
     {
-        return (string) $this->getId();
+        $id = $this->getId();
+        if ($id === null) {
+            throw new \LogicException('Cannot get user identifier before ID is set.');
+        }
+
+        return (string) $id;
     }
 
-    /**
-     * @return Collection<int, EmailHistory>
-     */
     public function getEmailHistories(): Collection
     {
         return $this->emailHistories;

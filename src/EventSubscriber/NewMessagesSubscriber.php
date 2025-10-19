@@ -26,6 +26,7 @@ readonly class NewMessagesSubscriber implements EventSubscriberInterface
     ) {
     }
 
+    #[\Override]
     public static function getSubscribedEvents(): array
     {
         return [

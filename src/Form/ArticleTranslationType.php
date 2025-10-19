@@ -31,6 +31,7 @@ class ArticleTranslationType extends AbstractType
     ) {
     }
 
+    #[\Override]
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -128,6 +129,7 @@ class ArticleTranslationType extends AbstractType
         return array_flip($availableLocales);
     }
 
+    #[\Override]
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
