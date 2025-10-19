@@ -138,6 +138,7 @@ class ExperienceType extends AbstractType
 
     /**
      * @psalm-suppress PossiblyUnusedMethod This is used as a validation callback.
+     *
      * @see above
      */
     public function compareDates(?\DateTime $toDate, ExecutionContext $executionContext): bool

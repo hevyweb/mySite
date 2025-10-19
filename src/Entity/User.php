@@ -361,7 +361,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getUserIdentifier(): string
     {
         $id = $this->getId();
-        if ($id === null) {
+        if (null === $id) {
             throw new \LogicException('Cannot get user identifier before ID is set.');
         }
 

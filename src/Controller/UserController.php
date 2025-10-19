@@ -95,7 +95,7 @@ class UserController extends AbstractController
         ]);
     }
 
-    private function getUserFromRequest(Request $request): User|null
+    private function getUserFromRequest(Request $request): ?User
     {
         $userId = (int) $request->get('id');
         if (empty($userId)) {
