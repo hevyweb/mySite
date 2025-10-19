@@ -8,7 +8,7 @@
             </a>
             {% block user %}
                 <div class="user-control align-top">
-                    {% include 'common/language_switch.html.twig' | raw %}
+                    {% include 'common/language_switch.html.twig' %}
                     {% if is_granted('ROLE_ADMIN') %}
                         <a class="bottom-btn" id="user-admin-page" href="{{ url('admin-dashboard') }}" title="{% trans from 'dashboard' %}Admin panel{% endtrans %}">
                             <i class="fa-solid fa-shield-halved"></i>
@@ -26,7 +26,7 @@
         </div>
     </div>
     <div class="main-menu navbar-light">
-        {% include 'common/menu.html.twig' %}
+        {% embed 'common/menu.html.twig' %}{% endembed %}
     </div>
 </header>
 {% endblock %}

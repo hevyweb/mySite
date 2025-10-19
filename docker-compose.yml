@@ -1,7 +1,7 @@
 version: '3.2'
 services:
   db:
-    image: bitnami/mariadb:10.6.17
+    image: mariadb:10.6.17
     volumes:
       - mariadb_data:/bitnami/mariadb
     ports:
@@ -15,7 +15,7 @@ services:
       - net
 
   test-db:
-    image: bitnami/mariadb:10.6.17
+    image: mariadb:10.6.17
     volumes:
       - test_DB:/bitnami/mariadb
     ports:
@@ -32,8 +32,8 @@ services:
     build: docker/php
     volumes:
       - './:/var/www/html'
-      - './docker/php/php.ini:/opt/bitnami/php/etc/php.ini'
-      - './docker/php/xdebug.ini:/opt/bitnami/php/etc/conf.d/xdebug.ini'
+      - './docker/php/php.ini:/usr/local/etc/php/conf.d/99-php.ini'
+      - './docker/php/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini'
     ports:
       - '9000:9000'
     working_dir: '/var/www/html'

@@ -58,13 +58,14 @@ readonly class LocaleSubscriber implements EventSubscriberInterface
 
     private function detectUserLocale(): ?string
     {
-        if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
-            $parts = explode(';', strtolower($_SERVER['HTTP_ACCEPT_LANGUAGE']));
-            $userLocales = explode(',', $parts[0]);
-            foreach ($userLocales as $locale) {
-                if ('uk' == $locale || 'ru' == $locale) {
-                    return 'ua';
-                }
+        $header = $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? '';
+        $langs = explode(',', strtolower($header));
+
+        foreach ($langs as $lang) {
+            $lang = explode(';', $lang)[0];
+            $lang = substr(trim($lang), 0, 2); // normalize e.g. "en-US" → "en"
+            if (in_array($lang, ['uk', 'ru'])) {
+                return 'ua';
             }
         }
 
