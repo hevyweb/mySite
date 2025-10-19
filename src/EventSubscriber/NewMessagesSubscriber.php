@@ -22,7 +22,7 @@ readonly class NewMessagesSubscriber implements EventSubscriberInterface
         private TranslatorInterface $translator,
         private Address $from,
         private EntityManagerInterface $entityManager,
-        private LoggerInterface $logger
+        private LoggerInterface $logger,
     ) {
     }
 

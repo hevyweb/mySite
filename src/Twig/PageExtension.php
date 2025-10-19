@@ -18,7 +18,7 @@ use Twig\TwigFunction;
 class PageExtension extends AbstractExtension
 {
     public function __construct(
-        readonly private EntityManagerInterface $entityManager,
+        private readonly EntityManagerInterface $entityManager,
     ) {
     }
 

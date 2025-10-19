@@ -16,7 +16,7 @@ readonly class NewEmailConfirmSubscriber implements EventSubscriberInterface
         private TemplatedEmail $templatedEmail,
         private MailerInterface $mailer,
         private TranslatorInterface $translator,
-        private Address $from
+        private Address $from,
     ) {
     }
 

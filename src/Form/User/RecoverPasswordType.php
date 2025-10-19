@@ -17,7 +17,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  */
 class RecoverPasswordType extends AbstractType
 {
-    public function __construct(readonly TranslatorInterface $translator)
+    public function __construct(public readonly TranslatorInterface $translator)
     {
     }
 

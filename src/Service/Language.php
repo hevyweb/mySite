@@ -11,7 +11,7 @@ readonly class Language
      */
     public function __construct(
         private TranslatorInterface $translator,
-        private array $locales
+        private array $locales,
     ) {
     }
 
