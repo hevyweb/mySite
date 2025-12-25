@@ -10,10 +10,11 @@ abstract class AbstractController extends AbstractSymfonyController
     public function getUserEntity(): User
     {
         $user = $this->getUser();
-        
+
         if (!($user instanceof User)) {
             throw new \LogicException('The user must be an instance of User.');
         }
+
         return $user;
     }
 }

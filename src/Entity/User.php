@@ -77,7 +77,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?User $updatedBy = null;
 
     #[ORM\Column(type: 'string', length: 64, nullable: true)]
-    private ?string $emailConfirm = null    ;
+    private ?string $emailConfirm = null;
 
     /**
      * @var Collection<int, EmailHistory>

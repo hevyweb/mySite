@@ -27,10 +27,10 @@ readonly class ArticleTranslationFactory implements FactoryInterface
     public function build(): ArticleTranslation
     {
         $user = $this->security->getUser();
-        if (! $user instanceof User) {
+        if (!$user instanceof User) {
             throw new IncorrectUserException('User is not instance of User');
         }
-        
+
         $article = new Article();
         $translation = new ArticleTranslation();
         $translation->setLocale($this->request->getLocale())
