@@ -15,29 +15,29 @@ class Message
     private ?int $id;
 
     #[ORM\Column(type: 'string', length: 64)]
-    private ?string $name;
+    private string $name;
 
     #[ORM\Column(type: 'string', length: 128)]
-    private ?string $email;
+    private string $email;
 
     #[ORM\Column(type: 'text')]
-    private ?string $message;
+    private string $message;
 
     #[ORM\Column(type: 'datetime_immutable')]
-    private ?\DateTimeImmutable $createdAt;
+    private \DateTimeImmutable $createdAt;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $subject;
 
     #[ORM\Column(type: 'boolean')]
-    private ?bool $seen = false;
+    private bool $seen = false;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getName(): ?string
+    public function getName(): string
     {
         return $this->name;
     }
@@ -49,7 +49,7 @@ class Message
         return $this;
     }
 
-    public function getEmail(): ?string
+    public function getEmail(): string
     {
         return $this->email;
     }
@@ -61,7 +61,7 @@ class Message
         return $this;
     }
 
-    public function getMessage(): ?string
+    public function getMessage(): string
     {
         return $this->message;
     }
@@ -73,7 +73,7 @@ class Message
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->createdAt;
     }
@@ -97,7 +97,7 @@ class Message
         return $this;
     }
 
-    public function isSeen(): ?bool
+    public function isSeen(): bool
     {
         return $this->seen;
     }

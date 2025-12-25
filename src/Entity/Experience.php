@@ -14,35 +14,35 @@ class Experience
     private ?int $id;
 
     #[ORM\Column(type: 'string', length: 255)]
-    private ?string $name;
+    private string $name;
 
     #[ORM\Column(type: 'text')]
-    private ?string $description;
+    private string $description;
 
     #[ORM\Column(type: 'string', length: 2)]
-    private ?string $locale;
+    private string $locale;
 
     #[ORM\Column(type: 'string', length: 64)]
-    private ?string $image;
+    private string $image;
 
     #[ORM\Column(type: 'date')]
-    private ?\DateTimeInterface $fromDate;
+    private \DateTime $fromDate;
 
     #[ORM\Column(type: 'date', nullable: true)]
-    private ?\DateTimeInterface $toDate;
+    private ?\DateTime $toDate;
 
     #[ORM\Column(type: 'string', length: 64, nullable: true)]
     private ?string $company;
 
     #[ORM\Column(type: 'string', length: 128)]
-    private ?string $location;
+    private string $location;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getName(): ?string
+    public function getName(): string
     {
         return $this->name;
     }
@@ -54,7 +54,7 @@ class Experience
         return $this;
     }
 
-    public function getDescription(): ?string
+    public function getDescription(): string
     {
         return $this->description;
     }
@@ -66,7 +66,7 @@ class Experience
         return $this;
     }
 
-    public function getLocale(): ?string
+    public function getLocale(): string
     {
         return $this->locale;
     }
@@ -78,7 +78,7 @@ class Experience
         return $this;
     }
 
-    public function getImage(): ?string
+    public function getImage(): string
     {
         return $this->image;
     }
@@ -90,24 +90,24 @@ class Experience
         return $this;
     }
 
-    public function getFromDate(): ?\DateTimeInterface
+    public function getFromDate(): \DateTime
     {
         return $this->fromDate;
     }
 
-    public function setFromDate(\DateTimeInterface $fromDate): self
+    public function setFromDate(\DateTime $fromDate): self
     {
         $this->fromDate = $fromDate;
 
         return $this;
     }
 
-    public function getToDate(): ?\DateTimeInterface
+    public function getToDate(): ?\DateTime
     {
         return $this->toDate;
     }
 
-    public function setToDate(?\DateTimeInterface $toDate): self
+    public function setToDate(?\DateTime $toDate): self
     {
         $this->toDate = $toDate;
 
@@ -126,7 +126,7 @@ class Experience
         return $this;
     }
 
-    public function getLocation(): ?string
+    public function getLocation(): string
     {
         return $this->location;
     }

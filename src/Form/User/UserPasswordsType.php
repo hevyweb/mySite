@@ -33,13 +33,11 @@ class UserPasswordsType extends AbstractType
                 ],
                 'constraints' => [
                     new Sequentially([
-                        'constraints' => [
-                            new NotBlank(),
-                            new Length([
-                                'max' => 32,
-                            ]),
-                            new CurrentPassword(),
-                        ],
+                        new NotBlank(),
+                        new Length([
+                            'max' => 32,
+                        ]),
+                        new CurrentPassword(),
                     ]),
                 ],
             ])

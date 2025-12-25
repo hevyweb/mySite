@@ -12,9 +12,9 @@ use Doctrine\Persistence\ManagerRegistry;
  * @extends ServiceEntityRepository<ArticleTranslation>
  *
  * @method ArticleTranslation|null find($id, $lockMode = null, $lockVersion = null)
- * @method ArticleTranslation|null findOneBy(array $criteria, array $orderBy = null)
+ * @method ArticleTranslation|null findOneBy(array<string, mixed> $criteria, array<string, string>|null $orderBy = null)
  * @method ArticleTranslation[]    findAll()
- * @method ArticleTranslation[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method ArticleTranslation[]    findBy(array<string, mixed> $criteria, array<string, string>|null $orderBy = null, int|null $limit = null, int|null $offset = null)
  *
  * @seal-methods
  */

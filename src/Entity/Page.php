@@ -15,37 +15,37 @@ class Page
     private ?int $id;
 
     #[ORM\Column(type: 'string', length: 255)]
-    private ?string $title;
+    private string $title;
 
     #[ORM\Column(type: 'text')]
-    private ?string $body;
+    private string $body;
 
     #[ORM\Column(type: 'string', length: 2)]
-    private ?string $locale;
+    private string $locale;
 
     #[ORM\Column(name: 'created_at', type: 'datetime_immutable')]
-    private ?\DateTimeImmutable $createdAt;
+    private \DateTimeImmutable $createdAt;
 
     #[ORM\Column(name: 'updated_at', type: 'datetime', nullable: true)]
-    private ?\DateTimeInterface $updatedAt;
+    private ?\DateTime $updatedAt;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(name: 'created_by_id', nullable: false)]
-    private ?UserInterface $createdBy;
+    private User $createdBy;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(name: 'updated_by_id')]
-    private ?UserInterface $updatedBy;
+    private ?User $updatedBy;
 
     #[ORM\Column(type: 'string', length: 255)]
-    private ?string $route;
+    private string $route;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getTitle(): ?string
+    public function getTitle(): string
     {
         return $this->title;
     }
@@ -57,7 +57,7 @@ class Page
         return $this;
     }
 
-    public function getBody(): ?string
+    public function getBody(): string
     {
         return $this->body;
     }
@@ -69,7 +69,7 @@ class Page
         return $this;
     }
 
-    public function getLocale(): ?string
+    public function getLocale(): string
     {
         return $this->locale;
     }
@@ -81,7 +81,7 @@ class Page
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->createdAt;
     }
@@ -93,43 +93,43 @@ class Page
         return $this;
     }
 
-    public function getUpdatedAt(): ?\DateTimeInterface
+    public function getUpdatedAt(): ?\DateTime
     {
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(?\DateTimeInterface $updatedAt): self
+    public function setUpdatedAt(?\DateTime $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
 
         return $this;
     }
 
-    public function getCreatedBy(): ?UserInterface
+    public function getCreatedBy(): User
     {
         return $this->createdBy;
     }
 
-    public function setCreatedBy(?UserInterface $createdBy): self
+    public function setCreatedBy(User $createdBy): self
     {
         $this->createdBy = $createdBy;
 
         return $this;
     }
 
-    public function getUpdatedBy(): ?UserInterface
+    public function getUpdatedBy(): ?User
     {
         return $this->updatedBy;
     }
 
-    public function setUpdatedBy(?UserInterface $updatedBy): self
+    public function setUpdatedBy(?User $updatedBy): self
     {
         $this->updatedBy = $updatedBy;
 
         return $this;
     }
 
-    public function getRoute(): ?string
+    public function getRoute(): string
     {
         return $this->route;
     }

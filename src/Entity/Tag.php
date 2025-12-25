@@ -18,7 +18,7 @@ class Tag
 
     #[ORM\Column(length: 64)]
     #[Groups(['search'])]
-    private ?string $name = null;
+    private string $name;
 
     /**
      * @var Collection<int, Article>
@@ -36,7 +36,7 @@ class Tag
         return $this->id;
     }
 
-    public function getName(): ?string
+    public function getName(): string
     {
         return $this->name;
     }

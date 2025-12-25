@@ -13,16 +13,16 @@ class EmailHistory
     private ?int $id = null;
 
     #[ORM\Column(type: 'string', length: 255)]
-    private ?string $oldEmail;
+    private string $oldEmail;
 
     #[ORM\Column(type: 'string', length: 255)]
-    private ?string $newEmail;
+    private string $newEmail;
 
     #[ORM\Column(type: 'string', length: 64)]
-    private ?string $oldConfirmationToken;
+    private string $oldConfirmationToken;
 
     #[ORM\Column(type: 'string', length: 64)]
-    private ?string $newConfirmationToken;
+    private string $newConfirmationToken;
 
     #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private ?\DateTimeImmutable $oldEmailConfirmAt = null;
@@ -31,21 +31,21 @@ class EmailHistory
     private ?\DateTimeImmutable $newEmailConfirmAt = null;
 
     #[ORM\Column(type: 'datetime_immutable')]
-    private ?\DateTimeImmutable $createdAt;
+    private \DateTimeImmutable $createdAt;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'emailHistories')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?User $user;
+    private User $user;
 
     #[ORM\Column(type: 'boolean')]
-    private ?bool $completed = false;
+    private bool $completed = false;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getOldEmail(): ?string
+    public function getOldEmail(): string
     {
         return $this->oldEmail;
     }
@@ -57,7 +57,7 @@ class EmailHistory
         return $this;
     }
 
-    public function getNewEmail(): ?string
+    public function getNewEmail(): string
     {
         return $this->newEmail;
     }
@@ -69,7 +69,7 @@ class EmailHistory
         return $this;
     }
 
-    public function getOldConfirmationToken(): ?string
+    public function getOldConfirmationToken(): string
     {
         return $this->oldConfirmationToken;
     }
@@ -81,7 +81,7 @@ class EmailHistory
         return $this;
     }
 
-    public function getNewConfirmationToken(): ?string
+    public function getNewConfirmationToken(): string
     {
         return $this->newConfirmationToken;
     }
@@ -117,7 +117,7 @@ class EmailHistory
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->createdAt;
     }
@@ -129,19 +129,19 @@ class EmailHistory
         return $this;
     }
 
-    public function getUser(): ?User
+    public function getUser(): User
     {
         return $this->user;
     }
 
-    public function setUser(?User $user): self
+    public function setUser(User $user): self
     {
         $this->user = $user;
 
         return $this;
     }
 
-    public function isCompleted(): ?bool
+    public function isCompleted(): bool
     {
         return $this->completed;
     }

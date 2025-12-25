@@ -22,10 +22,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id;
 
     #[ORM\Column(type: 'string', length: 32, nullable: false)]
-    private ?string $firstName;
+    private string $firstName;
 
     #[ORM\Column(type: 'string', length: 32, nullable: false)]
-    private ?string $lastName;
+    private string $lastName;
 
     #[ORM\Column(type: 'date', nullable: true)]
     #[Assert\Type('\DateTimeInterface')]
@@ -35,16 +35,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $sex;
 
     #[ORM\Column(type: 'string', length: 32, unique: true)]
-    private ?string $username;
+    private string $username;
 
     #[ORM\Column(type: 'string', length: 64, unique: true)]
-    private ?string $email;
+    private string $email;
 
     #[Assert\Length(max: 32)]
     private ?string $plainPassword;
 
     #[ORM\Column(type: 'string', length: 64)]
-    private ?string $password;
+    private string $password;
 
     /**
      * @var Collection<int, Role>
@@ -67,16 +67,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private bool $active = false;
 
     #[ORM\Column(type: 'datetime_immutable')]
-    private ?\DateTimeImmutable $createdAt;
+    private \DateTimeImmutable $createdAt;
 
     #[ORM\Column(type: 'datetime', nullable: true)]
     private ?\DateTimeInterface $updatedAt;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
-    private ?User $updatedBy;
+    #[ORM\JoinColumn(name: 'updated_by_id', nullable: true)]
+    private ?User $updatedBy = null;
 
     #[ORM\Column(type: 'string', length: 64, nullable: true)]
-    private ?string $emailConfirm;
+    private ?string $emailConfirm = null    ;
 
     /**
      * @var Collection<int, EmailHistory>
@@ -368,6 +369,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return (string) $id;
     }
 
+    /**
+     * @return Collection<int, EmailHistory>
+     */
     public function getEmailHistories(): Collection
     {
         return $this->emailHistories;
@@ -378,18 +382,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         if (!$this->emailHistories->contains($emailHistory)) {
             $this->emailHistories[] = $emailHistory;
             $emailHistory->setUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeEmailHistory(EmailHistory $emailHistory): self
-    {
-        if ($this->emailHistories->removeElement($emailHistory)) {
-            // set the owning side to null (unless already changed)
-            if ($emailHistory->getUser() === $this) {
-                $emailHistory->setUser(null);
-            }
         }
 
         return $this;

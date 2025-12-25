@@ -14,10 +14,10 @@ use Doctrine\Persistence\ManagerRegistry;
  * @extends ServiceEntityRepository<Article>
  *
  * @method Article|null find($id, $lockMode = null, $lockVersion = null)
- * @method Article|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Article|null findOneBy(array<string, mixed> $criteria, array<string, string>|null $orderBy = null)
  * @method Article[]    findAll()
- * @method Article[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
- * @method Article|null findOneBySlug(string $slug, array $orderBy = null)
+ * @method Article[]    findBy(array<string, mixed> $criteria, array<string, string>|null $orderBy = null, int|null $limit = null, int|null $offset = null)
+ * @method Article|null findOneBySlug(string $slug, array<string, string>|null $orderBy = null)
  *
  * @seal-methods
  */

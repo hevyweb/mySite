@@ -18,17 +18,17 @@ class Role
     private ?int $id;
 
     #[ORM\Column(type: 'string', length: 69, unique: true)]
-    private ?string $code;
+    private string $code;
 
     #[ORM\Column(type: 'string', length: 64)]
-    private ?string $label;
+    private string $label;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getCode(): ?string
+    public function getCode(): string
     {
         return $this->code;
     }
@@ -40,7 +40,7 @@ class Role
         return $this;
     }
 
-    public function getLabel(): ?string
+    public function getLabel(): string
     {
         return $this->label;
     }

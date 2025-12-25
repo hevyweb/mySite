@@ -6,7 +6,6 @@ use App\Repository\ArticleTranslationRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Symfony\Component\Security\Core\User\UserInterface;
 
 #[UniqueEntity(
     fields: ['articleId', 'locale'],
@@ -24,7 +23,7 @@ class ArticleTranslation
 
     #[ORM\ManyToOne(targetEntity: Article::class, cascade: ['persist'], inversedBy: 'articleTranslations')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Article $article = null;
+    private Article $article;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $title = null;
@@ -42,20 +41,20 @@ class ArticleTranslation
     private ?string $image = null;
 
     #[ORM\Column(length: 2)]
-    private ?string $locale = null;
+    private string $locale;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(nullable: false)]
-    private ?UserInterface $createdBy = null;
+    private User $createdBy;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $createdAt = null;
+    private \DateTimeImmutable $createdAt;
 
     #[ORM\ManyToOne(targetEntity: User::class)]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?UserInterface $updatedBy = null;
+    #[ORM\JoinColumn(nullable: true)]
+    private ?User $updatedBy = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $updatedAt = null;
 
     #[ORM\Column]
@@ -66,12 +65,12 @@ class ArticleTranslation
         return $this->id;
     }
 
-    public function getArticle(): ?Article
+    public function getArticle(): Article
     {
         return $this->article;
     }
 
-    public function setArticle(?Article $article): static
+    public function setArticle(Article $article): static
     {
         $this->article = $article;
 
@@ -138,7 +137,7 @@ class ArticleTranslation
         return $this;
     }
 
-    public function getLocale(): ?string
+    public function getLocale(): string
     {
         return $this->locale;
     }
@@ -150,19 +149,19 @@ class ArticleTranslation
         return $this;
     }
 
-    public function getCreatedBy(): ?UserInterface
+    public function getCreatedBy(): User
     {
         return $this->createdBy;
     }
 
-    public function setCreatedBy(?UserInterface $createdBy): static
+    public function setCreatedBy(User $createdBy): static
     {
         $this->createdBy = $createdBy;
 
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->createdAt;
     }
@@ -174,12 +173,12 @@ class ArticleTranslation
         return $this;
     }
 
-    public function getUpdatedBy(): ?UserInterface
+    public function getUpdatedBy(): ?User
     {
         return $this->updatedBy;
     }
 
-    public function setUpdatedBy(?UserInterface $updatedBy): static
+    public function setUpdatedBy(?User $updatedBy): static
     {
         $this->updatedBy = $updatedBy;
 
@@ -215,7 +214,6 @@ class ArticleTranslation
         $this->id = null;
         $this->draft = true;
         $this->createdAt = new \DateTimeImmutable();
-        $this->createdBy = null;
         $this->updatedAt = new \DateTime();
         $this->updatedBy = null;
         $this->hit = 0;

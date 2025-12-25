@@ -13,7 +13,6 @@ use App\Service\FileSystem\FileManagementInterface;
 use App\Traits\FlashMessageTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerAwareTrait;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\Form\FormError;
@@ -121,9 +120,9 @@ class ArticleController extends AbstractController
         $newArticleTranslation = clone $articleTranslation;
         $newArticleTranslation
             ->setLocale($locale)
-            ->setCreatedBy($this->getUser())
+            ->setCreatedBy($this->getUserEntity())
             ->setUpdatedAt(new \DateTime())
-            ->setUpdatedBy($this->getUser())
+            ->setUpdatedBy($this->getUserEntity())
         ;
         try {
             $this->cloneImage($articleTranslation, $newArticleTranslation);
@@ -168,7 +167,7 @@ class ArticleController extends AbstractController
             try {
                 $this->setImage($form, $translation);
                 $translation
-                    ->setUpdatedBy($this->getUser())
+                    ->setUpdatedBy($this->getUserEntity())
                     ->setUpdatedAt(new \DateTime());
                 $this->entityManager->flush();
 

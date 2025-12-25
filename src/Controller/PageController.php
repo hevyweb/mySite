@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Entity\Page;
 use App\Form\PageType;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -42,7 +41,7 @@ class PageController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $page
                 ->setCreatedAt(new \DateTimeImmutable())
-                ->setCreatedBy($this->getUser());
+                ->setCreatedBy($this->getUserEntity());
             $this->entityManager->persist($page);
             $this->entityManager->flush();
 
@@ -71,7 +70,7 @@ class PageController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $page
                 ->setUpdatedAt(new \DateTime())
-                ->setUpdatedBy($this->getUser());
+                ->setUpdatedBy($this->getUserEntity());
             $this->entityManager->persist($page);
             $this->entityManager->flush();
 

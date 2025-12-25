@@ -98,18 +98,6 @@ class Article
         return $this;
     }
 
-    public function removeArticleTranslation(ArticleTranslation $articleTranslation): static
-    {
-        if ($this->articleTranslations->removeElement($articleTranslation)) {
-            // set the owning side to null (unless already changed)
-            if ($articleTranslation->getArticle() === $this) {
-                $articleTranslation->setArticle(null);
-            }
-        }
-
-        return $this;
-    }
-
     public function getArticleTranslation(string $locale): ?ArticleTranslation
     {
         $translation = $this->articleTranslations->filter(

@@ -11,13 +11,13 @@ use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
- * @method User|null find($id, $lockMode = null, $lockVersion = null)
- * @method User|null findOneBy(array $criteria, array $orderBy = null)
- * @method User[]    findAll()
- * @method User[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
- * @method User|null findOneByUsername(string $username)
- *
  * @template-extends EntityRepository<User>
+ *
+ * @method User|null find(int|string $id, ?int $lockMode = null, ?int $lockVersion = null)
+ * @method User|null findOneBy(array<string, mixed> $criteria, array<string, 'ASC'|'DESC'>|null $orderBy = null)
+ * @method User[]    findAll()
+ * @method User[]    findBy(array<string, mixed> $criteria, array<string, 'ASC'|'DESC'>|null $orderBy = null, ?int $limit = null, ?int $offset = null)
+ * @method User|null findOneByUsername(string $username)
  */
 class UserRepository extends EntityRepository implements UserLoaderInterface
 {
