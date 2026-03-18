@@ -18,7 +18,7 @@ class ExperienceFixtures extends Fixture implements FixtureGroupInterface
         $fakerUA = FakerFactory::create('uk_UA');
 
         $this->buildTenEntries($faker, $manager, 'en');
-        $this->buildTenEntries($fakerUA, $manager, 'ua');
+        $this->buildTenEntries($fakerUA, $manager, 'uk');
     }
 
     public function buildTenEntries(Generator $faker, ObjectManager $manager, string $locale): void

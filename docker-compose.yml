@@ -3,7 +3,7 @@ services:
   db:
     image: mariadb:10.6.17
     volumes:
-      - mariadb_data:/bitnami/mariadb
+      - mariadb_data:/var/lib/mysql
     ports:
       - "3306:${MYSQL_PORT}"
     environment:
@@ -17,7 +17,7 @@ services:
   test-db:
     image: mariadb:10.6.17
     volumes:
-      - test_DB:/bitnami/mariadb
+      - test_DB:/var/lib/mysql
     ports:
       - "3307:${MYSQL_PORT}"
     environment:

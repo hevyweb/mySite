@@ -17,7 +17,7 @@ article-translate:
   controller: App\Controller\ArticleController::translate
   requirements:
     id: '^\d+$'
-    locale: 'en|ua'
+    locale: 'en|uk'
 
 article-delete:
   path: /administrator/article/delete

@@ -22,10 +22,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id;
 
     #[ORM\Column(type: 'string', length: 32, nullable: false)]
-    private string $firstName;
+    private ?string $firstName;
 
     #[ORM\Column(type: 'string', length: 32, nullable: false)]
-    private string $lastName;
+    private ?string $lastName;
 
     #[ORM\Column(type: 'date', nullable: true)]
     #[Assert\Type('\DateTimeInterface')]
@@ -35,16 +35,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $sex;
 
     #[ORM\Column(type: 'string', length: 32, unique: true)]
-    private string $username;
+    private ?string $username;
 
     #[ORM\Column(type: 'string', length: 64, unique: true)]
-    private string $email;
+    private ?string $email;
 
     #[Assert\Length(max: 32)]
     private ?string $plainPassword;
 
     #[ORM\Column(type: 'string', length: 64)]
-    private string $password;
+    private ?string $password;
 
     /**
      * @var Collection<int, Role>
@@ -96,7 +96,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->id;
     }
 
-    public function getFirstName(): ?string
+    public function getFirstName(): string
     {
         return $this->firstName;
     }
@@ -108,7 +108,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getLastName(): ?string
+    public function getLastName(): string
     {
         return $this->lastName;
     }
@@ -256,7 +256,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * This is important if, at any given point, sensitive information like
      * the plain-text password is stored on this object.
      */
-    #[\Override]
     public function eraseCredentials(): void
     {
         $this->plainPassword = null;

@@ -27,7 +27,7 @@ class ArticleTranslationFixtures extends Fixture implements DependentFixtureInte
     public function load(ObjectManager $manager): void
     {
         $fakers['en'] = FakerFactory::create();
-        $fakers['ua'] = FakerFactory::create('uk_UA');
+        $fakers['uk'] = FakerFactory::create('uk_UA');
         for ($n = 0; $n < 100; ++$n) {
             $languagesCount = count($this->locales);
             $locales = $fakers['en']->shuffleArray($this->locales);

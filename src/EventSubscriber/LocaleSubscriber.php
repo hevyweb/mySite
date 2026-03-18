@@ -66,7 +66,7 @@ readonly class LocaleSubscriber implements EventSubscriberInterface
             $lang = explode(';', $lang)[0];
             $lang = substr(trim($lang), 0, 2); // normalize e.g. "en-US" → "en"
             if (in_array($lang, ['uk', 'ru'])) {
-                return 'ua';
+                return 'uk';
             }
         }
 

@@ -3,7 +3,7 @@ parameters:
     locale: '%env(DEFAULT_LOCALE)%'
     app_locales:
         - '%env(DEFAULT_LOCALE)%'
-        - ua
+        - uk
     images_article: '%kernel.project_dir%/public/blog'
     images_experience: '%kernel.project_dir%/public/company'
 
