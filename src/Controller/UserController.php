@@ -444,7 +444,7 @@ class UserController extends AbstractController
                 $emailHistory->setNewEmailConfirmAt(new \DateTimeImmutable());
             }
             if (!$this->changeEmail($emailHistory)) {
-                $this->addFlash(self::SUCCESS, $this->translator->trans('Old email successfully confirmed.', [], 'user'));
+                $this->addFlash(self::SUCCESS, $this->translator->trans('New email successfully confirmed.', [], 'user'));
             }
         } else {
             $this->addFlash(self::ERROR, $this->translator->trans('The confirmation link is expired.'));

@@ -1,7 +1,7 @@
 parameters:
     supported_locales:
         - en
-        - ua
+        - uk
 
 framework:
     default_locale: en

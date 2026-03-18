@@ -50,7 +50,6 @@ class RecoverPasswordType extends AbstractType
             ]);
     }
 
-    #[\Override]
     public function configureOptions(OptionsResolver $resolver): OptionsResolver
     {
         return $resolver->setDefaults([

@@ -27,7 +27,10 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  */
 class RegistrationType extends AbstractType
 {
-    public function __construct(private readonly TranslatorInterface $translator)
+    public function __construct(
+        private readonly TranslatorInterface $translator,
+        private readonly string $defaultDateFormat,
+    )
     {
     }
 
@@ -141,12 +144,12 @@ class RegistrationType extends AbstractType
                 'html5' => false,
                 'attr' => [
                     'class' => 'js-datepicker form-control',
-                    'placeholder' => $this->translator->trans($_SERVER['DEFAULT_DATE_FORMAT']),
+                    'placeholder' => $this->translator->trans($this->defaultDateFormat),
                     'maxlength' => 10,
                     'autocomplete' => 'off',
                 ],
                 'required' => false,
-                'format' => $_SERVER['DEFAULT_DATE_FORMAT'],
+                'format' => $this->defaultDateFormat,
                 'label' => $this->translator->trans('Birthday', [], 'user'),
                 'constraints' => [
                     new GreaterThanOrEqual([

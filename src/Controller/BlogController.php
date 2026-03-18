@@ -60,11 +60,11 @@ class BlogController extends AbstractController
             'title' => $translation->getTitle(),
             'article' => $article,
             'translation' => $translation,
-        ], $this->incrementHit($translation)
+        ], $this->incrementHitAndGetResponse($translation)
         );
     }
 
-    private function incrementHit(ArticleTranslation $articleTranslation): Response
+    private function incrementHitAndGetResponse(ArticleTranslation $articleTranslation): Response
     {
         $hit = $_COOKIE['hit'] ?? '';
 

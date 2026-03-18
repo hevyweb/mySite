@@ -317,7 +317,8 @@ class UserControllerTest extends AbstractApplicationTestCase
 
         $data = array_merge($validData, $invalidData);
 
-        $this->client->submitForm('Save', $data);
+        $result = $this->client->submitForm('Save', $data);
+        //file_put_contents(__DIR__.'/test.html', $result->html());exit;
         $this->assertSelectorTextContains('.form_validation_error', $errorMessage);
     }
 

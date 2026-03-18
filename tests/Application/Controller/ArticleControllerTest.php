@@ -79,7 +79,7 @@ class ArticleControllerTest extends AbstractApplicationTestCase
             'form[translation][title]' => 'Dummy title',
             'form[article][slug]' => 'Dummy slug',
             'form[translation][body]' => '<b>Bold text</b> <p>paragraph</p>. Text',
-            'form[translation][locale]' => 'ua',
+            'form[translation][locale]' => 'uk',
             'form[article][tags]' => 'tag1, tag2, tag3',
             'form[translation][preview]' => 'Preview text',
         ]);
@@ -91,7 +91,7 @@ class ArticleControllerTest extends AbstractApplicationTestCase
          * @var Article $article
          */
         $article = $entityManager->getRepository(Article::class)->findOneBySlug('Dummy slug');
-        $translation = $article->getArticleTranslation('ua');
+        $translation = $article->getArticleTranslation('uk');
         $this->assertInstanceOf(ArticleTranslation::class, $translation);
         $this->assertSame('Dummy title', $translation->getTitle());
         $this->assertSame('<b>Bold text</b> <p>paragraph</p>. Text', $translation->getBody());
