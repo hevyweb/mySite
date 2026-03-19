@@ -1,0 +1,3 @@
+images-upload:
+  controller: App\Controller\ImageController::upload
+  path: administrator/images/upload
