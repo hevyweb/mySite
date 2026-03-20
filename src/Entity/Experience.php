@@ -14,19 +14,19 @@ class Experience
     private ?int $id;
 
     #[ORM\Column(type: 'string', length: 255)]
-    private string $name;
+    private ?string $name;
 
     #[ORM\Column(type: 'text')]
-    private string $description;
+    private ?string $description;
 
     #[ORM\Column(type: 'string', length: 2)]
-    private string $locale;
+    private ?string $locale;
 
     #[ORM\Column(type: 'string', length: 64)]
-    private string $image;
+    private ?string $image = null;
 
     #[ORM\Column(type: 'date')]
-    private \DateTime $fromDate;
+    private ?\DateTime $fromDate;
 
     #[ORM\Column(type: 'date', nullable: true)]
     private ?\DateTime $toDate;
@@ -35,7 +35,7 @@ class Experience
     private ?string $company;
 
     #[ORM\Column(type: 'string', length: 128)]
-    private string $location;
+    private ?string $location;
 
     public function getId(): ?int
     {
@@ -78,7 +78,7 @@ class Experience
         return $this;
     }
 
-    public function getImage(): string
+    public function getImage(): ?string
     {
         return $this->image;
     }
