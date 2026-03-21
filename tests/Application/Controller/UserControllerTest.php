@@ -317,8 +317,7 @@ class UserControllerTest extends AbstractApplicationTestCase
 
         $data = array_merge($validData, $invalidData);
 
-        $result = $this->client->submitForm('Save', $data);
-        //file_put_contents(__DIR__.'/test.html', $result->html());exit;
+        $this->client->submitForm('Save', $data);
         $this->assertSelectorTextContains('.form_validation_error', $errorMessage);
     }
 
@@ -477,7 +476,7 @@ class UserControllerTest extends AbstractApplicationTestCase
     {
         $this->client->request('GET', $this->router->generate('user-registration'));
 
-        $validaData = [
+        $validData = [
             'registration[username]' => 'new-user',
             'registration[email]' => 'new-user-email@fake.com',
             'registration[password][first]' => 'password',
@@ -488,7 +487,7 @@ class UserControllerTest extends AbstractApplicationTestCase
             'registration[sex]' => Gender::FEMALE,
         ];
 
-        $data = array_merge($validaData, $invalidData);
+        $data = array_merge($validData, $invalidData);
 
         $this->client->submitForm('Sign up', $data);
         $this->assertSelectorTextContains('.form_validation_error', $errorMessage);
