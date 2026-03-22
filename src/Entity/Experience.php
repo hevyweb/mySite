@@ -22,7 +22,7 @@ class Experience
     #[ORM\Column(type: 'string', length: 2)]
     private ?string $locale;
 
-    #[ORM\Column(type: 'string', length: 64)]
+    #[ORM\Column(type: 'string', length: 64, nullable: true)]
     private ?string $image = null;
 
     #[ORM\Column(type: 'date')]
@@ -42,24 +42,24 @@ class Experience
         return $this->id;
     }
 
-    public function getName(): string
+    public function getName(): ?string
     {
         return $this->name;
     }
 
-    public function setName(string $name): self
+    public function setName(?string $name): self
     {
         $this->name = $name;
 
         return $this;
     }
 
-    public function getDescription(): string
+    public function getDescription(): ?string
     {
         return $this->description;
     }
 
-    public function setDescription(string $description): self
+    public function setDescription(?string $description): self
     {
         $this->description = $description;
 
@@ -126,12 +126,12 @@ class Experience
         return $this;
     }
 
-    public function getLocation(): string
+    public function getLocation(): ?string
     {
         return $this->location;
     }
 
-    public function setLocation(string $location): self
+    public function setLocation(?string $location): self
     {
         $this->location = $location;
 

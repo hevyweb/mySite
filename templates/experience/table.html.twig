@@ -10,7 +10,7 @@
         {title: 'Experience' | trans }
     ] %}
     {% include 'common/breadcrumbs.html.twig' with breadcrumbs %}
-    <div class="admin-panel" id="article">
+    <div class="admin-panel" id="experience">
         <div class="container">
             <div class="section-header text-center wow zoomIn" data-wow-delay="0.1s">
                 <h2>{%trans%}Experiences{% endtrans %}</h2>
@@ -27,7 +27,7 @@
             </div>
             <div class="row">
                 <form action="{{ url('experience-delete') }}" method="post" class="datagrid-form">
-                    <table class="table table-striped">
+                    <table class="table table-striped" id="experience-table">
                         <thead>
                         <tr>
                             <th>

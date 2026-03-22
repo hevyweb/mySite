@@ -16,6 +16,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Context\ExecutionContext;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -42,7 +43,9 @@ class ExperienceType extends AbstractType
                     'class' => 'form-control',
                 ],
                 'constraints' => [
+                    new NotBlank(),
                     new Length([
+                        'min' => 2,
                         'max' => 255,
                     ]),
                 ],
@@ -60,6 +63,9 @@ class ExperienceType extends AbstractType
                     'class' => 'form-control',
                 ],
                 'label' => $this->translator->trans('Description'),
+                'constraints' => [
+                    new NotBlank(),
+                ],
             ]
             )
             ->add('fromDate', DateType::class, [
@@ -100,6 +106,7 @@ class ExperienceType extends AbstractType
                     'class' => 'form-control',
                 ],
                 'constraints' => [
+                    new NotBlank(),
                     new Length([
                         'max' => 64,
                     ]),
