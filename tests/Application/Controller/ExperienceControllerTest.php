@@ -77,7 +77,6 @@ class ExperienceControllerTest extends AbstractApplicationTestCase
         $this->assertSelectorExists('table#experience-table');
         $this->assertSelectorTextContains('h2', 'Experiences');
         
-        // Check that the table has 20 rows (data rows in tbody, excluding header)
         $crawler = $this->client->getCrawler();
         $rows = $crawler->filter('table#experience-table tbody tr');
         $this->assertCount(20, $rows);
@@ -93,7 +92,6 @@ class ExperienceControllerTest extends AbstractApplicationTestCase
 
     public function testCreateExperienceSuccess(): void
     {
-        // Verify fixture data exists
         $experience = $this->em->getRepository(Experience::class)->findOneBy(['name' => 'Senior Developer', 'locale' => 'en']);
         $this->assertNotNull($experience);
         $this->assertEquals('Senior Developer', $experience->getName());
@@ -103,11 +101,9 @@ class ExperienceControllerTest extends AbstractApplicationTestCase
 
     public function testCreateExperienceWithoutImage(): void
     {
-        // Verify fixture data exists - Backend Developer has an image, but we can test the structure
         $experience = $this->em->getRepository(Experience::class)->findOneBy(['name' => 'Developer', 'locale' => 'en']);
         $this->assertNotNull($experience);
         $this->assertEquals('Developer', $experience->getName());
-        // Fixture data includes image, but test structure is intact
     }
 
     /**
@@ -132,7 +128,6 @@ class ExperienceControllerTest extends AbstractApplicationTestCase
 
         $this->client->submitForm('Create', $data);
         
-        // Get all validation error messages and check if the expected one is present
         $crawler = $this->client->getCrawler();
         $errorMessages = $crawler->filter('.form_validation_error')->each(fn($node) => $node->text());
         $foundError = false;
@@ -152,7 +147,6 @@ class ExperienceControllerTest extends AbstractApplicationTestCase
 
     public function testUpdateExperienceSuccess(): void
     {
-        // Use fixture data - get the first experience to update
         $experience = $this->em->getRepository(Experience::class)->findOneBy(['name' => 'Lead Developer', 'locale' => 'en']);
         $experienceId = $experience->getId();
 
@@ -170,7 +164,6 @@ class ExperienceControllerTest extends AbstractApplicationTestCase
 
         $this->assertResponseRedirects($this->router->generate('experience-list'));
 
-        // Get fresh entity from database
         $this->em->clear();
         $updatedExperience = $this->em->getRepository(Experience::class)->find($experienceId);
         $this->assertEquals('Updated Position', $updatedExperience->getName());
@@ -203,10 +196,8 @@ class ExperienceControllerTest extends AbstractApplicationTestCase
 
         $this->client->submitForm('Update', $data);
         
-        // When validation fails, we should still be on the form page (not redirected)
         $this->assertResponseIsSuccessful();
         
-        // Get all validation error messages and check if the expected one is present
         $crawler = $this->client->getCrawler();
         $errorMessages = $crawler->filter('.form_validation_error')->each(fn($node) => $node->text());
         $foundError = false;
@@ -226,7 +217,6 @@ class ExperienceControllerTest extends AbstractApplicationTestCase
 
     public function testTreeViewExperiencesByLocale(): void
     {
-        // This is a public page, should not require login
         $this->client->restart();;
         $this->client->request('GET', $this->router->generate('experience-tree'));
         $this->assertEquals(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
@@ -235,7 +225,6 @@ class ExperienceControllerTest extends AbstractApplicationTestCase
 
     public function testDeleteExperienceSuccess(): void
     {
-        // Use fixture data - get Database Administrator to delete
         $experience = $this->em->getRepository(Experience::class)->findOneBy(['name' => 'Database Administrator', 'locale' => 'en']);
         $experienceId = $experience->getId();
 
@@ -247,7 +236,6 @@ class ExperienceControllerTest extends AbstractApplicationTestCase
 
         $this->assertResponseRedirects($this->router->generate('experience-list'));
 
-        // Clear entity manager cache and refresh from database
         $this->em->clear();
         $deletedExperience = $this->em->getRepository(Experience::class)->find($experienceId);
         $this->assertNull($deletedExperience);
@@ -255,7 +243,6 @@ class ExperienceControllerTest extends AbstractApplicationTestCase
 
     public function testDeleteMultipleExperiencesSuccess(): void
     {
-        // Use fixture data - get Frontend Developer and Backend Developer to delete
         $experience1 = $this->em->getRepository(Experience::class)->findOneBy(['name' => 'Frontend Developer', 'locale' => 'en']);
         $experience2 = $this->em->getRepository(Experience::class)->findOneBy(['name' => 'Backend Developer', 'locale' => 'en']);
         $id1 = $experience1->getId();
@@ -269,7 +256,6 @@ class ExperienceControllerTest extends AbstractApplicationTestCase
 
         $this->assertResponseRedirects($this->router->generate('experience-list'));
 
-        // Clear entity manager cache and refresh from database
         $this->em->clear();
         $this->assertNull($this->em->getRepository(Experience::class)->find($id1));
         $this->assertNull($this->em->getRepository(Experience::class)->find($id2));
@@ -288,7 +274,6 @@ class ExperienceControllerTest extends AbstractApplicationTestCase
 
     public function testCreateExperienceWithoutLogin(): void
     {
-        // Create a fresh client without admin login
         $this->client->restart();
         
         $this->client->request('GET', $this->router->generate('experience-create'));
@@ -310,12 +295,10 @@ class ExperienceControllerTest extends AbstractApplicationTestCase
 
     public function testDeleteExperienceWithoutLogin(): void
     {
-        // Create a fresh client without admin login
         $this->client->restart();
         $container = $this->getContainer();
         $router = $container->get('router');
         
-        // Access control should redirect to login page when not authenticated
         $this->client->request(
             'POST',
             $router->generate('experience-delete'),
