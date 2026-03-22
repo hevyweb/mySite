@@ -51,20 +51,15 @@ class ExperienceController extends AbstractController
         $form = $this->createForm(ExperienceType::class, $experience);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            try {
-                $file = $form->get('image')->getData();
-                if ($file) {
-                    $file = $this->fileService->saveFileTo($file, $this->parameterBag->get('images_experience'));
-                    $experience->setImage($file->getFilename());
-                }
-                $this->entityManager->persist($experience);
-                $this->entityManager->flush();
-
-                return $this->redirectToRoute('experience-list');
-            } catch (FileException $fileException) {
-                $error = new FormError($fileException->getMessage());
-                $form->get('image')->addError($error);
+            $file = $form->get('image')->getData();
+            if ($file) {
+                $file = $this->fileService->saveFileTo($file, $this->parameterBag->get('images_experience'));
+                $experience->setImage($file->getFilename());
             }
+            $this->entityManager->persist($experience);
+            $this->entityManager->flush();
+
+            return $this->redirectToRoute('experience-list');
         }
 
         return $this->render('experience/create.html.twig', [
@@ -80,22 +75,17 @@ class ExperienceController extends AbstractController
         $form = $this->createForm(ExperienceType::class, $experience);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            try {
-                $file = $form->get('image')->getData();
-                if ($file) {
-                    $file = $this->fileService->saveFileTo($file, $this->parameterBag->get('images_experience'));
-                    if ($experience->getImage()) {
-                        $this->fileService->remove($experience->getImage(), $this->parameterBag->get('images_experience'));
-                    }
-                    $experience->setImage($file->getFilename());
+            $file = $form->get('image')->getData();
+            if ($file) {
+                $file = $this->fileService->saveFileTo($file, $this->parameterBag->get('images_experience'));
+                if ($experience->getImage()) {
+                    $this->fileService->remove($experience->getImage(), $this->parameterBag->get('images_experience'));
                 }
-                $this->entityManager->flush();
-
-                return $this->redirectToRoute('experience-list');
-            } catch (FileException $fileException) {
-                $error = new FormError($fileException->getMessage());
-                $form->get('image')->addError($error);
+                $experience->setImage($file->getFilename());
             }
+            $this->entityManager->flush();
+
+            return $this->redirectToRoute('experience-list');
         }
 
         return $this->render('experience/create.html.twig', [
@@ -129,18 +119,11 @@ class ExperienceController extends AbstractController
             $experiences = $this->entityManager->getRepository(Experience::class)->findBy(['id' => $ids]);
             if (count($experiences)) {
                 foreach ($experiences as $experience) {
-                    try {
-                        if ($experience->getImage()) {
-                            $this->fileService->remove($experience->getImage(), $this->parameterBag->get('images_experience'));
-                        }
-                        $this->entityManager->remove($experience);
-                        $this->logger->debug('Experience "'.$experience->getName().'" removed.');
-                    } catch (FileNotFoundException $exception) {
-                        $this->logger->error($exception->getMessage());
-                        $this->addFlash(self::SUCCESS, $this->translator->trans('Can not remove image of the company.', [], 'experience'));
-
-                        return $this->redirectToRoute('experience-list');
+                    if ($experience->getImage()) {
+                        $this->fileService->remove($experience->getImage(), $this->parameterBag->get('images_experience'));
                     }
+                    $this->entityManager->remove($experience);
+                    $this->logger->debug('Experience "'.$experience->getName().'" removed.');
                 }
                 $this->entityManager->flush();
             }

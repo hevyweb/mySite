@@ -4,6 +4,7 @@ namespace App\Tests\Application\Controller;
 
 use App\Entity\Experience;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -13,6 +14,8 @@ class ExperienceControllerTest extends AbstractApplicationTestCase
     
     protected RouterInterface $router;
 
+    protected array $uploadedFiles = [];
+
     #[\Override]
     public function setUp(): void
     {
@@ -20,6 +23,17 @@ class ExperienceControllerTest extends AbstractApplicationTestCase
         $this->em = $this->getContainer()->get(EntityManagerInterface::class);
         $this->router = $this->getContainer()->get('router');
         $this->logInAdmin();
+    }
+
+    #[\Override]
+    public function tearDown(): void
+    {
+        parent::tearDown();
+        foreach ($this->uploadedFiles as $file) {
+            if (file_exists($file)) {
+                @unlink($file);
+            }
+        }
     }
 
     public static function invalidExperienceDataProvider(): \Generator
@@ -104,6 +118,129 @@ class ExperienceControllerTest extends AbstractApplicationTestCase
         $experience = $this->em->getRepository(Experience::class)->findOneBy(['name' => 'Developer', 'locale' => 'en']);
         $this->assertNotNull($experience);
         $this->assertEquals('Developer', $experience->getName());
+    }
+
+    public function testCreateExperienceWithImage(): void
+    {
+        $imagePath = __DIR__ . '/Resource/test.jpg';
+        $uploadedFile = new UploadedFile(
+            $imagePath,
+            'test.jpg',
+            'image/jpeg',
+            null,
+            true
+        );
+
+        $this->client->request('GET', $this->router->generate('experience-create'));
+
+        $this->client->submitForm('Create', [
+            'experience[name]' => 'Position with Image',
+            'experience[locale]' => 'en',
+            'experience[description]' => 'Description for position with image.',
+            'experience[location]' => 'Image Location',
+            'experience[company]' => 'Image Company',
+            'experience[fromDate]' => '2023-01-01',
+            'experience[image]' => $uploadedFile,
+        ]);
+
+        $this->assertResponseRedirects($this->router->generate('experience-list'));
+
+        $this->em->clear();
+        $experience = $this->em->getRepository(Experience::class)->findOneBy(['name' => 'Position with Image']);
+        $this->assertNotNull($experience);
+        $this->assertNotNull($experience->getImage());
+
+        $imagesDir = $this->getContainer()->getParameter('images_experience');
+        $this->uploadedFiles[] = $imagesDir . '/' . $experience->getImage();
+        
+        $this->assertFileExists($imagesDir . '/' . $experience->getImage());
+    }
+
+    public function testUpdateExperienceWithImage(): void
+    {
+        $imagePath = __DIR__ . '/Resource/test.jpg';
+        $uploadedFile = new UploadedFile(
+            $imagePath,
+            'test.jpg',
+            'image/jpeg',
+            null,
+            true
+        );
+
+        $experience = $this->em->getRepository(Experience::class)->findOneBy(['name' => 'Senior Developer', 'locale' => 'en']);
+        $experienceId = $experience->getId();
+
+        $this->client->request('GET', $this->router->generate('experience-update', ['id' => $experienceId]));
+
+        $this->client->submitForm('Update', [
+            'experience[name]' => 'Updated Project Manager',
+            'experience[locale]' => 'en',
+            'experience[description]' => 'Updated description.',
+            'experience[location]' => 'Updated Location',
+            'experience[company]' => 'Updated Company',
+            'experience[fromDate]' => '2022-01-01',
+            'experience[toDate]' => '2023-01-01',
+            'experience[image]' => $uploadedFile,
+        ]);
+
+        $this->assertResponseRedirects($this->router->generate('experience-list'));
+
+        $this->em->clear();
+        $updatedExperience = $this->em->getRepository(Experience::class)->find($experienceId);
+        $this->assertEquals('Updated Project Manager', $updatedExperience->getName());
+        $this->assertNotNull($updatedExperience->getImage());
+        
+        $imagesDir = $this->getContainer()->getParameter('images_experience');
+        $this->uploadedFiles[] = $imagesDir . '/' . $updatedExperience->getImage();
+        
+        $this->assertFileExists($imagesDir . '/' . $updatedExperience->getImage());
+    }
+    
+    public function testDeleteExperienceWithImage(): void
+    {
+        // First create an experience with an image to ensure we have one to delete
+        $imagePath = __DIR__ . '/Resource/test.jpg';
+        $uploadedFile = new UploadedFile(
+            $imagePath,
+            'test.jpg',
+            'image/jpeg',
+            null,
+            true
+        );
+
+        $this->client->request('GET', $this->router->generate('experience-create'));
+        $this->client->submitForm('Create', [
+            'experience[name]' => 'To Be Deleted',
+            'experience[locale]' => 'en',
+            'experience[description]' => 'This will be deleted.',
+            'experience[location]' => 'Delete Location',
+            'experience[company]' => 'Delete Company',
+            'experience[fromDate]' => '2023-01-01',
+            'experience[image]' => $uploadedFile,
+        ]);
+
+        $this->em->clear();
+        $experience = $this->em->getRepository(Experience::class)->findOneBy(['name' => 'To Be Deleted']);
+        $experienceId = $experience->getId();
+        $imageFilename = $experience->getImage();
+        $imagesDir = $this->getContainer()->getParameter('images_experience');
+        $fullImagePath = $imagesDir . '/' . $imageFilename;
+        
+        $this->assertFileExists($fullImagePath);
+
+        // Now delete it
+        $this->client->request(
+            'POST',
+            $this->router->generate('experience-delete'),
+            ['id' => [$experienceId => 'on']]
+        );
+
+        $this->assertResponseRedirects($this->router->generate('experience-list'));
+
+        $this->em->clear();
+        $deletedExperience = $this->em->getRepository(Experience::class)->find($experienceId);
+        $this->assertNull($deletedExperience);
+        $this->assertFileDoesNotExist($fullImagePath);
     }
 
     /**
