@@ -44,7 +44,6 @@ user-reset-password:
 
 user-logout:
   path: /logout
-  controller: App\Controller\UserController::logout
 
 user-new-email-confirm:
   path: /user/confirm_new_email/{token}

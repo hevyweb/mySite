@@ -4,6 +4,7 @@ namespace App\DataFixtures\Tests;
 
 use App\Entity\Role;
 use App\Entity\User;
+use App\Type\Gender;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
@@ -15,6 +16,8 @@ class UserFixtures extends Fixture implements DependentFixtureInterface, Fixture
     public const REGULAR_USER = 'user';
 
     public const ADMIN_USER = 'admin';
+    
+    public const NAKED_USER = 'naked';
 
     public function __construct(private readonly UserPasswordHasherInterface $passwordHasher)
     {
@@ -34,8 +37,10 @@ class UserFixtures extends Fixture implements DependentFixtureInterface, Fixture
     {
         $adminUser = $this->createAdminUser();
         $user = $this->createUser();
+        $nakedUser = $this->createNakedUser();
         $manager->persist($adminUser);
         $manager->persist($user);
+        $manager->persist($nakedUser);
         $manager->flush();
 
         $this->setReference('user_admin', $adminUser);
@@ -52,7 +57,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface, Fixture
             ->setEmail('admin@fake.com')
             ->setFirstName('John')
             ->setLastName('Smith')
-            ->setSex(1)
+            ->setSex(Gender::MALE)
             ->setUsername(self::ADMIN_USER)
             ->setPlainPassword('admin')
             ->setPassword($this->passwordHasher->hashPassword($adminUser, 'admin'))
@@ -76,7 +81,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface, Fixture
             ->setEmail('user@fake.com')
             ->setFirstName('Jane')
             ->setLastName('Smith')
-            ->setSex(0)
+            ->setSex(Gender::FEMALE)
             ->setUsername(self::REGULAR_USER)
             ->setPlainPassword('user')
             ->setPassword($this->passwordHasher->hashPassword($user, 'user'))
@@ -86,6 +91,26 @@ class UserFixtures extends Fixture implements DependentFixtureInterface, Fixture
 
         $user->addRole($this->getReference('role_ROLE_USER', Role::class));
         $this->setReference('test_user', $user);
+
+        return $user;
+    }
+    
+    private function createNakedUser(): User
+    {
+        $user = new User();
+        $user
+            ->setEmail('naked@user.com')
+            ->setFirstName('Sam')
+            ->setLastName('Some')
+            ->setUsername(self::NAKED_USER)
+            ->setPlainPassword('user')
+            ->setPassword($this->passwordHasher->hashPassword($user, 'user'))
+            ->setActive(true)
+            ->setEnabled(true)
+            ->setCreatedAt(new \DateTimeImmutable((new \DateTime('2025-01-01 00:00:00'))->format('c')));
+
+        $user->addRole($this->getReference('role_ROLE_USER', Role::class));
+        $this->setReference('test_naked_user', $user);
 
         return $user;
     }

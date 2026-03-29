@@ -111,6 +111,9 @@ class UserController extends AbstractController
         return $user;
     }
 
+    /**
+     * @throws \Exception
+     */
     #[\Override]
     public function getUser(): ?User
     {
@@ -270,11 +273,6 @@ class UserController extends AbstractController
         ]);
     }
 
-    public function logout(): Response
-    {
-        return $this->redirectToRoute('home');
-    }
-
     public function create(Request $request, UserPasswordHasherInterface $passwordHasher): Response
     {
         if (!empty($this->getUser())) {
@@ -283,7 +281,7 @@ class UserController extends AbstractController
 
         if (!$this->getParameter('registration_enabled')) {
             return $this->render('user/register_closed.html.twig', [
-                'title' => $this->translator->trans('Sign up'),
+                'title' => $this->translator->trans('Sign up is closed'),
             ]);
         }
 
@@ -420,6 +418,7 @@ class UserController extends AbstractController
             $this->dispatcher->dispatch($event);
         } else {
             usleep(mt_rand(0, self::ANTI_BRUT_FORCE_COOL_DOWN));
+            $this->logger->warning('Someone is trying to use recovery token that does not exist "'.substr($token, 0, 64).'".');
         }
         $this->addFlash(self::SUCCESS, $this->translator->trans(
             'A new password has been sent to your email.',
