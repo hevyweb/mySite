@@ -412,7 +412,7 @@ class UserControllerTest extends AbstractApplicationTestCase
     {
         $this->logInUser();
         $this->client->request('GET', $this->router->generate('user-edit-general', ['id' => 1]));
-        $this->assertResponseStatusCodeSame(404);
+        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
     }
 
     public function testAdminCanUpdateOtherUsers(): void

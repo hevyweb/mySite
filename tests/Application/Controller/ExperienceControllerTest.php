@@ -25,17 +25,6 @@ class ExperienceControllerTest extends AbstractApplicationTestCase
         $this->logInAdmin();
     }
 
-    #[\Override]
-    public function tearDown(): void
-    {
-        parent::tearDown();
-        foreach ($this->uploadedFiles as $file) {
-            if (file_exists($file)) {
-                @unlink($file);
-            }
-        }
-    }
-
     public static function invalidExperienceDataProvider(): \Generator
     {
         yield 'blank name' => [

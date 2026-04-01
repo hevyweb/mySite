@@ -32,7 +32,7 @@ readonly class AccessDeniedHandler implements AccessDeniedHandlerInterface
             $this->twig->render('security/access_denied.html.twig', [
                 'title' => $this->translator->trans('Access Denied.', [], 'security'),
             ]),
-            404
+            Response::HTTP_FORBIDDEN
         );
     }
 }

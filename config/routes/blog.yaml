@@ -1,9 +1,16 @@
 blog-list:
   controller: App\Controller\BlogController::index
-  path: blog
+  path: blog/{page}
+  defaults:
+    page: 1
+  requirements:
+    page: '[1-9]\d*'
 
 blog-view:
   controller: App\Controller\BlogController::view
-  path: blog/{slug}
+  path: blog/{slug}/{page}
+  defaults:
+    page: 1
   requirements:
     slug: '^[\w-]+$'
+    page: '[1-9]\d*'

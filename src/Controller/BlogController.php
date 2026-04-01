@@ -29,10 +29,6 @@ class BlogController extends AbstractController
     {
         $page = (int) $request->get('page', 1);
 
-        if ($page < 1) {
-            $page = 1;
-        }
-
         $articleRepository = $this->entityManager->getRepository(Article::class);
 
         $count = $articleRepository->countBlogArticles($request->getLocale());
@@ -60,13 +56,13 @@ class BlogController extends AbstractController
             'title' => $translation->getTitle(),
             'article' => $article,
             'translation' => $translation,
-        ], $this->incrementHitAndGetResponse($translation)
+        ], $this->incrementHitAndGetResponse($request, $translation)
         );
     }
 
-    private function incrementHitAndGetResponse(ArticleTranslation $articleTranslation): Response
+    private function incrementHitAndGetResponse(Request $request, ArticleTranslation $articleTranslation): Response
     {
-        $hit = $_COOKIE['hit'] ?? '';
+        $hit = $request->cookies->get('hit', '');
 
         if ('' === $hit) {
             $hit = [];

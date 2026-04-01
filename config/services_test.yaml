@@ -1,0 +1,9 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    App\Tests\Mock\ReCaptchaMockFactory: ~
+
+    ReCaptcha\ReCaptcha:
+        factory: ['App\Tests\Mock\ReCaptchaMockFactory', 'create']
