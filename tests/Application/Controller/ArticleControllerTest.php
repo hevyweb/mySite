@@ -176,6 +176,45 @@ class ArticleControllerTest extends AbstractApplicationTestCase
         $this->assertCount(1, $updatedArticle->getTags());
     }
 
+    public function testArticleUpdateNotFound(): void
+    {
+        $this->logInAdmin();
+        $this->client->request('GET', $this->router->generate('article-edit', [
+            'slug' => 'non-existent-slug',
+            'locale' => 'en',
+        ]));
+        $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
+    }
+
+    public function testArticleUpdateLocaleFallback(): void
+    {
+        $this->logInAdmin();
+        /** @var Article $article */
+        $article = $this->entityManager->getRepository(Article::class)->findOneBySlug('test_slug');
+        
+        $this->client->request('GET', $this->router->generate('article-edit', [
+            'slug' => $article->getSlug(),
+            'locale' => 'uk', 
+        ]));
+        
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorTextContains('h2', 'Update an article');
+    }
+
+    public function testArticleUpdateNoTranslation(): void
+    {
+        $this->logInAdmin();
+        
+        // This article has no translations in fixtures
+        $this->client->request('GET', $this->router->generate('article-edit', [
+            'slug' => 'no_translation_slug',
+            'locale' => 'en',
+        ]));
+
+        // Based on controller logic: if (!$translation) { ... return $this->redirectToRoute('article-create'); }
+        $this->assertResponseRedirects($this->router->generate('article-create'));
+    }
+
     public function testArticleTranslate(): void
     {
         $this->logInAdmin();
@@ -205,6 +244,23 @@ class ArticleControllerTest extends AbstractApplicationTestCase
         $newImagePath = $imagesArticleDir . DIRECTORY_SEPARATOR . $newTranslation->getImage();
         $this->assertFileExists($newImagePath);
         $this->uploadedFiles[] = $newImagePath;
+    }
+
+    public function testArticleTranslateAlreadyExists(): void
+    {
+        $this->logInAdmin();
+        /** @var ArticleTranslation $translation */
+        $translation = $this->entityManager->getRepository(ArticleTranslation::class)->findOneBy(['locale' => 'en']);
+        
+        $this->client->request('GET', $this->router->generate('article-translate', [
+            'id' => $translation->getId(),
+            'locale' => 'en'
+        ]));
+
+        $this->assertResponseRedirects($this->router->generate('article-edit', [
+            'slug' => $translation->getArticle()->getSlug(),
+            'locale' => 'en'
+        ]));
     }
 
     public function testArticleTranslateTranslationNotFound(): void
@@ -259,6 +315,53 @@ class ArticleControllerTest extends AbstractApplicationTestCase
         $updatedTranslation = $this->entityManager->getRepository(ArticleTranslation::class)->find($translation->getId());
         $this->assertEquals('Autosaved Title', $updatedTranslation->getTitle());
         $this->assertTrue($updatedTranslation->isDraft());
+    }
+
+    public function testArticleFormAutosaveTranslationNotFound(): void
+    {
+        $this->logInAdmin();
+        $this->client->request('POST', $this->router->generate('article-form-update', ['id' => 99999]), [
+            'form' => [
+                'translation' => [
+                    'title' => 'Autosaved Title',
+                    'body' => 'Autosaved body content.',
+                    'locale' => 'en',
+                    'preview' => 'Autosaved preview.',
+                ],
+                'article' => [
+                    'slug' => 'autosaved-slug',
+                    'tags' => 'tag1',
+                ]
+            ]
+        ]);
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
+        $this->assertResponseHeaderSame('Content-Type', 'application/json');
+        
+        $responseData = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertArrayHasKey('error', $responseData);
+        $this->assertEquals('Autosave failed because of invalid id.', $responseData['error']);
+    }
+
+    public function testArticleFormAutosaveNoId(): void
+    {
+        $this->logInAdmin();
+        $this->client->request('POST', $this->router->generate('article-form-update'), [
+            'form' => [
+                'translation' => [
+                    'title' => '',
+                    'body' => '',
+                    'locale' => 'en',
+                    'preview' => '',
+                ],
+                'article' => [
+                    'slug' => '',
+                    'tags' => '',
+                ]
+            ]
+        ]);
+
+        $this->assertResponseStatusCodeSame(Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 
     public function testArticleDeleteSingle(): void

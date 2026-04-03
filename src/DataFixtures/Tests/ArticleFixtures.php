@@ -27,9 +27,15 @@ class ArticleFixtures extends Fixture implements DependentFixtureInterface, Fixt
             ->addTag($this->getReference('tag_plum', Tag::class));
 
         $manager->persist($article);
+
+        $articleWithoutTranslation = new Article();
+        $articleWithoutTranslation->setSlug('no_translation_slug');
+        $manager->persist($articleWithoutTranslation);
+
         $manager->flush();
 
         $this->setReference('article_test', $article);
+        $this->setReference('article_no_translation', $articleWithoutTranslation);
     }
 
     #[\Override]
