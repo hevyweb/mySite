@@ -2,6 +2,7 @@ parameters:
     supported_locales:
         - en
         - uk
+    app_locales_regex: 'en|uk'
 
 framework:
     default_locale: en

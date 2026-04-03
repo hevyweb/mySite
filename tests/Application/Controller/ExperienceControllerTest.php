@@ -111,10 +111,10 @@ class ExperienceControllerTest extends AbstractApplicationTestCase
 
     public function testCreateExperienceWithImage(): void
     {
-        $imagePath = __DIR__ . '/Resource/test.jpg';
+        $imagePath = __DIR__ . '/Resource/test_test.jpg';
         $uploadedFile = new UploadedFile(
             $imagePath,
-            'test.jpg',
+            'test_test.jpg',
             'image/jpeg',
             null,
             true
@@ -147,7 +147,7 @@ class ExperienceControllerTest extends AbstractApplicationTestCase
 
     public function testUpdateExperienceWithImage(): void
     {
-        $imagePath = __DIR__ . '/Resource/test.jpg';
+        $imagePath = __DIR__ . '/Resource/test_test.jpg';
         $uploadedFile = new UploadedFile(
             $imagePath,
             'test.jpg',
@@ -188,7 +188,7 @@ class ExperienceControllerTest extends AbstractApplicationTestCase
     public function testDeleteExperienceWithImage(): void
     {
         // First create an experience with an image to ensure we have one to delete
-        $imagePath = __DIR__ . '/Resource/test.jpg';
+        $imagePath = __DIR__ . '/Resource/test_test.jpg';
         $uploadedFile = new UploadedFile(
             $imagePath,
             'test.jpg',

@@ -106,15 +106,14 @@ class ArticleController extends AbstractController
 
         $locale = $request->get('locale');
 
-        if (!in_array($locale, $this->getParameter('app_locales'))) {
-            throw new NotFoundHttpException($this->translator->trans('Locale {{ locale }} not found', ['locale' => $locale], 'languages'));
-        }
-
-        if ($existingArticle = $articleTranslationRepository->findOneBy([
+        if ($existingTranslation = $articleTranslationRepository->findOneBy([
             'article' => $articleTranslation->getArticle(),
             'locale' => $locale])
         ) {
-            return $this->redirectToRoute('article-edit', ['id' => $existingArticle->getId()]);
+            return $this->redirectToRoute('article-edit', [
+                'slug' => $existingTranslation->getArticle()->getSlug(),
+                'locale' => $existingTranslation->getLocale(),
+            ]);
         }
 
         $newArticleTranslation = clone $articleTranslation;

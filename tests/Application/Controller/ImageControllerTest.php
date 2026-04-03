@@ -6,13 +6,36 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class ImageControllerTest extends AbstractApplicationTestCase
 {
+    private string $imagePath;
+    private string $sourceImagePath;
+
+    #[\Override]
+    public function setUp(): void
+    {
+        parent::setUp();
+        $this->imagePath = __DIR__ . '/Resource/test.jpg';
+        $this->sourceImagePath = __DIR__ . '/Resource/test_test.jpg';
+        
+        if (file_exists($this->sourceImagePath)) {
+            copy($this->sourceImagePath, $this->imagePath);
+        }
+    }
+
+    #[\Override]
+    public function tearDown(): void
+    {
+        parent::tearDown();
+        if (file_exists($this->imagePath)) {
+            unlink($this->imagePath);
+        }
+    }
+
     public function testImageUpload(): void
     {
         $this->logInAdmin();
         
-        $imagePath = __DIR__ . '/Resource/test.jpg';
         $uploadedFile = new UploadedFile(
-            $imagePath,
+            $this->imagePath,
             'test.jpg',
             'image/jpeg',
             null,
@@ -27,9 +50,6 @@ class ImageControllerTest extends AbstractApplicationTestCase
         $responseData = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertArrayHasKey('location', $responseData);
         $this->assertStringContainsString('/blog/', $responseData['location']);
-        
-        // Clean up uploaded file if possible, or assume tearDown handles it if tracked.
-        // For simplicity in this test, we just verify the response.
     }
 
     public function testImageUploadAccessDeniedForRegularUser(): void
@@ -37,5 +57,11 @@ class ImageControllerTest extends AbstractApplicationTestCase
         $this->logInUser();
         $this->client->request('POST', $this->router->generate('images-upload'));
         $this->assertResponseStatusCodeSame(403);
+    }
+
+    public function testImageUploadRedirectsForAnonymous(): void
+    {
+        $this->client->request('POST', $this->router->generate('images-upload'));
+        $this->assertResponseRedirects($this->router->generate('user-login'));
     }
 }

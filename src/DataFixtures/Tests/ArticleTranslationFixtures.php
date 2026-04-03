@@ -12,6 +12,8 @@ use Doctrine\Persistence\ObjectManager;
 
 class ArticleTranslationFixtures extends Fixture implements DependentFixtureInterface, FixtureGroupInterface
 {
+    public const ARTICLE_TRANSLATION_ID = 1;
+
     #[\Override]
     public function load(ObjectManager $manager): void
     {
@@ -26,14 +28,15 @@ class ArticleTranslationFixtures extends Fixture implements DependentFixtureInte
             ->setUpdatedAt(new \DateTime('2022-02-24'))
             ->setUpdatedBy($this->getReference('test_admin', User::class))
             ->setCreatedBy($this->getReference('test_admin', User::class))
-            ->setDraft(true)
+            ->setDraft(false)
             ->setHit(456)
-            ->setImage('images/notfound.jpg')
+            ->setImage('test_image.jpg')
             ->setArticle($this->getReference('article_test', Article::class));
 
         $manager->persist($articleTranslation);
         $manager->flush();
-        $manager->clear();
+        
+        $this->addReference('article_translation_test', $articleTranslation);
     }
 
     #[\Override]
