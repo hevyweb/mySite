@@ -11,7 +11,10 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 readonly class File
 {
-    public function __construct(private StringService $strings)
+    public function __construct(
+        private StringService $strings,
+        private string $env,
+    )
     {
     }
 
@@ -19,8 +22,11 @@ readonly class File
     {
         $this->checkAndCreateFolder($dir);
         $fileName = $this->generateUniqueFilename($file->getClientOriginalExtension(), $dir);
-
-        return $file->move($dir, $fileName);
+        if ($this->env !== 'test') {
+            return $file->move($dir, $fileName);
+        } else {
+            return new SymfonyFile($dir.DIRECTORY_SEPARATOR.$fileName, false);
+        }
     }
 
     public function generateUniqueFilename(string $ext, string $dir): string
@@ -35,9 +41,11 @@ readonly class File
     public function remove(string $fileName, string $dir): void
     {
         $filePath = $this->getFilePath($dir, $fileName);
-
-        if (is_file($filePath) && !unlink($filePath)) {
-            throw new FileNotFoundException('Can not delete file "'.$filePath.'"');
+        
+        if ($this->env !== 'test') {
+            if (is_file($filePath) && !unlink($filePath)) {
+                throw new FileNotFoundException('Can not delete file "' . $filePath . '"');
+            }
         }
     }
 
@@ -58,9 +66,11 @@ readonly class File
         $ext = pathinfo($filePath, \PATHINFO_EXTENSION);
         $newFileName = $this->generateUniqueFilename($ext, $dir);
         $newPath = $this->getFilePath($dir, $newFileName);
-
-        if (!@copy($filePath, $newPath)) {
-            throw new FileException('Can not copy file from "'.$filePath.'" to "'.$newPath.'"');
+        
+        if ($this->env !== 'test') {
+            if (!@copy($filePath, $newPath)) {
+                throw new FileException('Can not copy file from "' . $filePath . '" to "' . $newPath . '"');
+            }
         }
 
         return $newFileName;

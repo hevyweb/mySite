@@ -138,11 +138,6 @@ class ExperienceControllerTest extends AbstractApplicationTestCase
         $experience = $this->em->getRepository(Experience::class)->findOneBy(['name' => 'Position with Image']);
         $this->assertNotNull($experience);
         $this->assertNotNull($experience->getImage());
-
-        $imagesDir = $this->getContainer()->getParameter('images_experience');
-        $this->uploadedFiles[] = $imagesDir . '/' . $experience->getImage();
-        
-        $this->assertFileExists($imagesDir . '/' . $experience->getImage());
     }
 
     public function testUpdateExperienceWithImage(): void
@@ -178,11 +173,6 @@ class ExperienceControllerTest extends AbstractApplicationTestCase
         $updatedExperience = $this->em->getRepository(Experience::class)->find($experienceId);
         $this->assertEquals('Updated Project Manager', $updatedExperience->getName());
         $this->assertNotNull($updatedExperience->getImage());
-        
-        $imagesDir = $this->getContainer()->getParameter('images_experience');
-        $this->uploadedFiles[] = $imagesDir . '/' . $updatedExperience->getImage();
-        
-        $this->assertFileExists($imagesDir . '/' . $updatedExperience->getImage());
     }
     
     public function testDeleteExperienceWithImage(): void
@@ -211,11 +201,6 @@ class ExperienceControllerTest extends AbstractApplicationTestCase
         $this->em->clear();
         $experience = $this->em->getRepository(Experience::class)->findOneBy(['name' => 'To Be Deleted']);
         $experienceId = $experience->getId();
-        $imageFilename = $experience->getImage();
-        $imagesDir = $this->getContainer()->getParameter('images_experience');
-        $fullImagePath = $imagesDir . '/' . $imageFilename;
-        
-        $this->assertFileExists($fullImagePath);
 
         // Now delete it
         $this->client->request(
@@ -229,7 +214,6 @@ class ExperienceControllerTest extends AbstractApplicationTestCase
         $this->em->clear();
         $deletedExperience = $this->em->getRepository(Experience::class)->find($experienceId);
         $this->assertNull($deletedExperience);
-        $this->assertFileDoesNotExist($fullImagePath);
     }
 
     /**

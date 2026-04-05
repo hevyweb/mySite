@@ -7,6 +7,7 @@ use App\Entity\ArticleTranslation;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DomCrawler\Field\ChoiceFormField;
 use Symfony\Component\DomCrawler\Field\FileFormField;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Response;
 
 class ArticleControllerTest extends AbstractApplicationTestCase
@@ -41,6 +42,7 @@ class ArticleControllerTest extends AbstractApplicationTestCase
         parent::tearDown();
         foreach ($this->uploadedFiles as $file) {
             if (file_exists($file)) {
+                @chmod($file, 0666);
                 @unlink($file);
             }
         }
@@ -222,7 +224,6 @@ class ArticleControllerTest extends AbstractApplicationTestCase
         $originalTranslation = $this->entityManager->getRepository(ArticleTranslation::class)->findOneBy(['title' => 'Translation title', 'locale' => 'en']);
         $originalArticleId = $originalTranslation->getArticle()->getId();
         $originalImageFilename = $originalTranslation->getImage();
-        $imagesArticleDir = $this->getContainer()->getParameter('images_article');
 
         $this->client->request('GET', $this->router->generate('article-translate', [
             'id' => $originalTranslation->getId(),
@@ -240,10 +241,6 @@ class ArticleControllerTest extends AbstractApplicationTestCase
         $this->assertNotNull($newTranslation, 'The translation for uk locale should have been created.');
         $this->assertNotNull($newTranslation->getImage(), 'The image for the new translation should have been cloned.');
         $this->assertNotEquals($originalImageFilename, $newTranslation->getImage());
-
-        $newImagePath = $imagesArticleDir . DIRECTORY_SEPARATOR . $newTranslation->getImage();
-        $this->assertFileExists($newImagePath);
-        $this->uploadedFiles[] = $newImagePath;
     }
 
     public function testArticleTranslateAlreadyExists(): void

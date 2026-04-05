@@ -17,6 +17,7 @@ services:
             $defaultDateFormat: '%env(DEFAULT_DATE_FORMAT)%'
             $googlePublicKey: '%env(GOOGLE_RECAPTCHA_SITE_KEY)%'
             $autosave: '%env(AUTOSAVE)%'
+            $env: '%env(APP_ENV)%'
 
     App\:
         resource: '../src/'
