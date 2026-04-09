@@ -4,6 +4,7 @@ namespace App\Tests\Application\Controller;
 
 use App\Entity\Page;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Response;
 
 class PageControllerTest extends AbstractApplicationTestCase
 {
@@ -59,5 +60,41 @@ class PageControllerTest extends AbstractApplicationTestCase
         $em->clear();
         $updatedPage = $em->getRepository(Page::class)->find($pageId);
         $this->assertEquals('Updated Page Title', $updatedPage->getTitle());
+    }
+
+    public function testPageUpdateNotFound(): void
+    {
+        $this->logInAdmin();
+        $this->client->request('GET', $this->router->generate('page-update', ['id' => 99999]));
+        $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
+    }
+
+    public function testPageDeleteRedirects(): void
+    {
+        $this->logInAdmin();
+        // Since delete is not implemented yet, it just redirects back to list
+        $this->client->request('GET', $this->router->generate('page-delete'));
+        $this->assertResponseRedirects($this->router->generate('page-list'));
+    }
+
+    public function testPageListAccessDeniedForRegularUser(): void
+    {
+        $this->logInUser();
+        $this->client->request('GET', $this->router->generate('page-list'));
+        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+    }
+
+    public function testPageCreateAccessDeniedForRegularUser(): void
+    {
+        $this->logInUser();
+        $this->client->request('GET', $this->router->generate('page-create'));
+        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
+    }
+
+    public function testPageUpdateAccessDeniedForRegularUser(): void
+    {
+        $this->logInUser();
+        $this->client->request('GET', $this->router->generate('page-update', ['id' => 1]));
+        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
     }
 }

@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Service\FileSystem\FileManagementInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -19,15 +20,19 @@ class ImageController extends AbstractController
 
     public function index(): Response
     {
-        return $this->render('image/index.html.twig', [
-            'controller_name' => 'ImageController',
-        ]);
+        return $this->redirectToRoute('home');
     }
 
     public function upload(Request $request): Response
     {
         try {
-            $newName = basename($this->fileManagement->save($request->files->get('file'), $this->getParameter('images_article')));
+            /** @var UploadedFile|null $file */
+            $file = $request->files->get('file');
+            if (null === $file) {
+                throw new \Exception('No file uploaded.');
+            }
+
+            $newName = basename($this->fileManagement->save($file, $this->getParameter('images_article')));
 
             return $this->json([
                 'location' => $request->getSchemeAndHttpHost().'/blog/'.$newName,

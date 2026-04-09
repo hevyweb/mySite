@@ -17,4 +17,4 @@ page-update:
 page-delete:
   controller: App\Controller\PageController::delete
   path: administrator/page/delete
-  methods: [POST]
+  methods: [GET, POST]

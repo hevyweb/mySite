@@ -3,6 +3,7 @@
 namespace App\Tests\Application\Controller;
 
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\Response;
 
 class ImageControllerTest extends AbstractApplicationTestCase
 {
@@ -30,6 +31,13 @@ class ImageControllerTest extends AbstractApplicationTestCase
         }
     }
 
+    public function testImageIndex(): void
+    {
+        $this->logInAdmin();
+        $this->client->request('GET', $this->router->generate('images-list'));
+        $this->assertResponseRedirects($this->router->generate('home'));
+    }
+
     public function testImageUpload(): void
     {
         $this->logInAdmin();
@@ -52,11 +60,26 @@ class ImageControllerTest extends AbstractApplicationTestCase
         $this->assertStringContainsString('/blog/', $responseData['location']);
     }
 
+    public function testImageUploadError(): void
+    {
+        $this->logInAdmin();
+        
+        // Sending a POST request without the 'file' parameter should trigger an Exception in the controller
+        // because $request->files->get('file') will be null and the file manager will fail.
+        $this->client->request('POST', $this->router->generate('images-upload'));
+        
+        $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
+        $this->assertResponseHeaderSame('Content-Type', 'application/json');
+        
+        $responseData = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertArrayHasKey('error', $responseData);
+    }
+
     public function testImageUploadAccessDeniedForRegularUser(): void
     {
         $this->logInUser();
         $this->client->request('POST', $this->router->generate('images-upload'));
-        $this->assertResponseStatusCodeSame(403);
+        $this->assertResponseStatusCodeSame(Response::HTTP_FORBIDDEN);
     }
 
     public function testImageUploadRedirectsForAnonymous(): void
