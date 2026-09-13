@@ -1,0 +1,377 @@
+@import "~bootstrap/scss/bootstrap.scss";
+
+:root {
+  --bg-canvas: #fff;        /* Soft warm cream/ivory background */
+  --bg-card: #F4F3EE;       /* Pure white for crisp text readability */
+  --primary-warm: #4a3728;  /* Rich deep sepia/charcoal for headers */
+  --accent-amber: #8c6239;  /* Warm muted bronze/amber for labels and borders */
+  --text-dark: #2c2520;     /* Deep brown-black for high contrast reading */
+  --text-muted: #706456;    /* Muted taupe for tertiary details */
+  --border-color: #e6dfd3;  /* Soft warm grey for dividing lines */
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.color-white {
+  color: var(--bg-canvas);
+}
+
+.color-dark {
+  color: var(--accent-amber);
+}
+
+header {
+  background: none;
+  box-shadow: none;
+}
+
+body {
+  background-color: var(--bg-canvas);
+}
+
+.memorial-container {
+  background-color: var(--bg-canvas);
+  color: var(--text-dark);
+  font-family: 'Georgia', 'Times New Roman', serif;
+  line-height: 1.6;
+  padding: 15px 0; /* Reduced from 40px for mobile */
+  min-height: 100vh;
+
+  @include media-breakpoint-up(md) {
+    padding: 40px 0;
+  }
+}
+
+.memorial-card {
+  background: var(--bg-card);
+  border-radius: 8px;
+  box-shadow: 0 4px 25px rgba(74, 55, 40, 0.04);
+  padding: 15px; /* Reduced side/top padding for mobile */
+  margin-top: 0;
+  border-top: 4px solid var(--primary-warm);
+
+  @include media-breakpoint-up(md) {
+    padding: 40px;
+    margin-top: 20px;
+  }
+}
+
+/* Header typography styling */
+.memorial-header {
+  text-align: center;
+  margin-bottom: 25px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 15px;
+
+  @include media-breakpoint-up(md) {
+    margin-bottom: 40px;
+    padding-bottom: 25px;
+  }
+
+  .pre-title {
+    font-family: 'Arial', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 0.75rem;
+    color: var(--accent-amber);
+    font-weight: bold;
+    margin-bottom: 5px;
+
+    @include media-breakpoint-up(md) {
+      letter-spacing: 3px;
+      font-size: 0.85rem;
+      margin-bottom: 10px;
+    }
+  }
+
+  h1 {
+    font-size: 1.75rem; /* Scaled down for mobile */
+    color: var(--primary-warm);
+    margin: 0 0 5px 0;
+    font-weight: normal;
+
+    @include media-breakpoint-up(md) {
+      font-size: 2.5rem;
+    }
+  }
+
+  .lifespan {
+    font-size: 1rem;
+    color: var(--text-muted);
+    font-style: italic;
+
+    @include media-breakpoint-up(md) {
+      font-size: 1.25rem;
+    }
+  }
+}
+
+/* Profile image presentation details */
+.portrait-wrapper {
+  text-align: center;
+  background: linear-gradient(90deg, #6F5A49, #C39E81);
+  padding: 0.75rem;
+  border-radius: 5px 5px 0 0;
+}
+
+.info-action-bar {
+  margin-bottom: 25px; /* Added spacing after action bar */
+}
+
+.action-bar-button {
+  background: #E1D8C9;
+  border: 1px solid #B7AFA4;
+  padding: 0.6rem 0.25rem; /* Center aligned for icon-only mobile */
+  text-transform: uppercase;
+  font-size: 1rem; /* Larger icon touch targets */
+  font-weight: bold;
+  font-family: sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  @include media-breakpoint-up(sm) {
+    padding: 0.5rem 0.75rem;
+    font-size: 12px;
+  }
+
+  &:hover {
+    background: #d5cbba;
+  }
+}
+
+.action-bar-icon {
+  color: var(--accent-amber);
+  font-size: 1.2rem;
+
+  @include media-breakpoint-up(sm) {
+    font-size: 1rem;
+  }
+}
+
+.memorial-portrait {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+  box-shadow: 0 5px 15px rgba(74, 55, 40, 0.08);
+  border: 1px solid var(--border-color);
+  filter: grayscale(15%);
+  transition: filter 0.3s ease;
+
+  &:hover {
+    filter: grayscale(0%);
+  }
+}
+
+/* Metadata & Info Section styling */
+.info-panel {
+  background-color: #ECE8DF;
+  border: 1px solid #BCB5AB;
+  padding: 15px; /* Compact mobile padding */
+  margin-bottom: 20px;
+  border-radius: 5px;
+
+  @include media-breakpoint-up(md) {
+    padding: 20px 25px;
+  }
+
+  h3 {
+    font-family: 'Arial', sans-serif;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--primary-warm);
+    margin-top: 0;
+    margin-bottom: 12px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 5px;
+    text-align: center;
+
+    @include media-breakpoint-up(md) {
+      font-size: 1rem;
+      margin-bottom: 15px;
+    }
+  }
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr; /* 1 column on mobile (label above value) */
+  gap: 2px 0;
+  font-size: 0.95rem;
+
+  @include media-breakpoint-up(md) {
+    grid-template-columns: max-content 1fr; /* 2 columns on desktop */
+    gap: 8px 15px;
+  }
+}
+
+.info-label {
+  font-weight: bold;
+  color: var(--accent-amber);
+  font-family: 'Arial', sans-serif;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  padding-top: 6px;
+
+  @include media-breakpoint-up(md) {
+    padding-top: 2px;
+  }
+}
+
+.info-value {
+  color: var(--text-dark);
+  margin-bottom: 6px;
+
+  @include media-breakpoint-up(md) {
+    margin-bottom: 0;
+  }
+}
+
+/* Right-side content panel */
+.content-panel {
+  background-color: #E2DCCE;
+  border-radius: 5px;
+  padding: 1rem; /* Reduced mobile padding */
+  margin-right: 0; /* Reset right margin on mobile */
+
+  @include media-breakpoint-up(md) {
+    padding: 0.5rem 2rem 0.5rem 2rem;
+    margin-right: 1rem;
+  }
+
+  h2 {
+    font-family: 'Arial', sans-serif;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--primary-warm);
+    margin-bottom: 15px;
+
+    @include media-breakpoint-up(md) {
+      font-size: 1.25rem;
+      margin-bottom: 20px;
+    }
+  }
+
+  p {
+    margin-bottom: 15px;
+    text-indent: 15px; /* Shorter indent for narrow screens */
+
+    @include media-breakpoint-up(md) {
+      margin-bottom: 20px;
+      text-indent: 30px;
+    }
+  }
+}
+
+.content-panel-header {
+  font-size: 1.5rem;
+  text-align: center;
+  color: var(--text-dark); /* Fixed typo from varify to var */
+  text-transform: uppercase;
+  font-family: sans-serif;
+
+  @include media-breakpoint-up(md) {
+    font-size: 2rem;
+  }
+}
+
+.tab-content {
+  border: 1px solid #F5F5F5;
+  padding: 1rem;
+
+  @include media-breakpoint-up(md) {
+    padding: 2rem;
+  }
+  border-top: 0 none;
+}
+
+#photoModal .modal-content {
+  background-color: #121212;
+  color: #fff;
+}
+
+.main-photo-container {
+  position: relative;
+  width: 100%;
+  height: 40vh; /* Scaled down modal height for mobile */
+  max-height: 500px;
+  background-color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  user-select: none;
+
+  @include media-breakpoint-up(md) {
+    height: 55vh;
+  }
+
+  img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+  }
+}
+
+.photo-caption-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.85));
+  padding: 15px 20px 10px;
+  pointer-events: none;
+}
+
+.thumbnails-strip {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 12px;
+  background-color: #1e1e1e;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+
+  &::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #555;
+    border-radius: 3px;
+  }
+}
+
+.thumb-item {
+  flex: 0 0 55px;
+  height: 55px;
+  border-radius: 6px;
+  overflow: hidden;
+  cursor: pointer;
+  border: 2px solid transparent;
+  opacity: 0.6;
+  transition: all 0.2s ease;
+
+  @include media-breakpoint-up(md) {
+    flex: 0 0 70px;
+    height: 70px;
+  }
+
+  &.active,
+  &:hover {
+    opacity: 1;
+    border-color: #0d6efd;
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}

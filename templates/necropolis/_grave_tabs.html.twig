@@ -1,0 +1,12 @@
+<div class="graves-tabs-header-container">
+    <ul class="graves-tabs-header nav nav-tabs" role="tablist">
+        {% for tab in tabs %}
+            <li class="nav-item" role="presentation">
+                <a class="nav-link {{ tab.active ? 'active' : '' }}" type="button" role="tab" href="{{ tab.url }}">
+                    <i class="{{ tab.icon }}"></i>
+                    {{ tab.label }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+</div>

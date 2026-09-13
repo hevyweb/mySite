@@ -1,0 +1,87 @@
+necropolis-list:
+  controller: App\Controller\NecropolisController::index
+  path: administrator/necropolis/graves
+  
+necropolis-create:
+  controller: App\Controller\NecropolisController::create
+  path: administrator/necropolis/grave/create
+
+necropolis-edit:
+  controller: App\Controller\NecropolisController::edit
+  path: administrator/necropolis/grave/{id}
+  requirements:
+    id: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
+
+necropolis-delete:
+  controller: App\Controller\NecropolisController::delete
+  path: administrator/necropolis/grave/delete
+
+necropolis-public:
+  controller: App\Controller\NecropolisController::grave
+  path: grave/{id}
+  requirements:
+    id: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
+
+necropolis-photos:
+  controller: App\Controller\NecropolisController::photos
+  path: administrator/grave/{id}/photos
+  requirements:
+    id: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
+    
+necropolis-photos-create:
+  controller: App\Controller\NecropolisController::photosCreate
+  path: administrator/grave/{id}/photos/create
+  requirements:
+    id: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
+    
+necropolis-photos-delete:
+  controller: App\Controller\NecropolisController::photosDelete
+  path: administrator/grave/{id}/photos/{photoId}/delete
+  requirements:
+    id: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
+    photoId: \d+
+    
+necropolis-photos-edit:
+  controller: App\Controller\NecropolisController::photosEdit
+  path: administrator/grave/{id}/photos/{photoId}/edit
+  requirements:
+    id: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
+    photoId: \d+
+    
+necropolis-photos-list:
+  controller: App\Controller\NecropolisController::photosList
+  path: /grave/{id}/photos
+  requirements:
+    id: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
+
+necropolis-condolences:
+  controller: App\Controller\NecropolisController::condolences
+  path: grave/{id}/condolences
+  requirements:
+    id: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
+
+necropolis-condolences-delete:
+  controller: App\Controller\NecropolisController::condolencesDelete
+  path: grave/{id}/condolences/{condolenceId}/delete
+  requirements:
+    id: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
+    
+necropolis-condolences-toggle-status:
+  controller: App\Controller\NecropolisController::condolencesToggleStatus
+  path: grave/{id}/condolences/{condolenceId}/toggle-status
+  requirements:
+    id: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
+    condolenceId: \d+
+    
+necropolis-condolences-new:
+  controller: App\Controller\NecropolisController::condolencesNew
+  path: grave/{id}/condolences/new
+  methods: [POST]
+  requirements:
+    id: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
+
+necropolis-flowers:
+  controller: App\Controller\NecropolisController::flowers
+  path: grave/flowers/{id}
+  requirements:
+    id: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'

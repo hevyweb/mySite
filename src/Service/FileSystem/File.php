@@ -75,4 +75,13 @@ readonly class File
 
         return $newFileName;
     }
+    
+    public function saveFileContents(string $contents, string $dir, string $fileName): void
+    {
+        $this->checkAndCreateFolder($dir);
+        $filePath = $this->getFilePath($dir, $fileName);
+        if ($this->env !== 'test') {
+            file_put_contents($filePath, $contents);
+        }
+    }
 }

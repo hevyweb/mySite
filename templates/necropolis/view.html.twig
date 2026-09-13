@@ -1,0 +1,48 @@
+<html lang="uk">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ grave.firstName }} {{ grave.lastName }}</title>
+    <meta property="og:url" content="{{ url('necropolis-public', {'id': grave.id}) }}" />
+    <meta property="og:locale" content="uk" />
+    <meta property="og:type" content="profile" />
+    <meta property="og:profile:first_name" content="{{ grave.firstName }}" />
+    <meta property="og:profile:last_name" content="{{ grave.lastName }}" />
+    <meta property="og:profile:username" content="{{ grave.firstName }} {{ grave.lastName }}" />
+    <meta property="og:image" content="{{ absolute_url('/grave/' ~ grave.image) }}" />
+    {% if grave.birthDate %}
+        <meta property="og:profile:birth_date" content="{{ grave.birthDate|date('Y-m-d') }}" />
+    {% endif %}
+    {{ encore_entry_link_tags('css/necropolis') }}
+    {{ encore_entry_script_tags('js/necropolis') }}
+    {{ encore_entry_script_tags('js/bouquetBuilder') }}
+</head>
+<body>
+{% block content %}
+    <div class="memorial-container">
+        <div class="container">
+            <article class="memorial-card">
+                {{ include('necropolis/_memorial-header.html.twig', { 'grave': grave }) }}
+                <div class="row">
+                    <!-- 1 column on cellphones, 2 columns on medium screens (md) and up -->
+                    <div class="col-12 col-md-6">
+                        {{ include('necropolis/_info-panel.html.twig', { 'grave': grave }) }}
+                        {{ include('necropolis/_info-panel-photo.html.twig', { 'grave': grave }) }}
+                        {{ include('necropolis/_info-action-bar.html.twig', { 'grave': grave }) }}
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="content-panel">
+                            {{ include('necropolis/_bio.html.twig', { 'grave': grave }) }}
+                            {{ include('necropolis/_condolences.html.twig', { 'grave': grave }) }}
+                            {{ include('necropolis/_flowers.html.twig', { 'grave': grave }) }}
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </div>
+    {{ include('necropolis/_condolences-form.html.twig', { 'grave': grave }) }}
+    {{ include('necropolis/_carousel.html.twig') }}
+{% endblock %}
+</body>
+</html>

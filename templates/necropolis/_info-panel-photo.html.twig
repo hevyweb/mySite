@@ -1,0 +1,12 @@
+<div class="portrait-wrapper">
+    {% if grave.image %}
+        <img src="{{ absolute_url('/necropolis/' ~ grave.image) }}"
+             class="memorial-portrait"
+             alt="{{ grave.firstName }} {{ grave.lastName }}" />
+    {% else %}
+        {# Fallback template icon placeholder #}
+        <img src="{{ absolute_url('/images/default-monument.png') }}"
+             class="memorial-portrait"
+             alt="Default Memorial Image" />
+    {% endif %}
+</div>

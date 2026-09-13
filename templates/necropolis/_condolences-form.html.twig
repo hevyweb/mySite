@@ -1,0 +1,41 @@
+<!-- Модальне вікно (винесено за межі карток для уникнення проблем із z-index на мобільних) -->
+<div class="modal fade" id="condolenceModal" tabindex="-1" aria-labelledby="condolenceModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="condolenceModalLabel">Написати співчуття</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            {{ form_start(form, {
+                'action': path('necropolis-condolences-new', {'id': grave.id}),
+                'method': 'POST',
+                'attr': {'id': 'condolenceForm'}
+            }) }}
+            <div class="modal-body">
+                <div class="mb-3">
+                    {{ form_label(form.description, 'Текст співчуття', {'label_attr': {'class': 'form-label required'}}) }}
+                    {{ form_widget(form.description, {'attr': {'class': 'form-control', 'rows': '4', 'placeholder': 'Напишіть ваше повідомлення...'}}) }}
+                    {{ form_errors(form.description) }}
+                </div>
+                <div class="mb-3">
+                    {{ form_label(form.name, 'Ваше ім’я', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.name, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.name) }}
+                </div>
+                <div class="mb-3">
+                    {{ form_label(form.email, 'Email', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.email, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.email) }}
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Скасувати</button>
+                <button type="submit" class="btn btn-primary" id="btnSubmitCondolence">
+                    <i class="fa-solid fa-paper-plane me-1"></i> Надіслати
+                </button>
+            </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>

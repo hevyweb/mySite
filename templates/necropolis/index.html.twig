@@ -52,11 +52,13 @@
                                 </td>
                                 <td>
                                     {% if grave.image %}
-                                        <img src="{{ absolute_url('/uploads/graves/' ~ grave.image) }}" class="img-thumbnail company-thumbnail" alt="" />
+                                        <a href="{{ path('necropolis-edit', {'id': grave.id}) }}">
+                                            <img src="{{ absolute_url('/necropolis/' ~ grave.image) }}" class="img-thumbnail company-thumbnail" alt="" />
+                                        </a>
                                     {% endif %}
                                 </td>
                                 {# Added UUID link routing to edit view #}
-                                <td><a href="{{ path('necropolis-update', {'id': grave.id}) }}">{{ grave.firstName }}</a></td>
+                                <td><a href="{{ path('necropolis-edit', {'id': grave.id}) }}">{{ grave.firstName }}</a></td>
                                 <td>{{ grave.lastName }}</td>
                                 <td>{{ grave.maidenName ?? '-' }}</td>
                                 <td>
