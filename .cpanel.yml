@@ -1,0 +1,9 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/dmytrodz/mySite/
+    # 1. Sync updated project files while preserving server-only files (.env.local, var/ logs, etc.)
+    - /usr/bin/rsync -av --exclude='.git*' --exclude='.env.local' --exclude='var/cache/' --exclude='var/log/' ./ $DEPLOYPATH
+    
+    # 2. Run post-deployment maintenance (adjust PHP path if cPanel uses EA-PHP)
+    - cd $DEPLOYPATH && /usr/local/bin/php bin/console cache:clear --env=prod
