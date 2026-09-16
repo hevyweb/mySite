@@ -15,6 +15,50 @@ $(function($){
         })
         $('#biography').show();
     });
+
+    const $modalEl1 = $('#qrCodeModal');
+    const qrModal = new bootstrap.Modal($modalEl1[0]);
+
+    const $spinner = $('#qr-spinner');
+    const $qrContainer = $('#qr-code-container');
+    const $qrImg = $('#qr-code-img');
+    const $errorMessage = $('#qr-error-message');
+
+    $('.js-qr-btn').click(function (e) {
+        e.preventDefault();
+
+        const url = $(this).attr('href');
+
+        // Скидаємо стан елементів модалки
+        $qrContainer.addClass('d-none');
+        $errorMessage.addClass('d-none');
+        $spinner.removeClass('d-none');
+        $qrImg.attr('src', '');
+
+        // Відкриваємо модальне вікно
+        qrModal.show();
+
+        // Виконуємо AJAX запит
+        $.ajax({
+            url: url,
+            method: 'GET',
+            dataType: 'json',
+            success: function (response) {
+                if (response && response.qrcode) {
+                    $qrImg.attr('src', 'data:image/png;base64,' + response.qrcode);
+                    $qrContainer.removeClass('d-none');
+                } else {
+                    $errorMessage.text('Некоректний формат відповіді сервера.').removeClass('d-none');
+                }
+            },
+            error: function (xhr, status, error) {
+                $errorMessage.text('Помилка під час завантаження QR-коду (' + xhr.status + ').').removeClass('d-none');
+            },
+            complete: function () {
+                $spinner.addClass('d-none');
+            }
+        });
+    });
     
     const $shareButton = $('#shareButton');
 

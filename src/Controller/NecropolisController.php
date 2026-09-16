@@ -12,11 +12,20 @@ use App\Form\GraveType;
 use App\Service\FileSystem\File;
 use App\Service\ImageService;
 use Doctrine\ORM\EntityManagerInterface;
+use Endroid\QrCode\Color\Color;
+use Endroid\QrCode\Encoding\Encoding;
+use Endroid\QrCode\ErrorCorrectionLevel;
+use Endroid\QrCode\Label\Label;
+use Endroid\QrCode\Logo\Logo;
+use Endroid\QrCode\QrCode;
+use Endroid\QrCode\RoundBlockSizeMode;
+use Endroid\QrCode\Writer\PngWriter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 final class NecropolisController extends AbstractController
@@ -113,11 +122,13 @@ final class NecropolisController extends AbstractController
         ]);
     }
     
-    public function delete(Request $request): Response
+    public function delete(Grave $grave): Response
     {
-        return $this->render('necropolis/delete.html.twig', [
-            'controller_name' => 'NecropolisController',
-        ]);
+        $this->fileService->remove($grave->getImage(), $this->parameterBag->get('images_necropolis'));
+        $this->entityManager->remove($grave);
+        $this->entityManager->flush();
+        
+        return $this->redirectToRoute('necropolis-list');
     }
     
     public function photos(Grave $grave, Request $request): Response
@@ -338,5 +349,119 @@ final class NecropolisController extends AbstractController
         $condolence->setIsActive(!$condolence->isActive());
         $this->entityManager->flush();
         return $this->redirectToRoute('necropolis-condolences', ['id' => $condolence->getGrave()->getId()]);
+    }
+
+    public function qrcode(Grave $grave): Response
+    {
+        $writer = new PngWriter();
+
+        $qrCode = new QrCode(
+            data: $this->generateUrl('necropolis-public', ['id' => $grave->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
+            encoding: new Encoding('UTF-8'),
+            errorCorrectionLevel: ErrorCorrectionLevel::Low,
+            size: 900,
+            margin: 0, // Прибираємо внутрішній margin ендроїда, відступи контролюємо через Imagick
+            roundBlockSizeMode: RoundBlockSizeMode::Margin,
+            foregroundColor: new Color(44, 44, 44),
+            backgroundColor: new Color(255, 255, 255)
+        );
+
+        $result = $writer->write($qrCode);
+
+        // 1. Початкове зображення QR-коду
+        $qrImage = new \Imagick();
+        $qrImage->readImageBlob($result->getString());
+
+        $qrWidth = $qrImage->getImageWidth();
+        $qrHeight = $qrImage->getImageHeight();
+
+        $strokeWidth = 50;
+        $halfStroke = $strokeWidth / 2;
+
+        // Висота верхнього та нижнього текстових блоків
+        $topTextBlockHeight = 110;
+        $bottomTextBlockHeight = 130;
+
+        // 2. Вираховуємо розмір фінального КВАДРАТА
+        // Загальна висота = QR + рамки + верхній текст + нижній текст
+        $squareSize = $qrHeight + ($strokeWidth * 2) + $topTextBlockHeight + $bottomTextBlockHeight;
+
+        // Розраховуємо бічні відступи (padding), щоб QR-код був по центру
+        $sidePadding = ($squareSize - ($strokeWidth * 2) - $qrWidth) / 2;
+
+        // Радіус закруглення зовнішньої рамки (5% від розміру квадрата)
+        $outerRadius = $squareSize * 0.05;
+
+        // 3. Створюємо квадратне полотно з білим фоном
+        $finalImage = new \Imagick();
+        $finalImage->newImage($squareSize, $squareSize, new \ImagickPixel('white'), 'png');
+
+        // Накладаємо QR-код строго по центру
+        $qrX = $strokeWidth + $sidePadding;
+        $qrY = $strokeWidth + $topTextBlockHeight;
+        $finalImage->compositeImage($qrImage, \Imagick::COMPOSITE_OVER, (int)$qrX, (int)$qrY);
+
+        // 4. Малюємо зовнішню рамку із закругленими кутами навколо всього квадрата
+        $borderDraw = new \ImagickDraw();
+        $borderDraw->setFillColor(new \ImagickPixel('none'));
+        $borderDraw->setStrokeColor(new \ImagickPixel('#2c2c2c'));
+        $borderDraw->setStrokeWidth($strokeWidth);
+
+        $x1 = $halfStroke;
+        $y1 = $halfStroke;
+        $x2 = $squareSize - $halfStroke;
+        $y2 = $squareSize - $halfStroke;
+
+        $borderDraw->roundRectangle($x1, $y1, $x2, $y2, $outerRadius, $outerRadius);
+        $finalImage->drawImage($borderDraw);
+
+        // Налаштування шрифту
+        $fontPath = '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf';
+        $fontToUse = file_exists($fontPath) ? $fontPath : 'Helvetica-Bold';
+
+        // 5. Текст зверху: "Вічна пам'ять"
+        $topText = "Вічна пам'ять";
+        $topTextDraw = new \ImagickDraw();
+        $topTextDraw->setFillColor(new \ImagickPixel('#2c2c2c'));
+        $topTextDraw->setTextAlignment(\Imagick::ALIGN_CENTER);
+        $topTextDraw->setFont($fontToUse);
+
+        // Підбір розміру для верхнього тексту
+        $topFontSize = 52;
+        $maxTextWidth = $squareSize - (($strokeWidth + 30) * 2);
+        do {
+            $topTextDraw->setFontSize($topFontSize);
+            $topMetrics = $finalImage->queryFontMetrics($topTextDraw, $topText);
+            $topFontSize -= 2;
+        } while ($topMetrics['textWidth'] > $maxTextWidth && $topFontSize > 18);
+
+        $topY = $strokeWidth + ($topTextBlockHeight / 2) + ($topMetrics['ascender'] / 2) - 5;
+        $finalImage->annotateImage($topTextDraw, $squareSize / 2, $topY, 0, $topText);
+
+        // 6. Текст знизу: Ім'я та Прізвище
+        $fullName = trim($grave->getFirstName() . ' ' . $grave->getLastName());
+
+        if (!empty($fullName)) {
+            $bottomTextDraw = new \ImagickDraw();
+            $bottomTextDraw->setFillColor(new \ImagickPixel('#2c2c2c'));
+            $bottomTextDraw->setTextAlignment(\Imagick::ALIGN_CENTER);
+            $bottomTextDraw->setFont($fontToUse);
+
+            $bottomFontSize = 60;
+            do {
+                $bottomTextDraw->setFontSize($bottomFontSize);
+                $bottomMetrics = $finalImage->queryFontMetrics($bottomTextDraw, $fullName);
+                $bottomFontSize -= 2;
+            } while ($bottomMetrics['textWidth'] > $maxTextWidth && $bottomFontSize > 18);
+
+            $bottomAreaTop = $qrY + $qrHeight;
+            $bottomY = $bottomAreaTop + ($bottomTextBlockHeight / 2) + ($bottomMetrics['ascender'] / 2) - 5;
+
+            $finalImage->annotateImage($bottomTextDraw, $squareSize / 2, $bottomY, 0, $fullName);
+        }
+
+        return $this->json([
+            'qrcode' => base64_encode($finalImage->getImageBlob()),
+        ]);
     }
 }

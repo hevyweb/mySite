@@ -3,6 +3,7 @@
 {% block javascripts %}
     {{ parent() }}
     {{ encore_entry_script_tags('js/admin') }}
+    {{ encore_entry_script_tags('js/necropolis') }}
 {% endblock %}
 {% block content %}
     {% set breadcrumbs = [
@@ -16,64 +17,99 @@
                 <h2>{% trans %}Graves{% endtrans %}</h2>
             </div>
             <div class="pb-4">
-                {# Adjusted path assumed for creating a new record #}
                 <a href="{{ path('necropolis-create') }}" class="btn btn-lg btn-success text-right">
                     <i class="fa-regular fa-file-lines"></i>
                     {% trans from 'messages' %}Create{% endtrans %}
                 </a>
-                <button class="btn btn-lg btn-danger delete" id="remove-grave" data-confirm="{% trans %}Are you sure that you want to remove selected records from your necropolis?{% endtrans %}">
-                    <i class="fa-solid fa-trash-can"></i>
-                    {% trans from 'messages' %}Delete{% endtrans %}
-                </button>
             </div>
             <div class="row">
-                <form action="{{ url('necropolis-delete') }}" method="post" class="datagrid-form">
-                    <table class="table table-striped" id="necropolis-table">
-                        <thead>
-                        <tr>
-                            <th>
-                                <label><input type="checkbox" class="check-all" /></label>
-                            </th>
-                            <th>{% trans from 'messages' %}Image{% endtrans %}</th>
-                            <th>{% trans %}First Name{% endtrans %}</th>
-                            <th>{% trans %}Last Name{% endtrans %}</th>
-                            <th>{% trans %}Maiden Name{% endtrans %}</th>
-                            <th>{% trans %}Birth Date{% endtrans %}</th>
-                            <th>{% trans %}Death Date{% endtrans %}</th>
-                            <th>{% trans %}Birth Place{% endtrans %}</th>
-                            <th>{% trans %}Death Place{% endtrans %}</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for grave in graves %}
-                            <tr>
-                                <td>
-                                    <label><input type="checkbox" name="id[{{ grave.id }}]" /></label>
-                                </td>
-                                <td>
+                <div class="row g-3">
+                    {% for grave in graves %}
+                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                            <div class="card overflow-hidden border-0 shadow-sm position-relative">
+                                <a href="{{ path('necropolis-edit', {'id': grave.id}) }}" class="ratio ratio-1x1 d-block text-decoration-none" title="{{ grave.firstName }} {{ grave.lastName }}">
                                     {% if grave.image %}
-                                        <a href="{{ path('necropolis-edit', {'id': grave.id}) }}">
-                                            <img src="{{ absolute_url('/necropolis/' ~ grave.image) }}" class="img-thumbnail company-thumbnail" alt="" />
-                                        </a>
+                                        <img src="{{ absolute_url('/necropolis/' ~ grave.image) }}" class="card-img object-fit-cover w-100 h-100" alt="{{ grave.firstName }} {{ grave.lastName }}" />
+                                    {% else %}
+                                        <div class="card-img bg-secondary d-flex align-items-center justify-content-center w-100 h-100 text-white">
+                                            <i class="fa-regular fa-image fa-2x"></i>
+                                        </div>
                                     {% endif %}
-                                </td>
-                                {# Added UUID link routing to edit view #}
-                                <td><a href="{{ path('necropolis-edit', {'id': grave.id}) }}">{{ grave.firstName }}</a></td>
-                                <td>{{ grave.lastName }}</td>
-                                <td>{{ grave.maidenName ?? '-' }}</td>
-                                <td>
-                                    {{ grave.birthDate ? grave.birthDate|date('d.m.Y') : '-' }}
-                                </td>
-                                <td>
-                                    {{ grave.deathDate|date('d.m.Y') }}
-                                </td>
-                                <td>{{ grave.birthPlace ?? '-' }}</td>
-                                <td>{{ grave.deathPlace ?? '-' }}</td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                </form>
+                                </a>
+                                <div class="position-absolute top-0 end-0 p-2 d-flex gap-1 z-2">
+                                    <a href="{{ path('necropolis-qrcode', {'id': grave.id}) }}" class="btn btn-sm btn-light border opacity-75 opacity-100-hover js-qr-btn" title="QR Code">
+                                        <i class="fa-solid fa-qrcode"></i>
+                                    </a>
+                                    {# Open dynamic modal for specific grave ID #}
+                                    <button type="button"
+                                            class="btn btn-sm btn-danger opacity-75 opacity-100-hover"
+                                            title="{% trans from 'messages' %}Delete{% endtrans %}"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#deleteModal-{{ grave.id }}">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
+                                </div>
+
+                                <div class="position-absolute bottom-0 start-0 w-100 p-2 text-white bg-dark bg-opacity-75 z-2">
+                                    <div class="card-title m-0 text-truncate text-center fs-6">
+                                        {{ grave.firstName }} {{ grave.lastName }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {# Confirmation Modal for each record #}
+                        <div class="modal fade" id="deleteModal-{{ grave.id }}" tabindex="-1" aria-labelledby="deleteModalLabel-{{ grave.id }}" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="deleteModalLabel-{{ grave.id }}">
+                                            {% trans from 'messages' %}Підтвердження видалення{% endtrans %}
+                                        </h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Ви впевнені, що хочете видалити цю могилу?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                            {% trans from 'messages' %}Скасувати{% endtrans %}
+                                        </button>
+                                        <a href="{{ path('necropolis-delete', {'id': grave.id}) }}" class="btn btn-danger">
+                                            {% trans from 'messages' %}Видалити{% endtrans %}
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="qrCodeModal" tabindex="-1" aria-labelledby="qrCodeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content text-center">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="qrCodeModalLabel">QR Code</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div id="qr-spinner" class="d-none my-3">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                    <div id="qr-code-container" class="d-none">
+                        <img id="qr-code-img" src="" alt="QR Code" class="img-fluid" />
+                    </div>
+                    <div id="qr-error-message" class="alert alert-danger d-none m-0" role="alert">
+                        Не вдалося завантажити QR-код. Спробуйте пізніше.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрити</button>
+                </div>
             </div>
         </div>
     </div>

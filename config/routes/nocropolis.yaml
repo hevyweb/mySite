@@ -14,7 +14,9 @@ necropolis-edit:
 
 necropolis-delete:
   controller: App\Controller\NecropolisController::delete
-  path: administrator/necropolis/grave/delete
+  path: administrator/necropolis/grave/{id}/delete
+  requirements:
+    id: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
 
 necropolis-public:
   controller: App\Controller\NecropolisController::grave
@@ -83,5 +85,11 @@ necropolis-condolences-new:
 necropolis-flowers:
   controller: App\Controller\NecropolisController::flowers
   path: grave/flowers/{id}
+  requirements:
+    id: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
+    
+necropolis-qrcode:
+  controller: App\Controller\NecropolisController::qrcode
+  path: grave/{id}/qrcode
   requirements:
     id: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
