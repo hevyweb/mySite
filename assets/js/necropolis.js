@@ -1,5 +1,6 @@
 require('@fortawesome/fontawesome-free/js/all.js');
 const bootstrap = require('bootstrap');
+const Modal = bootstrap.Modal || bootstrap.default?.Modal;
 
 $(function($){
     $('#condolence-btn').click(function(){
@@ -17,8 +18,8 @@ $(function($){
     });
 
     const $modalEl1 = $('#qrCodeModal');
-    const qrModal = new bootstrap.Modal($modalEl1[0]);
-
+    const qrModal = new Modal($modalEl1[0]);
+    
     const $spinner = $('#qr-spinner');
     const $qrContainer = $('#qr-code-container');
     const $qrImg = $('#qr-code-img');
@@ -93,7 +94,7 @@ $(function($){
     const $modalEl = $('#condolenceModal');
     if (!$modalEl.length) return;
 
-    const condolenceModal = new bootstrap.Modal($modalEl[0], {
+    const condolenceModal = new Modal($modalEl1[0], {
         backdrop: 'static',
         keyboard: true
     });
@@ -300,7 +301,7 @@ $(function($){
                 updateMainView(0);
 
                 // Show Modal
-                const modal = new bootstrap.Modal(document.getElementById('photoGalleryModal'));
+                const modal = new Modal(document.getElementById('photoGalleryModal'));
                 modal.show();
             },
             error: function (xhr, status, error) {
