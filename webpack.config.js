@@ -46,6 +46,10 @@ Encore
         to: 'plugin/tinymce/tinymce/langs/[path][name].[ext]'
     })
     .autoProvidejQuery()
+    .autoProvideVariables({
+        'bootstrap': 'bootstrap',
+        'window.bootstrap': 'bootstrap'
+    })
 ;
 
 module.exports = Encore.getWebpackConfig();

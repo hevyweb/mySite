@@ -1,53 +1,46 @@
 require('@fortawesome/fontawesome-free/js/all.js');
 const bootstrap = require('bootstrap');
-const Modal = bootstrap.Modal || bootstrap.default?.Modal;
 
 $(function($){
     $('#condolence-btn').click(function(){
-        $('.content-panel').children().each(function(){
-            $(this).hide();
+        $('.content-panel').children().each(function(){$(this).hide();
         })
         $('#condolences').show();
     });
-    
+
     $('#btnCloseCondolences').click(function(){
-        $('.content-panel').children().each(function(){
-            $(this).hide();
+        $('.content-panel').children().each(function(){$(this).hide();
         })
         $('#biography').show();
     });
 
-    const $modalEl1 = $('#qrCodeModal');
-    const qrModal = new Modal($modalEl1[0]);
-    
-    const $spinner = $('#qr-spinner');
-    const $qrContainer = $('#qr-code-container');
-    const $qrImg = $('#qr-code-img');
-    const $errorMessage = $('#qr-error-message');
+    const $spinner =$('#qr-spinner');
+    const $qrContainer =$('#qr-code-container');
+    const $qrImg =$('#qr-code-img');
+    const $errorMessage =$('#qr-error-message');
 
+    // 1. QR-код: створюємо інстанс модалки лише в момент кліку
     $('.js-qr-btn').click(function (e) {
         e.preventDefault();
 
         const url = $(this).attr('href');
 
-        // Скидаємо стан елементів модалки
-        $qrContainer.addClass('d-none');
-        $errorMessage.addClass('d-none');
-        $spinner.removeClass('d-none');
-        $qrImg.attr('src', '');
+        $qrContainer.addClass('d-none');$errorMessage.addClass('d-none');
+        $spinner.removeClass('d-none');$qrImg.attr('src', '');
 
-        // Відкриваємо модальне вікно
-        qrModal.show();
+        const modalEl = document.getElementById('qrCodeModal');
+        if (modalEl) {
+            const qrModal = bootstrap.Modal.getOrCreateInstance(modalEl);
+            qrModal.show();
+        }
 
-        // Виконуємо AJAX запит
         $.ajax({
             url: url,
             method: 'GET',
             dataType: 'json',
             success: function (response) {
                 if (response && response.qrcode) {
-                    $qrImg.attr('src', 'data:image/png;base64,' + response.qrcode);
-                    $qrContainer.removeClass('d-none');
+                    $qrImg.attr('src', 'data:image/png;base64,' + response.qrcode);$qrContainer.removeClass('d-none');
                 } else {
                     $errorMessage.text('Некоректний формат відповіді сервера.').removeClass('d-none');
                 }
@@ -60,11 +53,10 @@ $(function($){
             }
         });
     });
-    
-    const $shareButton = $('#shareButton');
+
+    const $shareButton =$('#shareButton');
 
     $shareButton.on('click', async function() {
-        // Check if the Web Share API is supported
         if (navigator.share) {
             try {
                 await navigator.share({
@@ -74,56 +66,50 @@ $(function($){
                 });
                 console.log('Поділились успішно.');
             } catch (err) {
-                // Handle user cancellation or error
                 if (err.name !== 'AbortError') {
                     console.error('Помилка:', err);
                 }
             }
         } else {
-            // Fallback for browsers that don't support native sharing
             copyToClipboard();
         }
     });
 
-    // Simple clipboard fallback
     function copyToClipboard() {
         navigator.clipboard.writeText(window.location.href);
         alert('Посилання скопійовано до буфера обміну!');
     }
-    
-    const $modalEl = $('#condolenceModal');
-    if (!$modalEl.length) return;
 
-    const condolenceModal = new Modal($modalEl1[0], {
-        backdrop: 'static',
-        keyboard: true
-    });
+    const $modalEl =$('#condolenceModal');
+    if ($modalEl.length) {
+        // Задаємо опції модалки через атрибути, щоб уникнути помилок ініціалізації конструктора
+        $modalEl.attr('data-bs-backdrop', 'static');$modalEl.attr('data-bs-keyboard', 'true');
 
-    $(document).on('click', '[data-bs-target="#condolenceModal"], #btnOpenCondolenceModal', function (e) {
-        e.preventDefault();
-        condolenceModal.show();
-    });
+        $(document).on('click', '[data-bs-target="#condolenceModal"], #btnOpenCondolenceModal', function (e) {
+            e.preventDefault();
+            const condolenceModal = bootstrap.Modal.getOrCreateInstance($modalEl[0]);
+            condolenceModal.show();
+        });
 
-    $modalEl.on('shown.bs.modal', function () {
-        $(this).find('textarea, input').first().trigger('focus');
-    });
+        $modalEl.on('shown.bs.modal', function () {$(this).find('textarea, input').first().trigger('focus');
+        });
 
-    $modalEl.on('hidden.bs.modal', function () {
-        const $form = $('#condolenceForm');
-        clearFormErrors($form);
-        if ($form.length) $form[0].reset();
-    });
+        $modalEl.on('hidden.bs.modal', function () {
+            const $form =$('#condolenceForm');
+            clearFormErrors($form);
+            if ($form.length)$form[0].reset();
+        });
+    }
 
     // AJAX відправка форми
     $(document).on('submit', '#condolenceForm', function (e) {
         e.preventDefault();
 
-        const $form = $(this);
-        const $submitBtn = $('#btnSubmitCondolence');
+        const $form =$(this);
+        const $submitBtn =$('#btnSubmitCondolence');
         const originalBtnHtml = $submitBtn.html();
 
-        clearFormErrors($form);
-        $submitBtn.prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin me-1"></i> Надсилання...');
+        clearFormErrors($form);$submitBtn.prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin me-1"></i> Надсилання...');
 
         $.ajax({
             url: $form.attr('action'),
@@ -132,18 +118,15 @@ $(function($){
             headers: { 'X-Requested-With': 'XMLHttpRequest' },
             success: function (response) {
                 if (response.success) {
-                    // 1. Отримуємо значення з форми до її очищення
                     const rawName = $form.find('[name*="[name]"]').val()?.trim();
                     const name = rawName ? escapeHtml(rawName) : 'Анонім';
                     const rawDescription = $form.find('[name*="[description]"]').val()?.trim() || '';
                     const description = escapeHtml(rawDescription).replace(/\n/g, '<br>');
 
-                    // 2. Формуємо дату та час
                     const now = new Date();
                     const formattedDate = now.toLocaleDateString('uk-UA', { day: '2-digit', month: '2-digit', year: 'numeric' }) + ' ' +
                         now.toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' });
 
-                    // 3. Шаблон тимчасового блоку з червоним бейджем "На модерації"
                     const tempItemHtml = `
                     <li class="list-group-item bg-light border border-warning-subtle rounded my-2 p-3 opacity-75">
                         <div class="d-flex justify-content-between align-items-center mb-1">
@@ -157,24 +140,21 @@ $(function($){
                     </li>
                 `;
 
-                    // 4. Шукаємо контейнер для списку співчуттів
-                    let $container = $('#condolencesList');
+                    let $container =$('#condolencesList');
                     if (!$container.length) {
-                        $container = $('#condolences').find('ul.list-group');
+                        $container =$('#condolences').find('ul.list-group');
                     }
 
-                    // Якщо списку ще немає (було "Співчуття відсутні"), створюємо новий
                     if (!$container.length) {
-                        const $body = $('#condolences .content-panel-body');
+                        const $body =$('#condolences .content-panel-body');
                         $body.html('<ul class="list-group list-group-flush" id="condolencesList"></ul>');
-                        $container = $('#condolencesList');
+                        $container =$('#condolencesList');
                     }
 
-                    // 5. Додаємо елемент на початок списку
                     $container.prepend(tempItemHtml);
 
-                    // 6. Закриваємо модалку та скидаємо форму
-                    condolenceModal.hide();
+                    const condolenceModal = bootstrap.Modal.getInstance($modalEl[0]);
+                    if (condolenceModal) condolenceModal.hide();
                     $form[0].reset();
                 }
             },
@@ -192,23 +172,19 @@ $(function($){
     });
 
     function clearFormErrors($form) {
-        $form.find('.is-invalid').removeClass('is-invalid');
-        $form.find('.invalid-feedback').remove();
+        $form.find('.is-invalid').removeClass('is-invalid');$form.find('.invalid-feedback').remove();
     }
 
-    function displayFormErrors($form, errors) {
-        $.each(errors, function (fieldName, messages) {
-            let $input = $form.find(`[name*="[${fieldName}]"]`);
-            if (!$input.length) $input = $form.find(`#${fieldName}`);
+    function displayFormErrors($form, errors) {$.each(errors, function (fieldName, messages) {
+        let $input =$form.find(`[name*="[${fieldName}]"]`);
+        if (!$input.length) $input =$form.find(`#${fieldName}`);
 
-            if ($input.length) {
-                $input.addClass('is-invalid');
-                $input.after(`<div class="invalid-feedback d-block">${messages.join('<br>')}</div>`);
-            }
-        });
+        if ($input.length) {
+            $input.addClass('is-invalid');$input.after(`<div class="invalid-feedback d-block">${messages.join('<br>')}</div>`);
+        }
+    });
     }
 
-    // Хелпер для захисту від XSS при динамічному додаванні тексту
     function escapeHtml(text) {
         return $('<div>').text(text).html();
     }
@@ -223,7 +199,7 @@ $(function($){
         });
     }
 
-    // 3. Click Handler for #photos
+    // 3. Галерея фото: ініціалізація інстансу всередині успішного AJAX-запиту
     $('#photos').on('click', function (e) {
         e.preventDefault();
 
@@ -239,19 +215,16 @@ $(function($){
                     return;
                 }
 
-                const $strip = $('#thumbnailsStrip').empty();
+                const $strip =$('#thumbnailsStrip').empty();
                 let currentIndex = 0;
 
-                // Function to update the main view
                 function updateMainView(index) {
                     currentIndex = index;
                     const photo = data[index];
                     const fullImgUrl = `/necropolis/${photo.filename}`;
 
-                    // Set Main Image
                     $('#mainPhoto').attr('src', fullImgUrl).data('full-url', fullImgUrl);
 
-                    // Set Caption Info
                     const formattedDate = formatDate(photo.shootingDate);
                     if (photo.description) {
                         $('#captionDesc').text(photo.description).show();
@@ -265,14 +238,11 @@ $(function($){
                         $('#captionDate').hide();
                     }
 
-                    // Counter header
                     $('#photoCounter').text(`Фото ${index + 1} з ${data.length}`);
 
-                    // Active Thumbnail styling
                     $('.thumb-item').removeClass('active');
-                    const $activeThumb = $(`.thumb-item[data-index="${index}"]`).addClass('active');
+                    const $activeThumb =$(`.thumb-item[data-index="${index}"]`).addClass('active');
 
-                    // Auto-scroll thumbnails strip to keep active thumbnail visible
                     if ($activeThumb.length) {
                         const strip = $strip[0];
                         const thumb = $activeThumb[0];
@@ -281,10 +251,9 @@ $(function($){
                     }
                 }
 
-                // Build Thumbnails
                 data.forEach(function (photo, idx) {
                     const thumbUrl = `/necropolis/thumbnails/${photo.filename}`;
-                    const $thumb = $(`
+                    const $thumb =$(`
             <div class="thumb-item" data-index="${idx}">
               <img src="${thumbUrl}" alt="Thumbnail ${idx + 1}" loading="lazy" />
             </div>
@@ -297,12 +266,13 @@ $(function($){
                     $strip.append($thumb);
                 });
 
-                // Initialize with first photo
                 updateMainView(0);
 
-                // Show Modal
-                const modal = new Modal(document.getElementById('photoGalleryModal'));
-                modal.show();
+                const photoModalEl = document.getElementById('photoGalleryModal');
+                if (photoModalEl) {
+                    const modal = bootstrap.Modal.getOrCreateInstance(photoModalEl);
+                    modal.show();
+                }
             },
             error: function (xhr, status, error) {
                 console.error('AJAX Error:', error);
@@ -311,7 +281,6 @@ $(function($){
         });
     });
 
-    // 4. Double click main photo to open original photo in full screen / new tab
     $(document).on('dblclick', '#mainPhotoWrapper', function () {
         const fullUrl = $('#mainPhoto').data('full-url');
         if (fullUrl) {
