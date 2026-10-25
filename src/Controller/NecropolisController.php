@@ -6,11 +6,13 @@ use App\DTO\GraveTab;
 use App\Entity\Condolence;
 use App\Entity\Grave;
 use App\Entity\PersonPhoto;
+use App\Entity\Stat;
 use App\Form\CondolenceType;
 use App\Form\GravePhotoType;
 use App\Form\GraveType;
 use App\Service\FileSystem\File;
 use App\Service\ImageService;
+use App\Service\StatsParser;
 use Doctrine\ORM\EntityManagerInterface;
 use Endroid\QrCode\Color\Color;
 use Endroid\QrCode\Encoding\Encoding;
@@ -39,15 +41,18 @@ final class NecropolisController extends AbstractController
         private readonly File $fileService,
         private readonly ParameterBagInterface $parameterBag,
         private readonly ImageService $imageService,
+        private readonly StatsParser $statsParser,
     )  {
     }
     
     public function index(): Response
     {
         $graves = $this->entityManager->getRepository(Grave::class)->findAll();
+        $stats = $this->entityManager->getRepository(Stat::class)->findGraveStatistics();
         return $this->render('necropolis/index.html.twig', [
             'title' => $this->translator->trans('Add working place', [], 'experience'),
             'graves' => $graves,
+            'stats' => $this->statsParser->parse($stats),
         ]);
     }
     

@@ -49,6 +49,11 @@
                                         <i class="fa-solid fa-trash-can"></i>
                                     </button>
                                 </div>
+                                
+                                <div class="position-absolute top-0 start-0 p-2 text-white bg-dark bg-opacity-75 z-2">
+                                    {{ stats.total[grave.id] | default(0) }}
+                                    (+<span class="green">{{ stats.today[grave.id] | default(0) }}</span>)
+                                </div>
 
                                 <div class="position-absolute bottom-0 start-0 w-100 p-2 text-white bg-dark bg-opacity-75 z-2">
                                     <div class="card-title m-0 text-truncate text-center fs-6">
