@@ -29,7 +29,7 @@ class StatRepository extends ServiceEntityRepository
             ->getQuery()
             ->getOneOrNullResult();
     }
-    
+
     public function findGraveStatistics(): array
     {
         return $this->createQueryBuilder('s')

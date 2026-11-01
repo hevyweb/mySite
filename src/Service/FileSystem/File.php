@@ -14,15 +14,14 @@ readonly class File
     public function __construct(
         private StringService $strings,
         private string $env,
-    )
-    {
+    ) {
     }
 
     public function saveFileTo(UploadedFile $file, string $dir): SymfonyFile
     {
         $this->checkAndCreateFolder($dir);
         $fileName = $this->generateUniqueFilename($file->getClientOriginalExtension(), $dir);
-        if ($this->env !== 'test') {
+        if ('test' !== $this->env) {
             return $file->move($dir, $fileName);
         } else {
             return new SymfonyFile($dir.DIRECTORY_SEPARATOR.$fileName, false);
@@ -41,10 +40,10 @@ readonly class File
     public function remove(string $fileName, string $dir): void
     {
         $filePath = $this->getFilePath($dir, $fileName);
-        
-        if ($this->env !== 'test') {
+
+        if ('test' !== $this->env) {
             if (is_file($filePath) && !unlink($filePath)) {
-                throw new FileNotFoundException('Can not delete file "' . $filePath . '"');
+                throw new FileNotFoundException('Can not delete file "'.$filePath.'"');
             }
         }
     }
@@ -66,21 +65,21 @@ readonly class File
         $ext = pathinfo($filePath, \PATHINFO_EXTENSION);
         $newFileName = $this->generateUniqueFilename($ext, $dir);
         $newPath = $this->getFilePath($dir, $newFileName);
-        
-        if ($this->env !== 'test') {
+
+        if ('test' !== $this->env) {
             if (!@copy($filePath, $newPath)) {
-                throw new FileException('Can not copy file from "' . $filePath . '" to "' . $newPath . '"');
+                throw new FileException('Can not copy file from "'.$filePath.'" to "'.$newPath.'"');
             }
         }
 
         return $newFileName;
     }
-    
+
     public function saveFileContents(string $contents, string $dir, string $fileName): void
     {
         $this->checkAndCreateFolder($dir);
         $filePath = $this->getFilePath($dir, $fileName);
-        if ($this->env !== 'test') {
+        if ('test' !== $this->env) {
             file_put_contents($filePath, $contents);
         }
     }

@@ -30,8 +30,7 @@ class RegistrationType extends AbstractType
     public function __construct(
         private readonly TranslatorInterface $translator,
         private readonly string $defaultDateFormat,
-    )
-    {
+    ) {
     }
 
     #[\Override]

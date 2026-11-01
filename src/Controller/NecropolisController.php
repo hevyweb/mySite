@@ -17,8 +17,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Endroid\QrCode\Color\Color;
 use Endroid\QrCode\Encoding\Encoding;
 use Endroid\QrCode\ErrorCorrectionLevel;
-use Endroid\QrCode\Label\Label;
-use Endroid\QrCode\Logo\Logo;
 use Endroid\QrCode\QrCode;
 use Endroid\QrCode\RoundBlockSizeMode;
 use Endroid\QrCode\Writer\PngWriter;
@@ -32,9 +30,9 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 final class NecropolisController extends AbstractController
 {
-    const THUMBNAIL_WIDTH = 256; //pixels
-    const THUMBNAIL_HEIGHT = 256; //pixels
-    
+    public const THUMBNAIL_WIDTH = 256; // pixels
+    public const THUMBNAIL_HEIGHT = 256; // pixels
+
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly TranslatorInterface $translator,
@@ -42,20 +40,21 @@ final class NecropolisController extends AbstractController
         private readonly ParameterBagInterface $parameterBag,
         private readonly ImageService $imageService,
         private readonly StatsParser $statsParser,
-    )  {
+    ) {
     }
-    
+
     public function index(): Response
     {
         $graves = $this->entityManager->getRepository(Grave::class)->findAll();
         $stats = $this->entityManager->getRepository(Stat::class)->findGraveStatistics();
+
         return $this->render('necropolis/index.html.twig', [
             'title' => $this->translator->trans('Add working place', [], 'experience'),
             'graves' => $graves,
             'stats' => $this->statsParser->parse($stats),
         ]);
     }
-    
+
     public function create(Request $request): Response
     {
         $grave = new Grave();
@@ -81,23 +80,23 @@ final class NecropolisController extends AbstractController
             'tabs' => $this->buildTabsArray($request),
         ]);
     }
-    
+
     public function grave(Request $request): Response
     {
         $grave = $this->entityManager->getRepository(Grave::class)->find($request->get('id'));
         if ($grave && $grave->isPublished()) {
             $form = $this->createForm(CondolenceType::class);
-            
+
             return $this->render('necropolis/view.html.twig', [
                 'grave' => $grave,
                 'condolences' => $this->entityManager->getRepository(Condolence::class)->findBy(['grave' => $grave, 'isActive' => true], ['creationDate' => 'DESC']),
                 'form' => $form->createView(),
             ]);
         }
-        
+
         throw $this->createNotFoundException();
     }
-    
+
     public function edit(Grave $grave, Request $request): Response
     {
         $form = $this->createForm(GraveType::class, $grave);
@@ -126,16 +125,16 @@ final class NecropolisController extends AbstractController
             'tabs' => $this->buildTabsArray($request),
         ]);
     }
-    
+
     public function delete(Grave $grave): Response
     {
         $this->fileService->remove($grave->getImage(), $this->parameterBag->get('images_necropolis'));
         $this->entityManager->remove($grave);
         $this->entityManager->flush();
-        
+
         return $this->redirectToRoute('necropolis-list');
     }
-    
+
     public function photos(Grave $grave, Request $request): Response
     {
         $form = $this->createForm(GravePhotoType::class, new PersonPhoto(), [
@@ -149,7 +148,7 @@ final class NecropolisController extends AbstractController
             'tabs' => $this->buildTabsArray($request),
         ]);
     }
-    
+
     public function photosCreate(Grave $grave, Request $request): Response
     {
         $form = $this->createForm(GravePhotoType::class, new PersonPhoto());
@@ -162,13 +161,14 @@ final class NecropolisController extends AbstractController
                     $file = $this->fileService->saveFileTo($file, $this->parameterBag->get('images_necropolis'));
                     $photo->setFilename($file->getFilename());
                     $thumbnailContent = $this->imageService->thumbnail(
-                        $this->parameterBag->get('images_necropolis') . '/' . $file->getFilename(),
+                        $this->parameterBag->get('images_necropolis').'/'.$file->getFilename(),
                         self::THUMBNAIL_WIDTH,
                         self::THUMBNAIL_HEIGHT,
                     );
-                    $this->fileService->saveFileContents($thumbnailContent, $this->parameterBag->get('images_necropolis') . '/thumbnails/', $file->getFilename());
+                    $this->fileService->saveFileContents($thumbnailContent, $this->parameterBag->get('images_necropolis').'/thumbnails/', $file->getFilename());
                 } catch (\Exception $e) {
                     $this->fileService->remove($file->getFilename(), $this->parameterBag->get('images_necropolis'));
+
                     return $this->redirectToRoute('necropolis-photos', ['id' => $grave->getId()]);
                 }
             }
@@ -176,9 +176,10 @@ final class NecropolisController extends AbstractController
             $this->entityManager->persist($photo);
             $this->entityManager->flush();
         }
+
         return $this->redirectToRoute('necropolis-photos', ['id' => $grave->getId()]);
     }
-    
+
     public function photosList(Grave $grave): Response
     {
         return $this->json($grave->getPersonPhotos(),
@@ -187,29 +188,31 @@ final class NecropolisController extends AbstractController
             ['groups' => ['photo:read']]
         );
     }
-    
+
     public function condolences(Request $request, Grave $grave): Response
-    {   
+    {
         return $this->render('necropolis/condolences.html.twig', [
             'grave' => $grave,
             'title' => $this->translator->trans('Condolences', [], 'necropolis'),
             'tabs' => $this->buildTabsArray($request),
-            ]
+        ]
         );
     }
-    
+
     public function condolencesDelete(Request $request): Response
-    {       
+    {
         $condolenceId = $request->get('condolenceId');
         $condolence = $this->entityManager->getRepository(Condolence::class)->find($condolenceId);
         if (!$condolence) {
             $this->addFlash('error', 'Grave condolence not found');
+
             return $this->redirectToRoute('necropolis-list');
         }
-        
+
         $this->entityManager->remove($condolence);
         $this->entityManager->flush();
         $this->entityManager->clear();
+
         return $this->redirectToRoute('necropolis-condolences', ['id' => $condolence->getGrave()->getId()]);
     }
 
@@ -244,7 +247,7 @@ final class NecropolisController extends AbstractController
             'errors' => $errors,
         ], Response::HTTP_UNPROCESSABLE_ENTITY);
     }
-    
+
     private function buildTabsArray(Request $request): array
     {
         $tabs = [];
@@ -252,40 +255,42 @@ final class NecropolisController extends AbstractController
             $mainTab = new GraveTab();
             $mainTab->label = $this->translator->trans('Grave details', [], 'necropolis');
             $mainTab->url = $this->generateUrl('necropolis-create', ['id' => $request->get('id')]);
-            $mainTab->active = $request->attributes->get('_route') === 'necropolis-edit';
+            $mainTab->active = 'necropolis-edit' === $request->attributes->get('_route');
             $mainTab->icon = 'fa fa-pencil';
             $tabs[] = $mainTab;
-            
+
             $photoTab = new GraveTab();
             $photoTab->label = $this->translator->trans('Image', [], 'necropolis');
             $photoTab->url = $this->generateUrl('necropolis-photos', ['id' => $request->get('id')]);
-            $photoTab->active = $request->attributes->get('_route') === 'necropolis-photos';
+            $photoTab->active = 'necropolis-photos' === $request->attributes->get('_route');
             $photoTab->icon = 'fa fa-image';
             $tabs[] = $photoTab;
-            
+
             $condolenceTab = new GraveTab();
             $condolenceTab->label = $this->translator->trans('Condolences', [], 'necropolis');
             $condolenceTab->url = $this->generateUrl('necropolis-condolences', ['id' => $request->get('id')]);
-            $condolenceTab->active = $request->attributes->get('_route') === 'necropolis-condolences';
+            $condolenceTab->active = 'necropolis-condolences' === $request->attributes->get('_route');
             $condolenceTab->icon = 'fa fa-heart';
             $tabs[] = $condolenceTab;
-            
+
             $flowersTab = new GraveTab();
             $flowersTab->label = $this->translator->trans('Flowers', [], 'necropolis');
             $flowersTab->url = $this->generateUrl('necropolis-flowers', ['id' => $request->get('id')]);
-            $flowersTab->active = $request->attributes->get('_route') === 'necropolis-flowers';
+            $flowersTab->active = 'necropolis-flowers' === $request->attributes->get('_route');
             $flowersTab->icon = 'fa fa-gift';
             $tabs[] = $flowersTab;
         }
+
         return $tabs;
     }
-    
+
     public function photosDelete(Request $request): Response
     {
         $id = $request->get('id');
         $grave = $this->entityManager->getRepository(Grave::class)->find($id);
         if (!$grave) {
             $this->addFlash('error', 'Grave not found');
+
             return $this->redirectToRoute('necropolis-list');
         }
 
@@ -293,66 +298,72 @@ final class NecropolisController extends AbstractController
         $personPhoto = $this->entityManager->getRepository(PersonPhoto::class)->find($photoId);
         if (!$personPhoto) {
             $this->addFlash('error', 'Grave photo not found');
+
             return $this->redirectToRoute('necropolis-photos', ['id' => $grave->getId()]);
         }
 
         $this->fileService->remove($personPhoto->getFilename(), $this->parameterBag->get('images_necropolis').'/thumbnails/');
         $this->fileService->remove($personPhoto->getFilename(), $this->parameterBag->get('images_necropolis'));
-        
+
         $this->entityManager->remove($personPhoto);
         $this->entityManager->flush();
         $this->entityManager->clear();
-        
+
         return $this->redirectToRoute('necropolis-photos', ['id' => $grave->getId()]);
     }
-    
+
     public function photosEdit(Request $request): Response
     {
         $id = $request->get('id');
         $grave = $this->entityManager->getRepository(Grave::class)->find($id);
         if (!$grave) {
             $this->addFlash('error', 'Grave not found');
+
             return $this->redirectToRoute('necropolis-list');
         }
-        
+
         $photoId = $request->get('photoId');
         $personPhoto = $this->entityManager->getRepository(PersonPhoto::class)->find($photoId);
         if (!$personPhoto) {
             $this->addFlash('error', 'Grave photo not found');
+
             return $this->redirectToRoute('necropolis-photos', ['id' => $grave->getId()]);
         }
-        
+
         if ($personPhoto->getGrave() !== $grave) {
             $this->addFlash('error', 'Grave photo does not belong to this grave');
+
             return $this->redirectToRoute('necropolis-photos', ['id' => $grave->getId()]);
         }
-        
+
         $description = $request->get('description');
         $shootingDate = $request->get('shootingDate');
         if ($description) {
             $personPhoto->setDescription($description);
         }
-        
+
         if ($shootingDate) {
             $personPhoto->setShootingDate(new \DateTime($shootingDate));
         }
-        
+
         $this->entityManager->flush();
         $this->entityManager->clear();
-        
+
         return $this->redirectToRoute('necropolis-photos', ['id' => $grave->getId()]);
     }
-    
+
     public function condolencesToggleStatus(Request $request): Response
     {
         $condolence = $this->entityManager->getRepository(Condolence::class)->find($request->get('condolenceId'));
         if (!$condolence) {
             $this->addFlash('error', 'Grave condolence not found');
+
             return $this->redirectToRoute('necropolis-list');
         }
-        
+
         $condolence->setIsActive(!$condolence->isActive());
         $this->entityManager->flush();
+
         return $this->redirectToRoute('necropolis-condolences', ['id' => $condolence->getGrave()->getId()]);
     }
 
@@ -404,7 +415,7 @@ final class NecropolisController extends AbstractController
         // Накладаємо QR-код строго по центру
         $qrX = $strokeWidth + $sidePadding;
         $qrY = $strokeWidth + $topTextBlockHeight;
-        $finalImage->compositeImage($qrImage, \Imagick::COMPOSITE_OVER, (int)$qrX, (int)$qrY);
+        $finalImage->compositeImage($qrImage, \Imagick::COMPOSITE_OVER, (int) $qrX, (int) $qrY);
 
         // 4. Малюємо зовнішню рамку із закругленими кутами навколо всього квадрата
         $borderDraw = new \ImagickDraw();
@@ -444,7 +455,7 @@ final class NecropolisController extends AbstractController
         $finalImage->annotateImage($topTextDraw, $squareSize / 2, $topY, 0, $topText);
 
         // 6. Текст знизу: Ім'я та Прізвище
-        $fullName = trim($grave->getFirstName() . ' ' . $grave->getLastName());
+        $fullName = trim($grave->getFirstName().' '.$grave->getLastName());
 
         if (!empty($fullName)) {
             $bottomTextDraw = new \ImagickDraw();

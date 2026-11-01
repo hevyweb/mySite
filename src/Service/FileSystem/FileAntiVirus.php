@@ -14,7 +14,7 @@ class FileAntiVirus implements FileAntiVirusInterface
     #[\Override]
     public function sanitize(string $fileName, string $destination): void
     {
-        if ($this->env === 'test') {
+        if ('test' === $this->env) {
             return;
         }
 

@@ -1,6 +1,7 @@
 <?php
 
 // src/Form/PersonPhotoType.php
+
 namespace App\Form;
 
 use App\Entity\PersonPhoto;
@@ -17,8 +18,9 @@ class GravePhotoType extends AbstractType
 {
     public function __construct(
         private readonly TranslatorInterface $translator,
-    ) {}
-    
+    ) {
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -34,7 +36,7 @@ class GravePhotoType extends AbstractType
                             'image/webp',
                         ],
                         'mimeTypesMessage' => 'Please upload a valid image (JPEG, PNG, WebP).',
-                    ])
+                    ]),
                 ],
             ])
             ->add('description', TextType::class, [
@@ -42,8 +44,8 @@ class GravePhotoType extends AbstractType
                 'required' => false,
                 'attr' => [
                     'placeholder' => 'e.g., Family gathered at the location...',
-                    'maxlength' => 255
-                ]
+                    'maxlength' => 255,
+                ],
             ])
             ->add('shootingDate', DateType::class, [
                 'label' => $this->translator->trans('Shooting Date', [], 'necropolis'),
@@ -58,7 +60,7 @@ class GravePhotoType extends AbstractType
             'data_class' => PersonPhoto::class,
             'csrf_protection' => true,
             'csrf_field_name' => '_token',
-            'csrf_token_id'   => 'necropolis_photo_upload',
+            'csrf_token_id' => 'necropolis_photo_upload',
         ]);
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Entity;
 
 use App\Repository\StatRepository;
@@ -73,52 +74,193 @@ class Stat
 
     // --- Getters and Setters ---
 
-    public function getId(): ?int { return $this->id; }
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
-    public function getPath(): ?string { return $this->path; }
-    public function setPath(string $path): static { $this->path = $path; return $this; }
+    public function getPath(): ?string
+    {
+        return $this->path;
+    }
 
-    public function getVisitorHash(): ?string { return $this->visitorHash; }
-    public function setVisitorHash(string $visitorHash): static { $this->visitorHash = $visitorHash; return $this; }
+    public function setPath(string $path): static
+    {
+        $this->path = $path;
 
-    public function getDeviceType(): ?string { return $this->deviceType; }
-    public function setDeviceType(?string $deviceType): static { $this->deviceType = $deviceType; return $this; }
+        return $this;
+    }
 
-    public function getBrowser(): ?string { return $this->browser; }
-    public function setBrowser(?string $browser): static { $this->browser = $browser; return $this; }
+    public function getVisitorHash(): ?string
+    {
+        return $this->visitorHash;
+    }
 
-    public function getOs(): ?string { return $this->os; }
-    public function setOs(?string $os): static { $this->os = $os; return $this; }
+    public function setVisitorHash(string $visitorHash): static
+    {
+        $this->visitorHash = $visitorHash;
 
-    public function getLanguage(): ?string { return $this->language; }
-    public function setLanguage(?string $language): static { $this->language = $language; return $this; }
+        return $this;
+    }
 
-    public function getCountry(): ?string { return $this->country; }
-    public function setCountry(?string $country): static { $this->country = $country; return $this; }
+    public function getDeviceType(): ?string
+    {
+        return $this->deviceType;
+    }
 
-    public function getCity(): ?string { return $this->city; }
-    public function setCity(?string $city): static { $this->city = $city; return $this; }
+    public function setDeviceType(?string $deviceType): static
+    {
+        $this->deviceType = $deviceType;
 
-    public function getReferer(): ?string { return $this->referer; }
-    public function setReferer(?string $referer): static { $this->referer = $referer; return $this; }
+        return $this;
+    }
 
-    public function getUtmSource(): ?string { return $this->utmSource; }
-    public function setUtmSource(?string $utmSource): static { $this->utmSource = $utmSource; return $this; }
+    public function getBrowser(): ?string
+    {
+        return $this->browser;
+    }
 
-    public function getUtmMedium(): ?string { return $this->utmMedium; }
-    public function setUtmMedium(?string $utmMedium): static { $this->utmMedium = $utmMedium; return $this; }
+    public function setBrowser(?string $browser): static
+    {
+        $this->browser = $browser;
 
-    public function getUtmCampaign(): ?string { return $this->utmCampaign; }
-    public function setUtmCampaign(?string $utmCampaign): static { $this->utmCampaign = $utmCampaign; return $this; }
+        return $this;
+    }
 
-    public function getIpAddress(): ?string { return $this->ipAddress; }
-    public function setIpAddress(?string $ipAddress): static { $this->ipAddress = $ipAddress; return $this; }
+    public function getOs(): ?string
+    {
+        return $this->os;
+    }
 
-    public function getUserAgent(): ?string { return $this->userAgent; }
-    public function setUserAgent(?string $userAgent): static { $this->userAgent = $userAgent; return $this; }
+    public function setOs(?string $os): static
+    {
+        $this->os = $os;
 
-    public function getCreatedAt(): ?\DateTimeImmutable { return $this->created_at ?? $this->createdAt; }
+        return $this;
+    }
 
-    public function getHits(): int { return $this->hits; }
-    public function setHits(int $hits): static { $this->hits = $hits; return $this; }
+    public function getLanguage(): ?string
+    {
+        return $this->language;
+    }
+
+    public function setLanguage(?string $language): static
+    {
+        $this->language = $language;
+
+        return $this;
+    }
+
+    public function getCountry(): ?string
+    {
+        return $this->country;
+    }
+
+    public function setCountry(?string $country): static
+    {
+        $this->country = $country;
+
+        return $this;
+    }
+
+    public function getCity(): ?string
+    {
+        return $this->city;
+    }
+
+    public function setCity(?string $city): static
+    {
+        $this->city = $city;
+
+        return $this;
+    }
+
+    public function getReferer(): ?string
+    {
+        return $this->referer;
+    }
+
+    public function setReferer(?string $referer): static
+    {
+        $this->referer = $referer;
+
+        return $this;
+    }
+
+    public function getUtmSource(): ?string
+    {
+        return $this->utmSource;
+    }
+
+    public function setUtmSource(?string $utmSource): static
+    {
+        $this->utmSource = $utmSource;
+
+        return $this;
+    }
+
+    public function getUtmMedium(): ?string
+    {
+        return $this->utmMedium;
+    }
+
+    public function setUtmMedium(?string $utmMedium): static
+    {
+        $this->utmMedium = $utmMedium;
+
+        return $this;
+    }
+
+    public function getUtmCampaign(): ?string
+    {
+        return $this->utmCampaign;
+    }
+
+    public function setUtmCampaign(?string $utmCampaign): static
+    {
+        $this->utmCampaign = $utmCampaign;
+
+        return $this;
+    }
+
+    public function getIpAddress(): ?string
+    {
+        return $this->ipAddress;
+    }
+
+    public function setIpAddress(?string $ipAddress): static
+    {
+        $this->ipAddress = $ipAddress;
+
+        return $this;
+    }
+
+    public function getUserAgent(): ?string
+    {
+        return $this->userAgent;
+    }
+
+    public function setUserAgent(?string $userAgent): static
+    {
+        $this->userAgent = $userAgent;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->created_at ?? $this->createdAt;
+    }
+
+    public function getHits(): int
+    {
+        return $this->hits;
+    }
+
+    public function setHits(int $hits): static
+    {
+        $this->hits = $hits;
+
+        return $this;
+    }
 }

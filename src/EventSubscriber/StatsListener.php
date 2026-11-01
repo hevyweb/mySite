@@ -10,7 +10,9 @@ use Symfony\Component\HttpKernel\KernelEvents;
 #[AsEventListener(event: KernelEvents::TERMINATE)]
 readonly class StatsListener
 {
-    public function __construct(private StatsTracker $statsTracker) {}
+    public function __construct(private StatsTracker $statsTracker)
+    {
+    }
 
     public function __invoke(TerminateEvent $event): void
     {

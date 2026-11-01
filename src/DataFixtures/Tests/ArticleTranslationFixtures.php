@@ -35,7 +35,7 @@ class ArticleTranslationFixtures extends Fixture implements DependentFixtureInte
 
         $manager->persist($articleTranslation);
         $manager->flush();
-        
+
         $this->addReference('article_translation_test', $articleTranslation);
     }
 

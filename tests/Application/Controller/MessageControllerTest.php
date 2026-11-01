@@ -19,16 +19,16 @@ class MessageControllerTest extends AbstractApplicationTestCase
     public function testMessageView(): void
     {
         $this->logInAdmin();
-        
+
         /** @var EntityManagerInterface $em */
         $em = $this->getContainer()->get(EntityManagerInterface::class);
         /** @var Message $message */
         $message = $em->getRepository(Message::class)->findOneBy(['name' => 'Test User 1']);
-        
+
         $this->client->request('GET', $this->router->generate('message-view', ['id' => $message->getId()]));
         $this->assertResponseIsSuccessful();
         $this->assertSelectorTextContains('h2', $message->getSubject());
-        
+
         $em->refresh($message);
         $this->assertTrue($message->isSeen());
     }
@@ -43,7 +43,7 @@ class MessageControllerTest extends AbstractApplicationTestCase
     public function testMessageDelete(): void
     {
         $this->logInAdmin();
-        
+
         /** @var EntityManagerInterface $em */
         $em = $this->getContainer()->get(EntityManagerInterface::class);
         /** @var Message $message */
@@ -51,9 +51,9 @@ class MessageControllerTest extends AbstractApplicationTestCase
         $id = $message->getId();
 
         $this->client->request('POST', $this->router->generate('message-delete'), ['id' => [$id => 'on']]);
-        
+
         $this->assertResponseRedirects($this->router->generate('message-list'));
-        
+
         $em->clear();
         $this->assertNull($em->getRepository(Message::class)->find($id));
     }
@@ -61,7 +61,7 @@ class MessageControllerTest extends AbstractApplicationTestCase
     public function testMessageDeleteSingleId(): void
     {
         $this->logInAdmin();
-        
+
         /** @var EntityManagerInterface $em */
         $em = $this->getContainer()->get(EntityManagerInterface::class);
         /** @var Message $message */
@@ -69,9 +69,9 @@ class MessageControllerTest extends AbstractApplicationTestCase
         $id = $message->getId();
 
         $this->client->request('POST', $this->router->generate('message-delete'), ['id' => $id]);
-        
+
         $this->assertResponseRedirects($this->router->generate('message-list'));
-        
+
         $em->clear();
         $this->assertNull($em->getRepository(Message::class)->find($id));
     }
@@ -86,7 +86,7 @@ class MessageControllerTest extends AbstractApplicationTestCase
     public function testMessageMarkSeen(): void
     {
         $this->logInAdmin();
-        
+
         /** @var EntityManagerInterface $em */
         $em = $this->getContainer()->get(EntityManagerInterface::class);
         /** @var Message $message */
@@ -94,9 +94,9 @@ class MessageControllerTest extends AbstractApplicationTestCase
         $id = $message->getId();
 
         $this->client->request('POST', $this->router->generate('message-seen'), ['id' => [$id => 'on']]);
-        
+
         $this->assertResponseRedirects($this->router->generate('message-list'));
-        
+
         $em->refresh($message);
         $this->assertTrue($message->isSeen());
     }

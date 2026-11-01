@@ -14,9 +14,9 @@ class ImageControllerTest extends AbstractApplicationTestCase
     public function setUp(): void
     {
         parent::setUp();
-        $this->imagePath = __DIR__ . '/Resource/test.jpg';
-        $this->sourceImagePath = __DIR__ . '/Resource/test_test.jpg';
-        
+        $this->imagePath = __DIR__.'/Resource/test.jpg';
+        $this->sourceImagePath = __DIR__.'/Resource/test_test.jpg';
+
         if (file_exists($this->sourceImagePath)) {
             copy($this->sourceImagePath, $this->imagePath);
         }
@@ -41,7 +41,7 @@ class ImageControllerTest extends AbstractApplicationTestCase
     public function testImageUpload(): void
     {
         $this->logInAdmin();
-        
+
         $uploadedFile = new UploadedFile(
             $this->imagePath,
             'test.jpg',
@@ -51,10 +51,10 @@ class ImageControllerTest extends AbstractApplicationTestCase
         );
 
         $this->client->request('POST', $this->router->generate('images-upload'), [], ['file' => $uploadedFile]);
-        
+
         $this->assertResponseIsSuccessful();
         $this->assertResponseHeaderSame('Content-Type', 'application/json');
-        
+
         $responseData = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertArrayHasKey('location', $responseData);
         $this->assertStringContainsString('/blog/', $responseData['location']);
@@ -63,14 +63,14 @@ class ImageControllerTest extends AbstractApplicationTestCase
     public function testImageUploadError(): void
     {
         $this->logInAdmin();
-        
+
         // Sending a POST request without the 'file' parameter should trigger an Exception in the controller
         // because $request->files->get('file') will be null and the file manager will fail.
         $this->client->request('POST', $this->router->generate('images-upload'));
-        
+
         $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
         $this->assertResponseHeaderSame('Content-Type', 'application/json');
-        
+
         $responseData = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertArrayHasKey('error', $responseData);
     }

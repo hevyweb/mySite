@@ -3,7 +3,6 @@
 namespace App\Service;
 
 use Imagick;
-use ImagickException;
 
 class ImageService
 {
@@ -12,15 +11,15 @@ class ImageService
      *
      * Uses PHP 8.4 new instance method chaining directly without extra parentheses.
      *
-     * @throws ImagickException
+     * @throws \ImagickException
      */
     public function thumbnail(
         string $imagePath,
         int $width,
         int $height,
-        bool $resize = true
+        bool $resize = true,
     ): string {
-        $imagick = new Imagick($imagePath);
+        $imagick = new \Imagick($imagePath);
 
         // 1. Get original image dimensions
         $origWidth = $imagick->getImageWidth();
@@ -53,7 +52,7 @@ class ImageService
             }
 
             // Resize image keeping aspect ratio intact
-            $imagick->resizeImage($scaleWidth, $scaleHeight, Imagick::FILTER_LANCZOS, 1);
+            $imagick->resizeImage($scaleWidth, $scaleHeight, \Imagick::FILTER_LANCZOS, 1);
 
             // Calculate center offsets for cropping
             $cropX = (int) max(0, round(($scaleWidth - $targetWidth) / 2));

@@ -16,7 +16,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface, Fixture
     public const REGULAR_USER = 'user';
 
     public const ADMIN_USER = 'admin';
-    
+
     public const NAKED_USER = 'naked';
 
     public function __construct(private readonly UserPasswordHasherInterface $passwordHasher)
@@ -94,7 +94,7 @@ class UserFixtures extends Fixture implements DependentFixtureInterface, Fixture
 
         return $user;
     }
-    
+
     private function createNakedUser(): User
     {
         $user = new User();

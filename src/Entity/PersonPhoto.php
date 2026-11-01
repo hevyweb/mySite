@@ -3,8 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\PersonPhotoRepository;
-use Symfony\Component\Serializer\Annotation\Groups;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: PersonPhotoRepository::class)]
 class PersonPhoto

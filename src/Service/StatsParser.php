@@ -1,13 +1,13 @@
 <?php
 
 namespace App\Service;
+
 use App\Entity\Stat;
 
 class StatsParser
 {
     /**
      * @param Stat[] $stats
-     * @return array
      */
     public function parse(array $stats): array
     {
@@ -20,17 +20,16 @@ class StatsParser
             } else {
                 $total[$graveId][$stat->getVisitorHash()] = 1;
             }
-            
         }
-        
+
         foreach ($total as &$grave) {
             $grave = array_sum($grave);
         }
-        
+
         foreach ($today as &$grave) {
             $grave = array_sum($grave);
         }
-        
+
         return [
             'total' => $total,
             'today' => $today,

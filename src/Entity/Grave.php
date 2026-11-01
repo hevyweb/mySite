@@ -13,63 +13,63 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Grave
 {
     #[ORM\Id]
-    #[ORM\Column(type: "uuid", unique: true)]
-    #[ORM\GeneratedValue(strategy: "CUSTOM")]
-    #[ORM\CustomIdGenerator(class: "doctrine.uuid_generator")]
+    #[ORM\Column(type: 'uuid', unique: true)]
+    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
+    #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
     #[Assert\Uuid]
     private ?string $id = null;
 
-    #[ORM\Column(name: "first_name", length: 255)]
+    #[ORM\Column(name: 'first_name', length: 255)]
     private ?string $firstName = null;
 
-    #[ORM\Column(name: "last_name", length: 255)]
+    #[ORM\Column(name: 'last_name', length: 255)]
     private ?string $lastName = null;
 
-    #[ORM\Column(name: "maiden_name", length: 255, nullable: true)]
+    #[ORM\Column(name: 'maiden_name', length: 255, nullable: true)]
     private ?string $maidenName = null;
 
-    #[ORM\Column(name: "birth_date", type: Types::DATE_MUTABLE, nullable: true)]
+    #[ORM\Column(name: 'birth_date', type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTime $birthDate = null;
 
-    #[ORM\Column(name: "death_date", type: Types::DATE_MUTABLE)]
+    #[ORM\Column(name: 'death_date', type: Types::DATE_MUTABLE)]
     private ?\DateTime $deathDate = null;
 
-    #[ORM\Column(name: "birth_place", length: 255, nullable: true)]
+    #[ORM\Column(name: 'birth_place', length: 255, nullable: true)]
     private ?string $birthPlace = null;
 
-    #[ORM\Column(name: "birth_place_coordinates", length: 515, nullable: true)]
+    #[ORM\Column(name: 'birth_place_coordinates', length: 515, nullable: true)]
     private ?string $birthPlaceCoordinates = null;
 
-    #[ORM\Column(name: "death_place", length: 255, nullable: true)]
+    #[ORM\Column(name: 'death_place', length: 255, nullable: true)]
     private ?string $deathPlace = null;
 
-    #[ORM\Column(name: "death_place_coordinates", length: 515, nullable: true)]
+    #[ORM\Column(name: 'death_place_coordinates', length: 515, nullable: true)]
     private ?string $deathPlaceCoordinates = null;
-    
-    #[ORM\Column(name: "grave_place", length: 255, nullable: true)]
+
+    #[ORM\Column(name: 'grave_place', length: 255, nullable: true)]
     private ?string $gravePlace = null;
-    #[ORM\Column(name: "grave_place_coordinates", length: 515, nullable: true)]
+    #[ORM\Column(name: 'grave_place_coordinates', length: 515, nullable: true)]
     private ?string $gravePlaceCoordinates = null;
-    
-    #[ORM\Column(name: "epitaph", length: 255, nullable: true)]
+
+    #[ORM\Column(name: 'epitaph', length: 255, nullable: true)]
     private ?string $epitaph = null;
 
     #[ORM\Column(length: 255)]
     private ?string $image = null;
 
-    #[ORM\Column(name: "is_published")]
+    #[ORM\Column(name: 'is_published')]
     private ?bool $isPublished = null;
-    
-    #[ORM\Column(name: "gender")]
+
+    #[ORM\Column(name: 'gender')]
     private int $gender;
-    
-    #[ORM\Column(name: "biography", type: Types::TEXT, nullable: true)]
+
+    #[ORM\Column(name: 'biography', type: Types::TEXT, nullable: true)]
     private ?string $biography = null;
 
-    #[ORM\Column(name: "created_at")]
+    #[ORM\Column(name: 'created_at')]
     private ?\DateTimeImmutable $createdAt = null;
 
-    #[ORM\Column(name: "updated_at", nullable: true)]
+    #[ORM\Column(name: 'updated_at', nullable: true)]
     private ?\DateTime $updatedAt = null;
 
     /**
@@ -96,7 +96,7 @@ class Grave
         $this->flowers = new ArrayCollection();
         $this->condolences = new ArrayCollection();
     }
-    
+
     public function getId(): ?string
     {
         return $this->id;
@@ -110,6 +110,7 @@ class Grave
     public function setFirstName(string $firstName): self
     {
         $this->firstName = $firstName;
+
         return $this;
     }
 
@@ -121,6 +122,7 @@ class Grave
     public function setLastName(string $lastName): self
     {
         $this->lastName = $lastName;
+
         return $this;
     }
 
@@ -132,6 +134,7 @@ class Grave
     public function setMaidenName(?string $maidenName): self
     {
         $this->maidenName = $maidenName;
+
         return $this;
     }
 
@@ -143,6 +146,7 @@ class Grave
     public function setBirthDate(?\DateTime $birthDate): self
     {
         $this->birthDate = $birthDate;
+
         return $this;
     }
 
@@ -154,6 +158,7 @@ class Grave
     public function setDeathDate(\DateTime $deathDate): self
     {
         $this->deathDate = $deathDate;
+
         return $this;
     }
 
@@ -165,6 +170,7 @@ class Grave
     public function setBirthPlace(?string $birthPlace): self
     {
         $this->birthPlace = $birthPlace;
+
         return $this;
     }
 
@@ -176,6 +182,7 @@ class Grave
     public function setDeathPlace(?string $deathPlace): self
     {
         $this->deathPlace = $deathPlace;
+
         return $this;
     }
 
@@ -187,6 +194,7 @@ class Grave
     public function setImage(string $image): self
     {
         $this->image = $image;
+
         return $this;
     }
 
@@ -198,6 +206,7 @@ class Grave
     public function setIsPublished(bool $isPublished): self
     {
         $this->isPublished = $isPublished;
+
         return $this;
     }
 
@@ -209,6 +218,7 @@ class Grave
     public function setCreatedAt(\DateTimeImmutable $createdAt): self
     {
         $this->createdAt = $createdAt;
+
         return $this;
     }
 
@@ -220,6 +230,7 @@ class Grave
     public function setUpdatedAt(?\DateTime $updatedAt): self
     {
         $this->updatedAt = $updatedAt;
+
         return $this;
     }
 
@@ -231,6 +242,7 @@ class Grave
     public function setBirthPlaceCoordinates(?string $birthPlaceCoordinates): Grave
     {
         $this->birthPlaceCoordinates = $birthPlaceCoordinates;
+
         return $this;
     }
 
@@ -242,6 +254,7 @@ class Grave
     public function setDeathPlaceCoordinates(?string $deathPlaceCoordinates): Grave
     {
         $this->deathPlaceCoordinates = $deathPlaceCoordinates;
+
         return $this;
     }
 
@@ -253,6 +266,7 @@ class Grave
     public function setGravePlace(?string $gravePlace): Grave
     {
         $this->gravePlace = $gravePlace;
+
         return $this;
     }
 
@@ -264,6 +278,7 @@ class Grave
     public function setGravePlaceCoordinates(?string $gravePlaceCoordinates): Grave
     {
         $this->gravePlaceCoordinates = $gravePlaceCoordinates;
+
         return $this;
     }
 
@@ -275,6 +290,7 @@ class Grave
     public function setEpitaph(?string $epitaph): Grave
     {
         $this->epitaph = $epitaph;
+
         return $this;
     }
 
@@ -286,6 +302,7 @@ class Grave
     public function setGender(int $gender): Grave
     {
         $this->gender = $gender;
+
         return $this;
     }
 
@@ -297,6 +314,7 @@ class Grave
     public function setBiography(?string $biography): Grave
     {
         $this->biography = $biography;
+
         return $this;
     }
 
@@ -389,5 +407,4 @@ class Grave
 
         return $this;
     }
-    
 }

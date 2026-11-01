@@ -13,21 +13,22 @@ class StatsTracker
 
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private StatRepository $statsRepository
-    ) {}
+        private StatRepository $statsRepository,
+    ) {
+    }
 
     public function track(Request $request): void
     {
         $path = $request->getPathInfo();
 
         if (
-            str_starts_with($path, '/_') ||
-            str_starts_with($path, '/css') ||
-            str_starts_with($path, '/js') ||
-            str_starts_with($path, '/api') || // Catch standard API routes
-            str_ends_with($path, 'serviceWorker.js') ||
-            str_ends_with($path, 'manifest.json') ||
-            preg_match('/\.(jpg|jpeg|png|gif|webp|svg|ico|avif|json|xml|txt)$/i', $path)
+            str_starts_with($path, '/_')
+            || str_starts_with($path, '/css')
+            || str_starts_with($path, '/js')
+            || str_starts_with($path, '/api') // Catch standard API routes
+            || str_ends_with($path, 'serviceWorker.js')
+            || str_ends_with($path, 'manifest.json')
+            || preg_match('/\.(jpg|jpeg|png|gif|webp|svg|ico|avif|json|xml|txt)$/i', $path)
         ) {
             return;
         }
@@ -39,7 +40,7 @@ class StatsTracker
 
         $clientIp = $request->getClientIp();
         $dailySalt = (new \DateTimeImmutable())->format('Y-m-d');
-        $visitorHash = hash('sha256', $clientIp . $userAgent . $dailySalt);
+        $visitorHash = hash('sha256', $clientIp.$userAgent.$dailySalt);
 
         // Check if this visitor already logged a hit for this path today
         $stats = $this->statsRepository->findTodayVisit($path, $visitorHash);
@@ -95,18 +96,31 @@ class StatsTracker
             $deviceType = str_contains(strtolower($ua), 'ipad') ? 'Tablet' : 'Mobile';
         }
 
-        if (preg_match('/windows nt 10/i', $ua)) { $os = 'Windows 10/11'; }
-        elseif (preg_match('/windows/i', $ua)) { $os = 'Windows'; }
-        elseif (preg_match('/mac os x/i', $ua)) { $os = 'macOS'; }
-        elseif (preg_match('/android/i', $ua)) { $os = 'Android'; }
-        elseif (preg_match('/iphone|ipad|ipod/i', $ua)) { $os = 'iOS'; }
-        elseif (preg_match('/linux/i', $ua)) { $os = 'Linux'; }
+        if (preg_match('/windows nt 10/i', $ua)) {
+            $os = 'Windows 10/11';
+        } elseif (preg_match('/windows/i', $ua)) {
+            $os = 'Windows';
+        } elseif (preg_match('/mac os x/i', $ua)) {
+            $os = 'macOS';
+        } elseif (preg_match('/android/i', $ua)) {
+            $os = 'Android';
+        } elseif (preg_match('/iphone|ipad|ipod/i', $ua)) {
+            $os = 'iOS';
+        } elseif (preg_match('/linux/i', $ua)) {
+            $os = 'Linux';
+        }
 
-        if (preg_match('/edg/i', $ua)) { $browser = 'Edge'; }
-        elseif (preg_match('/chrome/i', $ua)) { $browser = 'Chrome'; }
-        elseif (preg_match('/firefox/i', $ua)) { $browser = 'Firefox'; }
-        elseif (preg_match('/safari/i', $ua)) { $browser = 'Safari'; }
-        elseif (preg_match('/opr|opera/i', $ua)) { $browser = 'Opera'; }
+        if (preg_match('/edg/i', $ua)) {
+            $browser = 'Edge';
+        } elseif (preg_match('/chrome/i', $ua)) {
+            $browser = 'Chrome';
+        } elseif (preg_match('/firefox/i', $ua)) {
+            $browser = 'Firefox';
+        } elseif (preg_match('/safari/i', $ua)) {
+            $browser = 'Safari';
+        } elseif (preg_match('/opr|opera/i', $ua)) {
+            $browser = 'Opera';
+        }
 
         return [$browser, $os, $deviceType];
     }

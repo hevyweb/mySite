@@ -3,9 +3,7 @@
 namespace App\Tests\Application\Controller;
 
 use App\DataFixtures\Tests\UserFixtures;
-use App\DTO\UserSearch;
 use App\Entity\Role;
-use App\Entity\User;
 use App\Exception\UserNotFoundException;
 use App\Type\Gender;
 use Doctrine\ORM\EntityManagerInterface;
@@ -333,15 +331,15 @@ class UserControllerTest extends AbstractApplicationTestCase
         $this->assertEquals('01.01.1961', $user->getBirthday()->format('d.m.Y'));
         $this->assertEquals(Gender::FEMALE, $user->getSex());
     }
-    
+
     public function testEditUserDataEmailChange(): void
     {
         $this->logInUser(UserFixtures::NAKED_USER);
         $user = $this->getUser(UserFixtures::NAKED_USER);
         $oldEmail = $user->getEmail();
-        
+
         $this->client->request('GET', $this->router->generate('user-edit-general'));
-        
+
         // Change email
         $this->client->submitForm('Save', [
             'edit_user[email]' => 'newemail@example.com',
@@ -350,14 +348,14 @@ class UserControllerTest extends AbstractApplicationTestCase
             'edit_user[birthday]' => '24.02.2000',
             'edit_user[sex]' => Gender::FEMALE,
         ]);
-    
+
         $this->assertSelectorTextContains('.toast-body', 'User data updated.');
-        
+
         $this->entityManager->clear();
         $user = $this->getUser(UserFixtures::NAKED_USER);
-        
+
         $this->assertEquals($oldEmail, $user->getEmail());
-        
+
         $emailHistories = $user->getEmailHistories();
         $this->assertGreaterThan(0, $emailHistories->count());
         $lastHistory = $emailHistories->last();
@@ -693,21 +691,21 @@ class UserControllerTest extends AbstractApplicationTestCase
 
         $this->assertEquals('test2@fake.com', $user->getEmail());
     }
-    
+
     public function testUserNotExists(): void
     {
         $this->logInAdmin();
         $this->client->request('GET', $this->router->generate('user-edit-general', ['id' => 999]));
-        $this->assertResponseStatusCodeSame(404);   
+        $this->assertResponseStatusCodeSame(404);
     }
-    
+
     public function testLoginUserAlreadyLoggedIn(): void
     {
         $this->logInUser();
         $this->client->request('GET', $this->router->generate('user-login'));
         $this->assertResponseRedirects($this->router->generate('user-edit-general'));
     }
-    
+
     public function testRegistrationAlreadyClosed(): void
     {
         putenv('REGISTRATION_ENABLED=0');
@@ -718,7 +716,7 @@ class UserControllerTest extends AbstractApplicationTestCase
         $this->assertSelectorTextContains('h1', 'Sign up');
         $this->assertPageTitleSame('Sign up is closed');
     }
-    
+
     public function testRecoverEmailForNonExistingUser(): void
     {
         $this->client->request('GET', $this->router->generate('user-recover-password'));
@@ -728,7 +726,7 @@ class UserControllerTest extends AbstractApplicationTestCase
         $this->client->followRedirect();
         $this->assertSelectorTextContains('.toast-body', 'We have sent an email with a password reset request to the email address provided.');
     }
-    
+
     public function testRecoverEmailTooOften(): void
     {
         $this->client->request('GET', $this->router->generate('user-recover-password'));
@@ -738,12 +736,12 @@ class UserControllerTest extends AbstractApplicationTestCase
         $this->assertResponseRedirects($this->router->generate('home'));
         $this->client->request('GET', $this->router->generate('user-recover-password'));
         $this->client->submitForm('Recover password', [
-            'recover_password[email]' => 'user@fake.com', 
+            'recover_password[email]' => 'user@fake.com',
         ]);
         $this->client->followRedirect();
         $this->assertSelectorTextContains('.toast-body', 'We have sent an email with a password reset request to the email address provided.');
     }
-    
+
     public function testRecoveryTokenNotFound(): void
     {
         $this->logInUser();
@@ -751,16 +749,15 @@ class UserControllerTest extends AbstractApplicationTestCase
         $this->client->followRedirect();
         $this->assertSelectorTextContains('.toast-body', 'A new password has been sent to your email.');
     }
-    
+
     public function testConfirmNewEmailNotFound(): void
     {
         $this->logInUser();
         $this->client->request('GET', $this->router->generate('user-new-email-confirm', ['token' => 'qVP08TKzb3docoztxJJP-jxZL3D1oBMbqIq8JLQ-ohfLjPNGUe9-Ls662mDjpzRd']));
         $this->client->followRedirect();
         $this->assertSelectorTextContains('.toast-body', 'The confirmation link is expired.');
-    
     }
-    
+
     public function testConfirmOldEmailNotFound(): void
     {
         $this->logInUser();
@@ -775,7 +772,7 @@ class UserControllerTest extends AbstractApplicationTestCase
     public function testConfirmOldEmailSuccess(): void
     {
         $this->logInUser();
-        $this->client->request('GET', $this->router->generate('user-old-email-confirm', 
+        $this->client->request('GET', $this->router->generate('user-old-email-confirm',
             ['token' => str_repeat('aA-zA123', 8)]));
         $this->client->followRedirect();
         $this->assertSelectorTextContains('.toast-body', 'Old email successfully confirmed.');
