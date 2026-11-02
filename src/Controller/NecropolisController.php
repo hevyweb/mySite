@@ -254,7 +254,7 @@ final class NecropolisController extends AbstractController
         if ($request->get('id')) {
             $mainTab = new GraveTab();
             $mainTab->label = $this->translator->trans('Grave details', [], 'necropolis');
-            $mainTab->url = $this->generateUrl('necropolis-create', ['id' => $request->get('id')]);
+            $mainTab->url = $this->generateUrl('necropolis-edit', ['id' => $request->get('id')]);
             $mainTab->active = 'necropolis-edit' === $request->attributes->get('_route');
             $mainTab->icon = 'fa fa-pencil';
             $tabs[] = $mainTab;
