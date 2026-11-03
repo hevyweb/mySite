@@ -6,9 +6,22 @@ on:
       - main
 
 jobs:
-  create-basic-system:
+  quality-check:
     timeout-minutes: 10
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - tool: PHP-CS-Fixer
+            command: composer csfixer
+          - tool: Psalm
+            command: composer psalm
+          - tool: PHPStan
+            command: composer phpStan
+          - tool: Tests
+            command: php bin/phpunit tests
+
     steps:
       - name: Install Docker Compose
         run: sudo apt-get update && sudo apt-get install -y docker-compose
@@ -34,14 +47,8 @@ jobs:
       - name: Add empty tables to the DB
         run: docker-compose -f "docker-compose.yml" exec -T fpm php bin/console doctrine:migrations:migrate
 
-      - name: Run PHP-CS-fixer
-        run: docker-compose -f "docker-compose.yml" exec -T fpm composer csfixer
-
-      - name: Run Psalm
-        run: docker-compose -f "docker-compose.yml" exec -T fpm composer psalm
-
-      - name: Run PHPStan
-        run: docker-compose -f "docker-compose.yml" exec -T fpm composer phpStan
+      - name: Run ${{ matrix.tool }}
+        run: docker-compose -f "docker-compose.yml" exec -T fpm composer ${{ matrix.command }}
 
       - name: Stop containers
         if: always()
