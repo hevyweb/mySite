@@ -203,6 +203,9 @@ class ArticleController extends AbstractController
         return $this->redirectToRoute('article-list');
     }
 
+    /**
+     * @param FormInterface<array{article: Article, translation: ArticleTranslation}> $form
+     */
     private function setImage(FormInterface $form, ArticleTranslation $articleTranslation): void
     {
         $file = $form->get('translation')->get('image')->getData();
@@ -238,6 +241,9 @@ class ArticleController extends AbstractController
         }
     }
 
+    /**
+     * @return FormInterface<array{article: Article, translation: ArticleTranslation}>
+     */
     private function buildForm(Article $article, ArticleTranslation $articleTranslation): FormInterface
     {
         return $this->createFormBuilder([

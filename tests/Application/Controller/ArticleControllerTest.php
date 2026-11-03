@@ -12,6 +12,10 @@ use Symfony\Component\HttpFoundation\Response;
 class ArticleControllerTest extends AbstractApplicationTestCase
 {
     private EntityManagerInterface $entityManager;
+
+    /**
+     * @var string[]
+     */
     protected array $uploadedFiles = [];
 
     #[\Override]
@@ -22,8 +26,8 @@ class ArticleControllerTest extends AbstractApplicationTestCase
 
         $imagesArticleDir = $this->getContainer()->getParameter('images_article');
         $fixtureImage = 'test_image.jpg';
-        $fullFixturePath = $imagesArticleDir . '/' . $fixtureImage;
-        $sourceTestImagePath = __DIR__ . '/Resource/test_test.jpg';
+        $fullFixturePath = $imagesArticleDir.'/'.$fixtureImage;
+        $sourceTestImagePath = __DIR__.'/Resource/test_test.jpg';
 
         if (!is_dir($imagesArticleDir)) {
             mkdir($imagesArticleDir, 0777, true);
@@ -85,7 +89,7 @@ class ArticleControllerTest extends AbstractApplicationTestCase
 
         $form = $crawler->selectButton('Save')->form();
 
-        $imagePath = __DIR__ . '/Resource/test_test.jpg';
+        $imagePath = __DIR__.'/Resource/test_test.jpg';
         /** @var FileFormField $image */
         $image = $form['form[translation][image]'];
         $image->upload($imagePath);
@@ -109,6 +113,7 @@ class ArticleControllerTest extends AbstractApplicationTestCase
         $this->entityManager->clear();
         /** @var Article $article */
         $article = $this->entityManager->getRepository(Article::class)->findOneBySlug('new-article-slug');
+        /* @phpstan-ignore method.alreadyNarrowedType */
         $this->assertNotNull($article);
         $this->assertEquals('New Article Title', $article->getArticleTranslation('en')->getTitle());
         $this->assertEquals('new-article-slug', $article->getSlug());
@@ -146,7 +151,7 @@ class ArticleControllerTest extends AbstractApplicationTestCase
         ]));
         $form = $crawler->selectButton('Update')->form();
 
-        $imagePath = __DIR__ . '/Resource/test_test.jpg';
+        $imagePath = __DIR__.'/Resource/test_test.jpg';
         /** @var FileFormField $image */
         $image = $form['form[translation][image]'];
         $image->upload($imagePath);
@@ -170,6 +175,7 @@ class ArticleControllerTest extends AbstractApplicationTestCase
         $this->entityManager->clear();
         /** @var Article $updatedArticle */
         $updatedArticle = $this->entityManager->getRepository(Article::class)->findOneBySlug('updated-test-slug');
+        /* @phpstan-ignore method.alreadyNarrowedType */
         $this->assertNotNull($updatedArticle);
         $this->assertEquals('Updated Article Title', $updatedArticle->getArticleTranslation('en')->getTitle());
         $this->assertEquals('updated-test-slug', $updatedArticle->getSlug());
@@ -192,12 +198,12 @@ class ArticleControllerTest extends AbstractApplicationTestCase
         $this->logInAdmin();
         /** @var Article $article */
         $article = $this->entityManager->getRepository(Article::class)->findOneBySlug('test_slug');
-        
+
         $this->client->request('GET', $this->router->generate('article-edit', [
             'slug' => $article->getSlug(),
-            'locale' => 'uk', 
+            'locale' => 'uk',
         ]));
-        
+
         $this->assertResponseIsSuccessful();
         $this->assertSelectorTextContains('h2', 'Update an article');
     }
@@ -205,14 +211,12 @@ class ArticleControllerTest extends AbstractApplicationTestCase
     public function testArticleUpdateNoTranslation(): void
     {
         $this->logInAdmin();
-        
-        // This article has no translations in fixtures
+
         $this->client->request('GET', $this->router->generate('article-edit', [
             'slug' => 'no_translation_slug',
             'locale' => 'en',
         ]));
 
-        // Based on controller logic: if (!$translation) { ... return $this->redirectToRoute('article-create'); }
         $this->assertResponseRedirects($this->router->generate('article-create'));
     }
 
@@ -226,12 +230,12 @@ class ArticleControllerTest extends AbstractApplicationTestCase
 
         $this->client->request('GET', $this->router->generate('article-translate', [
             'id' => $originalTranslation->getId(),
-            'locale' => 'uk'
+            'locale' => 'uk',
         ]));
 
         $this->assertResponseRedirects();
         $this->client->followRedirect();
-        
+
         $this->entityManager->clear();
         /** @var Article $article */
         $article = $this->entityManager->getRepository(Article::class)->find($originalArticleId);
@@ -247,15 +251,15 @@ class ArticleControllerTest extends AbstractApplicationTestCase
         $this->logInAdmin();
         /** @var ArticleTranslation $translation */
         $translation = $this->entityManager->getRepository(ArticleTranslation::class)->findOneBy(['locale' => 'en']);
-        
+
         $this->client->request('GET', $this->router->generate('article-translate', [
             'id' => $translation->getId(),
-            'locale' => 'en'
+            'locale' => 'en',
         ]));
 
         $this->assertResponseRedirects($this->router->generate('article-edit', [
             'slug' => $translation->getArticle()->getSlug(),
-            'locale' => 'en'
+            'locale' => 'en',
         ]));
     }
 
@@ -264,7 +268,7 @@ class ArticleControllerTest extends AbstractApplicationTestCase
         $this->logInAdmin();
         $this->client->request('GET', $this->router->generate('article-translate', [
             'id' => 99999,
-            'locale' => 'uk'
+            'locale' => 'uk',
         ]));
         $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
     }
@@ -274,7 +278,7 @@ class ArticleControllerTest extends AbstractApplicationTestCase
         $this->logInAdmin();
         /** @var ArticleTranslation $translation */
         $translation = $this->entityManager->getRepository(ArticleTranslation::class)->findOneBy(['locale' => 'en']);
-        
+
         $this->client->request('GET', "/administrator/article/translate/{$translation->getId()}/fr");
         $this->assertResponseStatusCodeSame(Response::HTTP_NOT_FOUND);
     }
@@ -296,13 +300,13 @@ class ArticleControllerTest extends AbstractApplicationTestCase
                 'article' => [
                     'slug' => 'autosaved-slug',
                     'tags' => 'tag1',
-                ]
-            ]
+                ],
+            ],
         ]);
 
         $this->assertResponseIsSuccessful();
         $this->assertResponseHeaderSame('Content-Type', 'application/json');
-        
+
         $responseData = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertArrayHasKey('message', $responseData);
         $this->assertEquals('Autosaved success.', $responseData['message']);
@@ -327,13 +331,13 @@ class ArticleControllerTest extends AbstractApplicationTestCase
                 'article' => [
                     'slug' => 'autosaved-slug',
                     'tags' => 'tag1',
-                ]
-            ]
+                ],
+            ],
         ]);
 
         $this->assertResponseStatusCodeSame(Response::HTTP_BAD_REQUEST);
         $this->assertResponseHeaderSame('Content-Type', 'application/json');
-        
+
         $responseData = json_decode($this->client->getResponse()->getContent(), true);
         $this->assertArrayHasKey('error', $responseData);
         $this->assertEquals('Autosave failed because of invalid id.', $responseData['error']);
@@ -353,8 +357,8 @@ class ArticleControllerTest extends AbstractApplicationTestCase
                 'article' => [
                     'slug' => '',
                     'tags' => '',
-                ]
-            ]
+                ],
+            ],
         ]);
 
         $this->assertResponseStatusCodeSame(Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -384,7 +388,9 @@ class ArticleControllerTest extends AbstractApplicationTestCase
         /** @var Article $article2 */
         $article2 = $this->entityManager->getRepository(Article::class)->findOneBySlug('deletable-article-2');
 
+        /** @phpstan-ignore ternary.alwaysTrue */
         $id1 = $article1 ? $article1->getId() : null;
+        /** @phpstan-ignore ternary.alwaysTrue */
         $id2 = $article2 ? $article2->getId() : null;
 
         $this->client->request('POST', $this->router->generate('article-delete'), ['id' => [$id1 => 'on', $id2 => 'on']]);

@@ -1,0 +1,19 @@
+<header class="memorial-header">
+    <div class="pre-title">Світла пам'ять</div>
+    <h1>
+        {{ grave.firstName }}
+        {% if grave.maidenName %}
+            {{ grave.maidenName }}
+        {% endif %}
+        {{ grave.lastName }}
+    </h1>
+    <div class="lifespan">
+        {% if grave.birthDate %}
+            <time datetime="{{ grave.birthDate|date('Y-m-d') }}">{{ grave.birthDate|date('d.m.Y') }}</time>
+        {% else %}
+            ...
+        {% endif %}
+        &ndash;
+        <time datetime="{{ grave.deathDate|date('Y-m-d') }}">{{ grave.deathDate|date('d.m.Y') }}</time>
+    </div>
+</header>

@@ -15,7 +15,7 @@ class ContactMeControllerTest extends AbstractApplicationTestCase
     public function testContactMeFormSubmission(): void
     {
         $this->client->request('GET', $this->router->generate('contact-me'));
-        
+
         $this->client->submitForm('Send', [
             'contact_me[name]' => 'Test User',
             'contact_me[email]' => 'test@example.com',

@@ -11,9 +11,12 @@ use Symfony\Component\Routing\RouterInterface;
 class ExperienceControllerTest extends AbstractApplicationTestCase
 {
     protected EntityManagerInterface $em;
-    
+
     protected RouterInterface $router;
 
+    /**
+     * @var string[]
+     */
     protected array $uploadedFiles = [];
 
     #[\Override]
@@ -79,7 +82,7 @@ class ExperienceControllerTest extends AbstractApplicationTestCase
         $this->assertResponseIsSuccessful();
         $this->assertSelectorExists('table#experience-table');
         $this->assertSelectorTextContains('h2', 'Experiences');
-        
+
         $crawler = $this->client->getCrawler();
         $rows = $crawler->filter('table#experience-table tbody tr');
         $this->assertCount(20, $rows);
@@ -111,7 +114,7 @@ class ExperienceControllerTest extends AbstractApplicationTestCase
 
     public function testCreateExperienceWithImage(): void
     {
-        $imagePath = __DIR__ . '/Resource/test_test.jpg';
+        $imagePath = __DIR__.'/Resource/test_test.jpg';
         $uploadedFile = new UploadedFile(
             $imagePath,
             'test_test.jpg',
@@ -142,7 +145,7 @@ class ExperienceControllerTest extends AbstractApplicationTestCase
 
     public function testUpdateExperienceWithImage(): void
     {
-        $imagePath = __DIR__ . '/Resource/test_test.jpg';
+        $imagePath = __DIR__.'/Resource/test_test.jpg';
         $uploadedFile = new UploadedFile(
             $imagePath,
             'test.jpg',
@@ -174,11 +177,11 @@ class ExperienceControllerTest extends AbstractApplicationTestCase
         $this->assertEquals('Updated Project Manager', $updatedExperience->getName());
         $this->assertNotNull($updatedExperience->getImage());
     }
-    
+
     public function testDeleteExperienceWithImage(): void
     {
         // First create an experience with an image to ensure we have one to delete
-        $imagePath = __DIR__ . '/Resource/test_test.jpg';
+        $imagePath = __DIR__.'/Resource/test_test.jpg';
         $uploadedFile = new UploadedFile(
             $imagePath,
             'test.jpg',
@@ -237,18 +240,18 @@ class ExperienceControllerTest extends AbstractApplicationTestCase
         $data = array_merge($validData, $invalidData);
 
         $this->client->submitForm('Create', $data);
-        
+
         $crawler = $this->client->getCrawler();
-        $errorMessages = $crawler->filter('.form_validation_error')->each(fn($node) => $node->text());
+        $errorMessages = $crawler->filter('.form_validation_error')->each(fn ($node) => $node->text());
         $foundError = false;
-        
+
         foreach ($errorMessages as $msg) {
-            if (strpos($msg, $errorMessage) !== false) {
+            if (false !== strpos($msg, $errorMessage)) {
                 $foundError = true;
                 break;
             }
         }
-        
+
         $this->assertTrue(
             $foundError,
             sprintf('Expected error message "%s" not found. Found errors: %s', $errorMessage, implode(', ', $errorMessages))
@@ -305,20 +308,20 @@ class ExperienceControllerTest extends AbstractApplicationTestCase
         $data = array_merge($validData, $invalidData);
 
         $this->client->submitForm('Update', $data);
-        
+
         $this->assertResponseIsSuccessful();
-        
+
         $crawler = $this->client->getCrawler();
-        $errorMessages = $crawler->filter('.form_validation_error')->each(fn($node) => $node->text());
+        $errorMessages = $crawler->filter('.form_validation_error')->each(fn ($node) => $node->text());
         $foundError = false;
-        
+
         foreach ($errorMessages as $msg) {
-            if (strpos($msg, $errorMessage) !== false) {
+            if (false !== strpos($msg, $errorMessage)) {
                 $foundError = true;
                 break;
             }
         }
-        
+
         $this->assertTrue(
             $foundError,
             sprintf('Expected error message "%s" not found. Found errors: %s', $errorMessage, implode(', ', $errorMessages))
@@ -327,10 +330,10 @@ class ExperienceControllerTest extends AbstractApplicationTestCase
 
     public function testTreeViewExperiencesByLocale(): void
     {
-        $this->client->restart();;
+        $this->client->restart();
         $this->client->request('GET', $this->router->generate('experience-tree'));
         $this->assertEquals(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
-        $this->assertStringContainsString('My working experience', $this->client->getResponse()->getContent() ?? '');
+        $this->assertStringContainsString('My working experience', $this->client->getResponse()->getContent());
     }
 
     public function testDeleteExperienceSuccess(): void
@@ -385,21 +388,21 @@ class ExperienceControllerTest extends AbstractApplicationTestCase
     public function testCreateExperienceWithoutLogin(): void
     {
         $this->client->restart();
-        
+
         $this->client->request('GET', $this->router->generate('experience-create'));
-        
+
         $this->assertResponseRedirects($this->router->generate('user-login'));
     }
 
     public function testUpdateExperienceWithoutLogin(): void
     {
         $this->client->restart();
-    
+
         $this->client->request(
             'GET',
             $this->router->generate('experience-update', ['id' => 999])
         );
-        
+
         $this->assertResponseRedirects($this->router->generate('user-login'));
     }
 
@@ -408,7 +411,7 @@ class ExperienceControllerTest extends AbstractApplicationTestCase
         $this->client->restart();
         $container = $this->getContainer();
         $router = $container->get('router');
-        
+
         $this->client->request(
             'POST',
             $router->generate('experience-delete'),
@@ -435,7 +438,7 @@ class ExperienceControllerTest extends AbstractApplicationTestCase
             'GET',
             $this->router->generate('experience-update', ['id' => 99999])
         );
-        
-        $this->assertTrue($this->client->getResponse()->getStatusCode() !== Response::HTTP_OK);
+
+        $this->assertTrue(Response::HTTP_OK !== $this->client->getResponse()->getStatusCode());
     }
 }

@@ -1,0 +1,12 @@
+<div id="biography">
+    <div class="content-panel-header">Біографія</div>
+    <section>
+        <div class="content-panel-body">
+            {% if grave.biography %}
+                {{ grave.biography|raw }}
+            {% else %}
+                <p>Біографія відсутня.</p>
+            {% endif %}
+        </div>
+    </section>
+</div>

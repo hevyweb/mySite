@@ -1,0 +1,22 @@
+<div class="modal fade" id="photoGalleryModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content overflow-hidden">
+            <div class="modal-header border-secondary py-2 px-3">
+                <h6 class="modal-title m-0" id="photoCounter">Photo Gallery</h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0">
+                <!-- Main Photo View Area -->
+                <div class="main-photo-container" id="mainPhotoWrapper" title="Double click to open full size">
+                    <img id="mainPhoto" src="" alt="Photo preview" />
+                    <div class="photo-caption-overlay" id="photoCaption">
+                        <div class="fw-bold fs-6 text-white" id="captionDesc"></div>
+                        <div class="small text-muted" id="captionDate"></div>
+                    </div>
+                </div>
+                <!-- Thumbnails Bar (Scrollable 4+ photos) -->
+                <div class="thumbnails-strip" id="thumbnailsStrip"></div>
+            </div>
+        </div>
+    </div>
+</div>

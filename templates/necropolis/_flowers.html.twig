@@ -1,0 +1,145 @@
+<div class="tab-pane visually-hidden" id="flowers-tab-pane" role="tabpanel">
+    <!-- Wizard Navigation Header -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <!-- Circular Stepper Navigation -->
+        <div class="stepper-wrapper position-relative mb-4 px-2 px-md-5">
+            <!-- Connecting Progress Line -->
+            <div class="progress position-absolute top-50 start-0 end-0 translate-middle-y mx-4 mx-md-5" style="height: 3px; z-index: 1;">
+                <div class="progress-bar bg-primary transition-all" id="stepperProgressBar" role="progressbar" style="width: 0%;"></div>
+            </div>
+
+            <!-- Step Circles & Labels -->
+            <div class="d-flex justify-content-between position-relative" style="z-index: 2;">
+                <!-- Step 1 -->
+                <div class="step-item text-center cursor-pointer" id="stepNode1" data-step="1">
+                    <div class="step-circle rounded-circle bg-primary text-white d-flex align-items-center justify-content-center mx-auto fw-bold shadow-sm" style="width: 42px; height: 42px; transition: all 0.3s;">
+                        1
+                    </div>
+                    <div class="step-label small fw-bold text-primary mt-2">Вибір та збір квіток</div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="step-item text-center cursor-pointer" id="stepNode2" data-step="2">
+                    <div class="step-circle rounded-circle bg-light border border-2 text-muted d-flex align-items-center justify-content-center mx-auto fw-bold" style="width: 42px; height: 42px; transition: all 0.3s;">
+                        2
+                    </div>
+                    <div class="step-label small text-muted mt-2">Стрічка з написом</div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="step-item text-center cursor-pointer" id="stepNode3" data-step="3">
+                    <div class="step-circle rounded-circle bg-light border border-2 text-muted d-flex align-items-center justify-content-center mx-auto fw-bold" style="width: 42px; height: 42px; transition: all 0.3s;">
+                        3
+                    </div>
+                    <div class="step-label small text-muted mt-2">Розміщення біля фото</div>
+                </div>
+            </div>
+        </div>
+        <div class="wizard-actions">
+            <button type="button" class="btn btn-secondary d-none" id="btnPrevStep">Назад</button>
+            <button type="button" class="btn btn-primary" id="btnNextStep">Далі</button>
+            <button type="button" class="btn btn-success d-none" id="btnSaveBouquet">
+                <i class="fa-solid fa-floppy-disk me-1"></i> Зберегти
+            </button>
+        </div>
+    </div>
+
+    <!-- STEP 1: Flower Selection & Placement Canvas -->
+    <div class="wizard-step-content" id="wizardStep1">
+        <div class="row">
+            <div class="col-md-8">
+                <div id="flowerCanvas" class="flower-canvas border rounded bg-light position-relative overflow-hidden" style="height: 450px;">
+                    <div class="canvas-placeholder text-muted position-absolute top-50 start-50 translate-middle pointer-events-none">
+                        Перетягніть квіти сюди або натисніть на них у панелі (макс. 24)
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span class="fw-bold">Доступні квіти</span>
+                        <span class="badge bg-primary" id="flowerCounter">0 / 24</span>
+                    </div>
+                    {% set flowers = [
+                        {'id': 'bluebell', 'name': 'Дзвіночок', 'file': 'bluebell.png'},
+                        {'id': 'carnation', 'name': 'Гвоздика', 'file': 'carnation.png'},
+                        {'id': 'dahlia', 'name': 'Жоржина', 'file': 'dahlia.png'},
+                        {'id': 'hibiscus', 'name': 'Гібіскус', 'file': 'hibiscus.png'},
+                        {'id': 'iris', 'name': 'Півник', 'file': 'iris.png'},
+                        {'id': 'lavender', 'name': 'Лаванда', 'file': 'lavender.png'},
+                        {'id': 'lily', 'name': 'Лілія', 'file': 'lily.png'},
+                        {'id': 'lotus', 'name': 'Лотос', 'file': 'lotus.png'},
+                        {'id': 'magnolia', 'name': 'Магнолія', 'file': 'magnolia.png'},
+                        {'id': 'marigold', 'name': 'Чорнобривець', 'file': 'marigold.png'},
+                        {'id': 'orchid', 'name': 'Орхідея', 'file': 'orchid.png'},
+                        {'id': 'paeonia', 'name': 'Півонія', 'file': 'paeonia.png'},
+                        {'id': 'poppy', 'name': 'Мак', 'file': 'poppy.png'},
+                        {'id': 'rose', 'name': 'Троянда', 'file': 'rose.png'},
+                        {'id': 'sakura', 'name': 'Сакура', 'file': 'sakura.png'},
+                        {'id': 'sunflower', 'name': 'Соняшник', 'file': 'sunflower.png'},
+                        {'id': 'tulip', 'name': 'Тюльпан', 'file': 'tulip.png'},
+                        {'id': 'violet', 'name': 'Фіалка', 'file': 'violet.png'},
+                        {'id': 'white_daisy', 'name': 'Ромашка', 'file': 'white_daisy.png'}
+                    ] %}
+
+                    <div class="card-body overflow-auto" style="max-height: 400px;">
+                        <div class="row g-2" id="flowerPalette">
+                            {% for flower in flowers %}
+                                <div class="col-4">
+                                    <img src="/necropolis/flowers/{{ flower.file }}"
+                                         data-id="{{ flower.id }}"
+                                         data-name="{{ flower.name }}"
+                                         class="img-thumbnail palette-flower cursor-pointer"
+                                         alt="{{ flower.name }}">
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- STEP 2: Ribbon & Custom Text -->
+    <div class="wizard-step-content d-none" id="wizardStep2">
+        <div class="row">
+            <div class="col-md-7">
+                <div id="step2CanvasContainer" class="border rounded bg-light position-relative overflow-hidden d-flex justify-content-center align-items-center" style="height: 450px;">
+                    <!-- Step 1 bouquet mirror with ribbon -->
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="card">
+                    <div class="card-header fw-bold">Текст на жалобній стрічці</div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="ribbonTextInput" class="form-label">Напис (необов'язково)</label>
+                            <input type="text" id="ribbonTextInput" class="form-control" maxlength="60" placeholder="Наприклад: Пам'ятаємо, сумуємо...">
+                        </div>
+                        <div class="mb-3">
+                            <label for="ribbonColorSelect" class="form-label">Колір стрічки</label>
+                            <select id="ribbonColorSelect" class="form-select">
+                                <option value="black">Чорний</option>
+                                <option value="gold">Золотий</option>
+                                <option value="white">Білий</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- STEP 3: Position 256x256 Bouquet on Memorial Photo -->
+    <div class="wizard-step-content d-none" id="wizardStep3">
+        <div class="text-muted mb-2">Перетягніть сформований букет у потрібне місце в нижній частині фотографії:</div>
+        <div id="memorialPhotoArea" class="position-relative border rounded overflow-hidden d-inline-block" style="max-width: 100%;">
+            <img src="{{ absolute_url('/grave/' ~ grave.image) }}" id="memorialTargetPhoto" class="img-fluid d-block" alt="Фото">
+
+            <!-- Scaled 256x256 Bouquet Draggable Wrapper -->
+            <div id="scaledBouquetWrapper" class="position-absolute border border-primary border-2 rounded cursor-move" style="width: 256px; height: 256px; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10;">
+                <div id="scaledBouquetInner" class="w-100 h-100 position-relative"></div>
+            </div>
+        </div>
+    </div>
+</div>

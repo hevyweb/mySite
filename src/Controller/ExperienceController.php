@@ -11,9 +11,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerAwareTrait;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Component\Filesystem\Exception\FileNotFoundException;
-use Symfony\Component\Form\FormError;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -86,6 +83,8 @@ class ExperienceController extends AbstractController
             $this->entityManager->flush();
 
             return $this->redirectToRoute('experience-list');
+        } else {
+            $this->entityManager->detach($experience);
         }
 
         return $this->render('experience/create.html.twig', [

@@ -2,6 +2,7 @@
 
 namespace App\Form\User;
 
+use App\Entity\User;
 use App\Form\Constraint\CurrentPassword;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
@@ -13,7 +14,7 @@ use Symfony\Component\Validator\Constraints\Sequentially;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
- * @psalm-suppress MissingTemplateParam
+ * @extends AbstractType<User>
  */
 class UserPasswordsType extends AbstractType
 {

@@ -1,0 +1,164 @@
+{% extends 'base.html.twig' %}
+{% trans_default_domain 'necropolis' %}
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('js/admin') }}
+{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    {{ encore_entry_link_tags('css/necropolis-admin') }}
+{% endblock %}
+{% block content %}
+    {% set breadcrumbs = [
+        {title: 'Admin panel' | trans([], 'dashboard'), path: 'admin-dashboard'},
+        {title: 'Graves' | trans }
+    ] %}
+    {% include 'common/breadcrumbs.html.twig' with breadcrumbs %}
+
+    <div class="admin-panel" id="necropolis">
+        <div class="container">
+            <div class="section-header text-center wow zoomIn" data-wow-delay="0.1s">
+                <h2>{{ title }}</h2>
+            </div>
+
+            {{ include('necropolis/_grave_tabs.html.twig') }}
+
+            <div class="tab-content" style="border: 1px solid #dee2e6; padding: 2rem; border-top: 0 none; border-bottom-left-radius: 5px; border-bottom-right-radius: 5px;">
+
+                {# Add Photo Action #}
+                <div type="button" class="btn btn-success large-plus-button float-start me-2" data-bs-toggle="modal" data-bs-target="#addPhotoModal">
+                    <i class="fa-solid fa-plus"></i>
+                </div>
+
+                {# Photos List #}
+                {% for photo in grave.getPersonPhotos %}
+                    <div class="photo-card float-start">
+                        {# Delete Button (Top-Right) #}
+                        <button type="button"
+                                class="btn btn-danger btn-sm rounded-circle photo-delete-btn"
+                                data-bs-toggle="modal"
+                                data-bs-target="#deletePhotoModal-{{ photo.getId }}">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+
+                        {# Click Image to View / Edit #}
+                        <div data-bs-toggle="modal" data-bs-target="#editPhotoModal-{{ photo.getId }}">
+                            <img src="{{ images_necropolis }}thumbnails/{{ asset(photo.getFilename) }}" alt="{{ photo.getDescription }}">
+
+                            {# Sliding Overlay #}
+                            <div class="photo-overlay">
+                                <div class="photo-desc">
+                                    <i class="fa-solid fa-pen me-1"></i> {{ photo.getDescription|default('No description'|trans) }}
+                                </div>
+                                {% if photo.getShootingDate %}
+                                    <div class="photo-date">
+                                        <i class="fa-regular fa-calendar-days me-1"></i> {{ photo.getShootingDate|date('Y-m-d') }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    {# DELETE CONFIRMATION MODAL #}
+                    <div class="modal fade" id="deletePhotoModal-{{ photo.getId }}" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-sm">
+                            <div class="modal-content text-center">
+                                <div class="modal-body p-4">
+                                    <i class="fa-solid fa-triangle-exclamation text-warning fa-3x mb-3"></i>
+                                    <h5>{% trans %}Are you sure?{% endtrans %}</h5>
+                                    <p class="text-muted small">{% trans %}Do you really want to delete this photo? This process cannot be undone.{% endtrans %}</p>
+                                    <div class="d-flex justify-content-center gap-2 mt-3">
+                                        <button type="button" class="btn btn-light btn-sm" data-bs-dismiss="modal">{% trans %}Cancel{% endtrans %}</button>
+                                        <a href="{{ path('necropolis-photos-delete', {id: grave.id, photoId: photo.getId}) }}" class="btn btn-danger btn-sm">
+                                            <i class="fa-solid fa-trash me-1"></i> {% trans %}Delete{% endtrans %}
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {# EDIT / FULL VIEW PHOTO MODAL #}
+                    <div class="modal fade" id="editPhotoModal-{{ photo.getId }}" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title mb-0">{% trans %}Photo Details & Edit{% endtrans %}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <form action="{{ path('necropolis-photos-edit', {id: grave.getId, photoId: photo.getId}) }}" method="POST">
+                                    <div class="modal-body">
+                                        <div class="row">
+                                            {# Full Image Display #}
+                                            <div class="col-md-6 text-center mb-3 mb-md-0">
+                                                <a href="{{ asset(photo.getFilename) }}" target="_blank" title="Click to view full size">
+                                                    <img src="{{ images_necropolis }}{{ asset(photo.getFilename) }}" class="img-fluid rounded shadow-sm" style="max-height: 300px; object-fit: contain;">
+                                                </a>
+                                            </div>
+
+                                            {# Edit Metadata Fields #}
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label font-weight-bold">{% trans %}Shooting Date{% endtrans %}</label>
+                                                    <input type="date" name="shootingDate" class="form-control" value="{{ photo.getShootingDate ? photo.getShootingDate|date('Y-m-d') : '' }}">
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label class="form-label font-weight-bold">{% trans %}Short Description{% endtrans %}</label>
+                                                    <textarea name="description" class="form-control" rows="4">{{ photo.getDescription }}</textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans %}Cancel{% endtrans %}</button>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fa-solid fa-floppy-disk me-1"></i> {% trans %}Save Changes{% endtrans %}
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+
+                {# ADD PHOTO MODAL #}
+                <div class="modal fade" id="addPhotoModal" tabindex="-1" aria-labelledby="addPhotoModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header position-relative">
+                                <h5 class="modal-title mb-0" id="addPhotoModalLabel">{% trans %}Add photo{% endtrans %}</h5>
+                                <button type="button" class="btn-close position-absolute top-3 end-3" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            {{ form_start(form) }}
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        {{ form_row(form.filename, {'attr': {'class': 'form-control'}}) }}
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        {{ form_row(form.shootingDate, {'attr': {'class': 'form-control'}}) }}
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    {{ form_row(form.description, {'attr': {'class': 'form-control'}}) }}
+                                </div>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans %}Cancel{% endtrans %}</button>
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fa-solid fa-floppy-disk me-1"></i> {% trans %}Save Photo{% endtrans %}
+                                </button>
+                            </div>
+                            {{ form_end(form) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

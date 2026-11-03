@@ -55,10 +55,10 @@ class BlogControllerTest extends AbstractApplicationTestCase
         $this->client->getCookieJar()->set($cookie);
 
         $this->client->request('GET', $this->router->generate('blog-view', ['slug' => 'test_slug']));
-        
+
         $this->assertResponseIsSuccessful();
         $this->assertResponseHasCookie('hit');
-        
+
         $responseCookie = $this->client->getCookieJar()->get('hit');
         $this->assertStringContainsString('999', $responseCookie->getValue());
         $this->assertStringContainsString('1000', $responseCookie->getValue());

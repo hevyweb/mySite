@@ -2,13 +2,14 @@
 
 namespace App\Form;
 
+use ReCaptcha\ReCaptcha;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 
 /**
- * @psalm-suppress MissingTemplateParam
+ * @extends AbstractType<ReCaptcha>
  */
 class ReCaptchaType extends AbstractType
 {

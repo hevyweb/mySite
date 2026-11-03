@@ -21,7 +21,7 @@ use Symfony\Component\Validator\Context\ExecutionContext;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
- * @psalm-suppress MissingTemplateParam
+ * @extends AbstractType<Experience>
  */
 class ExperienceType extends AbstractType
 {

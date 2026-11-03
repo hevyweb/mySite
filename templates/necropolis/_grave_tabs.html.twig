@@ -1,0 +1,44 @@
+{% trans_default_domain 'necropolis' %}
+
+{% set tabs = [] %}
+{% set id = app.request.get('id') %}
+{% if id is not null %}
+    {% set mainTab = {
+        label: 'Grave details'|trans,
+        url: path('necropolis-edit', { id: id }),
+        active: app.request.attributes.get('_route') == 'necropolis-edit',
+        icon: 'fa fa-pencil'
+    } %}
+    {% set photoTab = {
+        label: 'Image'|trans,
+        url: path('necropolis-photos', { id: id }),
+        active: app.request.attributes.get('_route') == 'necropolis-photos',
+        icon: 'fa fa-image'
+    } %}
+    {% set condolenceTab = {
+        label: 'Condolences'|trans,
+        url: path('necropolis-condolences', { id: id }),
+        active: app.request.attributes.get('_route') == 'necropolis-condolences',
+        icon: 'fa fa-heart'
+    } %}
+    {% set flowersTab = {
+        label: 'Flowers'|trans,
+        url: path('necropolis-flowers', { id: id }),
+        active: app.request.attributes.get('_route') == 'necropolis-flowers',
+        icon: 'fa fa-gift'
+    } %}
+    {% set tabs = [mainTab, photoTab, condolenceTab, flowersTab] %}
+{% endif %}
+
+<div class="graves-tabs-header-container">
+    <ul class="graves-tabs-header nav nav-tabs" role="tablist">
+        {% for tab in tabs %}
+            <li class="nav-item" role="presentation">
+                <a class="nav-link {{ tab.active ? 'active' : '' }}" type="button" role="tab" href="{{ tab.url }}">
+                    <i class="{{ tab.icon }}"></i>
+                    {{ tab.label }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+</div>

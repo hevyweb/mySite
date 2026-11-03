@@ -140,7 +140,7 @@ class ExperienceFixtures extends Fixture implements FixtureGroupInterface
                 ->setDescription($descriptions[$locale][$n])
                 ->setName($titles[$locale][$n])
                 ->setFromDate((clone $baseDate)->modify("+{$n} years"))
-                ->setToDate((clone $baseDate)->modify("+".($n + 2)." years"))
+                ->setToDate((clone $baseDate)->modify('+'.($n + 2).' years'))
                 ->setLocation($locations[$locale][$n])
                 ->setImage('no-logo.png')
             ;
@@ -152,4 +152,3 @@ class ExperienceFixtures extends Fixture implements FixtureGroupInterface
         gc_collect_cycles();
     }
 }
-

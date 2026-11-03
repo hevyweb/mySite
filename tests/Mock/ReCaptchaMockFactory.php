@@ -10,6 +10,7 @@ class ReCaptchaMockFactory
     public static function create(): ReCaptcha
     {
         return new class('secret') extends ReCaptcha {
+            #[\Override]
             public function verify($response, $remoteIp = null): Response
             {
                 return new Response(true);

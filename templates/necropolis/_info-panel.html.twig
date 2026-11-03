@@ -1,0 +1,49 @@
+<div class="info-panel">
+    <h3>Загальна інформація</h3>
+    <div class="info-grid">
+        {% if grave.birthDate %}
+            <div class="info-label">Народження:</div>
+            <div class="info-value">
+                {{ grave.birthDate|date('d.m.Y') }}
+                {% if grave.birthPlaceCoordinates is not empty %}
+                    <a href="https://www.google.com/maps?q={{ grave.birthPlaceCoordinates}}" target="_blank" rel="noopener noreferrer">
+                        {% if grave.birthPlace %} &bull; {{ grave.birthPlace }}{% endif %}
+                    </a>
+                {% else %}
+                    {% if grave.birthPlace %} &bull; {{ grave.birthPlace }}{% endif %}
+                {% endif %}
+            </div>
+        {% endif %}        
+        {% if grave.deathDate %}
+            <div class="info-label">Смерть:</div>
+            {% if grave.deathPlaceCoordinates %}
+                <div class="info-value">
+                    {{ grave.deathDate|date('d.m.Y') }}
+                    <a href="https://www.google.com/maps?q={{ grave.deathPlaceCoordinates}}" target="_blank" rel="noopener noreferrer">
+                        {% if grave.deathPlace %} &bull; {{ grave.deathPlace }}{% endif %}
+                    </a>
+                </div>
+            {% else %}
+                <div class="info-value">
+                    {{ grave.deathDate|date('d.m.Y') }}
+                    {% if grave.deathPlace %} &bull; {{ grave.deathPlace }}{% endif %}
+                </div>
+            {% endif %}
+        {% endif %}
+        {% if grave.gravePlaceCoordinates or grave.gravePlace %}
+            <div class="info-label">Місце поховання:</div>
+            <div class="info-value">
+                <a href="https://www.google.com/maps?q={{ grave.gravePlaceCoordinates}}" target="_blank" rel="noopener noreferrer">
+                    {% if grave.gravePlace %}{{ grave.gravePlace }}{% else %}Показати на карті{% endif %}
+                </a>
+            </div>
+        {% elseif grave.gravePlace %}
+            <div class="info-label">Місце поховання:</div>
+            <div class="info-value">{{ grave.gravePlace }}</div>
+        {% endif %}
+        {% if grave.epitaph %}
+            <div class="info-label">Епітафія:</div>
+            <div class="info-value fst-italic">{{ grave.epitaph }}</div>
+        {% endif %}
+    </div>
+</div>

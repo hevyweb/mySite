@@ -2,6 +2,7 @@
 
 namespace App\Form\User;
 
+use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -13,7 +14,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
- * @psalm-suppress MissingTemplateParam
+ * @extends AbstractType<User>
  */
 class RecoverPasswordType extends AbstractType
 {
@@ -50,6 +51,7 @@ class RecoverPasswordType extends AbstractType
             ]);
     }
 
+    #[\Override]
     public function configureOptions(OptionsResolver $resolver): OptionsResolver
     {
         return $resolver->setDefaults([

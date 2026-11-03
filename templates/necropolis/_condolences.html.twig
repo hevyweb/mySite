@@ -1,0 +1,37 @@
+<div id="condolences" style="display: none;">
+    <div class="content-panel-header d-flex justify-content-between align-items-center">
+        <span>Співчуття</span>
+
+        <!-- Button group container with short spacing -->
+        <div class="d-flex align-items-center gap-2">
+            <button type="button" class="btn btn-sm btn-primary" id="btnOpenCondolenceModal">
+                <i class="fa-solid fa-plus" title="Висловити співчуття"></i>
+                <span class="d-none d-sm-inline ms-1">Висловити співчуття</span>
+            </button>
+            <button type="button" class="btn btn-sm btn-danger" id="btnCloseCondolences">
+                <i class="fa-solid fa-circle-left" title="Назад"></i>
+                <span class="d-none d-sm-inline ms-1">Назад</span>
+            </button>
+        </div>
+    </div>
+
+    <section>
+        <div class="content-panel-body">
+            {% if condolences is not empty %}
+                <ul class="list-group" id="condolencesList">
+                    {% for condolence in condolences %}
+                        <li class="list-group-item">
+                            <div class="fw-bold">{{ condolence.getName|default('Анонім') }}</div>
+                            <div>{{ condolence.getDescription|nl2br }}</div>
+                            <small class="text-muted">
+                                <i class="fa-regular fa-clock me-1"></i>{{ condolence.getCreationDate|date('d.m.Y H:i') }}
+                            </small>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-muted my-2" id="noCondolencesText">Співчуття відсутні.</p>
+            {% endif %}
+        </div>
+    </section>
+</div>

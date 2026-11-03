@@ -6,6 +6,8 @@ parameters:
         - uk
     images_article: '%kernel.project_dir%/public/blog'
     images_experience: '%kernel.project_dir%/public/company'
+    images_necropolis: '%kernel.project_dir%/public/necropolis'
+    images_necropolis_public: '/necropolis/'
 
 services:
     _defaults:
