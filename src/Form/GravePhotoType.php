@@ -14,6 +14,9 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Image;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+/**
+ * @extends AbstractType<PersonPhoto>
+ */
 class GravePhotoType extends AbstractType
 {
     public function __construct(
@@ -21,6 +24,7 @@ class GravePhotoType extends AbstractType
     ) {
     }
 
+    #[\Override]
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -54,6 +58,7 @@ class GravePhotoType extends AbstractType
             ]);
     }
 
+    #[\Override]
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([

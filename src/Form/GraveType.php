@@ -22,7 +22,7 @@ use Symfony\Component\Validator\Context\ExecutionContext;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
- * @psalm-suppress MissingTemplateParam
+ * @extends AbstractType<Grave>
  */
 class GraveType extends AbstractType
 {
@@ -34,7 +34,7 @@ class GraveType extends AbstractType
     #[\Override]
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        /** @var Grave $grave */
+        /** @var Grave|null $grave */
         $grave = $builder->getData();
 
         $builder
@@ -217,7 +217,7 @@ class GraveType extends AbstractType
             ->add('image', FileType::class, [
                 'label' => $this->translator->trans('Image', [], 'necropolis'),
                 'mapped' => false,
-                'required' => !$grave || !$grave->getImage(),
+                'required' => null === $grave || empty($grave->getImage()),
                 'constraints' => [
                     new File([
                         'mimeTypes' => [

@@ -11,7 +11,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
- * @psalm-suppress MissingTemplateParam
+ * @extends AbstractType<User>
  */
 class ResetPasswordType extends AbstractType
 {

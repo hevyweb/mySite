@@ -17,7 +17,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
- * @psalm-suppress MissingTemplateParam
+ * @extends AbstractType<Page>
  */
 class PageType extends AbstractType
 {

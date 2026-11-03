@@ -360,8 +360,12 @@ class UserControllerTest extends AbstractApplicationTestCase
         $this->assertGreaterThan(0, $emailHistories->count());
         $lastHistory = $emailHistories->last();
         $this->assertEquals('newemail@example.com', $lastHistory->getNewEmail());
+
+        /* @phpstan-ignore method.alreadyNarrowedType */
         $this->assertNotNull($lastHistory->getOldConfirmationToken());
+        /* @phpstan-ignore method.alreadyNarrowedType */
         $this->assertNotNull($lastHistory->getNewConfirmationToken());
+
         $this->assertEquals($oldEmail, $lastHistory->getOldEmail());
     }
 
@@ -652,8 +656,14 @@ class UserControllerTest extends AbstractApplicationTestCase
         ]);
         $this->assertResponseRedirects($this->router->generate('home'));
         $user = $this->getUser('user');
-        $this->assertNotNull($user->getRecovery());
-        $this->assertNotNull($user->getRecoveredAt());
+
+        /** @var string|null $recovery */
+        $recovery = $user->getRecovery();
+        $this->assertNotNull($recovery);
+
+        /** @var \DateTimeInterface|null $recoveredAt */
+        $recoveredAt = $user->getRecoveredAt();
+        $this->assertNotNull($recoveredAt);
     }
 
     public function testResetPasswordSuccess(): void

@@ -21,11 +21,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'integer')]
     private ?int $id;
 
-    #[ORM\Column(type: 'string', length: 32, nullable: false)]
-    private ?string $firstName;
+    #[ORM\Column(type: 'string', length: 32)]
+    private string $firstName;
 
-    #[ORM\Column(type: 'string', length: 32, nullable: false)]
-    private ?string $lastName;
+    #[ORM\Column(type: 'string', length: 32)]
+    private string $lastName;
 
     #[ORM\Column(type: 'date', nullable: true)]
     #[Assert\Type('\DateTimeInterface')]
@@ -35,16 +35,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $sex;
 
     #[ORM\Column(type: 'string', length: 32, unique: true)]
-    private ?string $username;
+    private string $username;
 
     #[ORM\Column(type: 'string', length: 64, unique: true)]
-    private ?string $email;
+    private string $email;
 
     #[Assert\Length(max: 32)]
-    private ?string $plainPassword;
+    private ?string $plainPassword = null;
 
     #[ORM\Column(type: 'string', length: 64)]
-    private ?string $password;
+    private string $password;
 
     /**
      * @var Collection<int, Role>
@@ -103,7 +103,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function setFirstName(?string $firstName): self
     {
-        $this->firstName = $firstName;
+        $this->firstName = $firstName ?? '';
 
         return $this;
     }
@@ -115,7 +115,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function setLastName(?string $lastName): self
     {
-        $this->lastName = $lastName;
+        $this->lastName = $lastName ?? '';
 
         return $this;
     }
@@ -197,7 +197,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     #[\Override]
-    public function getPassword(): ?string
+    public function getPassword(): string
     {
         return $this->password;
     }
@@ -214,14 +214,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return null;
     }
 
-    public function getUsername(): ?string
+    public function getUsername(): string
     {
         return $this->username;
     }
 
     public function setUsername(?string $username): self
     {
-        $this->username = $username;
+        $this->username = $username ?? '';
 
         return $this;
     }
@@ -238,14 +238,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getEmail(): ?string
+    public function getEmail(): string
     {
         return $this->email;
     }
 
     public function setEmail(?string $email): self
     {
-        $this->email = $email;
+        $this->email = $email ?? '';
 
         return $this;
     }
@@ -256,6 +256,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * This is important if, at any given point, sensitive information like
      * the plain-text password is stored on this object.
      */
+    #[\Override]
     public function eraseCredentials(): void
     {
         $this->plainPassword = null;
@@ -309,7 +310,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->createdAt;
     }

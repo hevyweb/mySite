@@ -73,7 +73,6 @@ class UserController extends AbstractController
                 'id' => $user->getId() != $this->getUser()->getId() ? $user->getId() : null,
             ]),
         ]);
-
         $oldEmail = $user->getEmail();
         $userEditForm->handleRequest($request);
         if ($userEditForm->isSubmitted() && $userEditForm->isValid()) {
@@ -84,6 +83,8 @@ class UserController extends AbstractController
                 ->setUpdatedBy($this->getUser());
             $this->entityManager->flush();
             $this->addFlash(self::SUCCESS, $this->translator->trans('User data updated.', [], 'user'));
+        } else {
+            $this->entityManager->detach($user);
         }
 
         return $this->render('user/edit.html.twig', [

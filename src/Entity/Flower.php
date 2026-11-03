@@ -2,10 +2,9 @@
 
 namespace App\Entity;
 
-use App\Repository\FlowerRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: FlowerRepository::class)]
+#[ORM\Entity]
 class Flower
 {
     #[ORM\Id]
@@ -14,21 +13,21 @@ class Flower
     private ?int $id = null;
 
     #[ORM\Column(name: 'creation_date')]
-    private ?\DateTimeImmutable $creationDate = null;
+    private \DateTimeImmutable $creationDate;
 
     #[ORM\Column(length: 255)]
-    private ?string $name = null;
+    private string $name;
 
     #[ORM\ManyToOne(inversedBy: 'flowers')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Grave $grave = null;
+    private Grave $grave;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getCreationDate(): ?\DateTimeImmutable
+    public function getCreationDate(): \DateTimeImmutable
     {
         return $this->creationDate;
     }
@@ -40,7 +39,7 @@ class Flower
         return $this;
     }
 
-    public function getName(): ?string
+    public function getName(): string
     {
         return $this->name;
     }
@@ -52,12 +51,12 @@ class Flower
         return $this;
     }
 
-    public function getGrave(): ?Grave
+    public function getGrave(): Grave
     {
         return $this->grave;
     }
 
-    public function setGrave(?Grave $grave): static
+    public function setGrave(Grave $grave): static
     {
         $this->grave = $grave;
 

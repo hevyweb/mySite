@@ -2,28 +2,28 @@
 
 namespace App\Entity;
 
-use App\Repository\GraveRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\IdGenerator\UuidGenerator;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity(repositoryClass: GraveRepository::class)]
+#[ORM\Entity]
 class Grave
 {
     #[ORM\Id]
     #[ORM\Column(type: 'uuid', unique: true)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
+    #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
     #[Assert\Uuid]
     private ?string $id = null;
 
     #[ORM\Column(name: 'first_name', length: 255)]
-    private ?string $firstName = null;
+    private string $firstName;
 
     #[ORM\Column(name: 'last_name', length: 255)]
-    private ?string $lastName = null;
+    private string $lastName;
 
     #[ORM\Column(name: 'maiden_name', length: 255, nullable: true)]
     private ?string $maidenName = null;
@@ -32,7 +32,7 @@ class Grave
     private ?\DateTime $birthDate = null;
 
     #[ORM\Column(name: 'death_date', type: Types::DATE_MUTABLE)]
-    private ?\DateTime $deathDate = null;
+    private \DateTime $deathDate;
 
     #[ORM\Column(name: 'birth_place', length: 255, nullable: true)]
     private ?string $birthPlace = null;
@@ -55,10 +55,10 @@ class Grave
     private ?string $epitaph = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $image = null;
+    private string $image;
 
     #[ORM\Column(name: 'is_published')]
-    private ?bool $isPublished = null;
+    private bool $isPublished = false;
 
     #[ORM\Column(name: 'gender')]
     private int $gender;
@@ -67,7 +67,7 @@ class Grave
     private ?string $biography = null;
 
     #[ORM\Column(name: 'created_at')]
-    private ?\DateTimeImmutable $createdAt = null;
+    private \DateTimeImmutable $createdAt;
 
     #[ORM\Column(name: 'updated_at', nullable: true)]
     private ?\DateTime $updatedAt = null;
@@ -102,7 +102,7 @@ class Grave
         return $this->id;
     }
 
-    public function getFirstName(): ?string
+    public function getFirstName(): string
     {
         return $this->firstName;
     }
@@ -114,7 +114,7 @@ class Grave
         return $this;
     }
 
-    public function getLastName(): ?string
+    public function getLastName(): string
     {
         return $this->lastName;
     }
@@ -150,7 +150,7 @@ class Grave
         return $this;
     }
 
-    public function getDeathDate(): ?\DateTime
+    public function getDeathDate(): \DateTime
     {
         return $this->deathDate;
     }
@@ -186,7 +186,7 @@ class Grave
         return $this;
     }
 
-    public function getImage(): ?string
+    public function getImage(): string
     {
         return $this->image;
     }
@@ -198,7 +198,7 @@ class Grave
         return $this;
     }
 
-    public function isPublished(): ?bool
+    public function isPublished(): bool
     {
         return $this->isPublished;
     }
@@ -210,7 +210,7 @@ class Grave
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->createdAt;
     }
@@ -336,18 +336,6 @@ class Grave
         return $this;
     }
 
-    public function removePersonPhoto(PersonPhoto $personPhoto): static
-    {
-        if ($this->personPhotos->removeElement($personPhoto)) {
-            // set the owning side to null (unless already changed)
-            if ($personPhoto->getGrave() === $this) {
-                $personPhoto->setGrave(null);
-            }
-        }
-
-        return $this;
-    }
-
     /**
      * @return Collection<int, Flower>
      */
@@ -366,18 +354,6 @@ class Grave
         return $this;
     }
 
-    public function removeFlower(Flower $flower): static
-    {
-        if ($this->flowers->removeElement($flower)) {
-            // set the owning side to null (unless already changed)
-            if ($flower->getGrave() === $this) {
-                $flower->setGrave(null);
-            }
-        }
-
-        return $this;
-    }
-
     /**
      * @return Collection<int, Condolence>
      */
@@ -391,18 +367,6 @@ class Grave
         if (!$this->condolences->contains($condolence)) {
             $this->condolences->add($condolence);
             $condolence->setGrave($this);
-        }
-
-        return $this;
-    }
-
-    public function removeCondolence(Condolence $condolence): static
-    {
-        if ($this->condolences->removeElement($condolence)) {
-            // set the owning side to null (unless already changed)
-            if ($condolence->getGrave() === $this) {
-                $condolence->setGrave(null);
-            }
         }
 
         return $this;

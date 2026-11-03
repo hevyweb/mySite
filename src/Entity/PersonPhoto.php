@@ -2,11 +2,10 @@
 
 namespace App\Entity;
 
-use App\Repository\PersonPhotoRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
-#[ORM\Entity(repositoryClass: PersonPhotoRepository::class)]
+#[ORM\Entity]
 class PersonPhoto
 {
     #[ORM\Id]
@@ -17,7 +16,7 @@ class PersonPhoto
 
     #[ORM\Column(length: 64)]
     #[Groups(['photo:read'])]
-    private ?string $filename = null;
+    private string $filename;
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['photo:read'])]
@@ -29,14 +28,14 @@ class PersonPhoto
 
     #[ORM\ManyToOne(inversedBy: 'personPhotos')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Grave $grave = null;
+    private Grave $grave;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getFilename(): ?string
+    public function getFilename(): string
     {
         return $this->filename;
     }
@@ -72,12 +71,12 @@ class PersonPhoto
         return $this;
     }
 
-    public function getGrave(): ?Grave
+    public function getGrave(): Grave
     {
         return $this->grave;
     }
 
-    public function setGrave(?Grave $grave): static
+    public function setGrave(Grave $grave): static
     {
         $this->grave = $grave;
 

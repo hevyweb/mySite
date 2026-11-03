@@ -8,26 +8,37 @@ class StatsParser
 {
     /**
      * @param Stat[] $stats
+     *
+     * @return array{total: array<string, int>, today: array<string, int>}
      */
     public function parse(array $stats): array
     {
-        $total = [];
-        $today = [];
+        /** @var array<string, array<string, true>> $totalVisitors */
+        $totalVisitors = [];
+        /** @var array<string, array<string, true>> $todayVisitors */
+        $todayVisitors = [];
+
+        $todayDate = (new \DateTimeImmutable())->format('Y-m-d');
+
         foreach ($stats as $stat) {
             $graveId = substr($stat->getPath(), 7);
-            if ($stat->getCreatedAt()->format('Y-m-d') === (new \DateTimeImmutable())->format('Y-m-d')) {
-                $today[$graveId][$stat->getVisitorHash()] = 1;
+            $visitorHash = $stat->getVisitorHash();
+
+            if ($stat->getCreatedAt()->format('Y-m-d') === $todayDate) {
+                $todayVisitors[$graveId][$visitorHash] = true;
             } else {
-                $total[$graveId][$stat->getVisitorHash()] = 1;
+                $totalVisitors[$graveId][$visitorHash] = true;
             }
         }
 
-        foreach ($total as &$grave) {
-            $grave = array_sum($grave);
+        $total = [];
+        foreach ($totalVisitors as $graveId => $visitors) {
+            $total[$graveId] = count($visitors);
         }
 
-        foreach ($today as &$grave) {
-            $grave = array_sum($grave);
+        $today = [];
+        foreach ($todayVisitors as $graveId => $visitors) {
+            $today[$graveId] = count($visitors);
         }
 
         return [

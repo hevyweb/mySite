@@ -83,6 +83,8 @@ class ExperienceController extends AbstractController
             $this->entityManager->flush();
 
             return $this->redirectToRoute('experience-list');
+        } else {
+            $this->entityManager->detach($experience);
         }
 
         return $this->render('experience/create.html.twig', [

@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
- * @psalm-suppress MissingTemplateParam
+ * @extends AbstractType<Article>
  */
 class ArticleType extends AbstractType
 {

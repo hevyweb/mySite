@@ -12,6 +12,10 @@ use Symfony\Component\HttpFoundation\Response;
 class ArticleControllerTest extends AbstractApplicationTestCase
 {
     private EntityManagerInterface $entityManager;
+
+    /**
+     * @var string[]
+     */
     protected array $uploadedFiles = [];
 
     #[\Override]
@@ -109,6 +113,7 @@ class ArticleControllerTest extends AbstractApplicationTestCase
         $this->entityManager->clear();
         /** @var Article $article */
         $article = $this->entityManager->getRepository(Article::class)->findOneBySlug('new-article-slug');
+        /* @phpstan-ignore method.alreadyNarrowedType */
         $this->assertNotNull($article);
         $this->assertEquals('New Article Title', $article->getArticleTranslation('en')->getTitle());
         $this->assertEquals('new-article-slug', $article->getSlug());
@@ -170,6 +175,7 @@ class ArticleControllerTest extends AbstractApplicationTestCase
         $this->entityManager->clear();
         /** @var Article $updatedArticle */
         $updatedArticle = $this->entityManager->getRepository(Article::class)->findOneBySlug('updated-test-slug');
+        /* @phpstan-ignore method.alreadyNarrowedType */
         $this->assertNotNull($updatedArticle);
         $this->assertEquals('Updated Article Title', $updatedArticle->getArticleTranslation('en')->getTitle());
         $this->assertEquals('updated-test-slug', $updatedArticle->getSlug());
@@ -206,13 +212,11 @@ class ArticleControllerTest extends AbstractApplicationTestCase
     {
         $this->logInAdmin();
 
-        // This article has no translations in fixtures
         $this->client->request('GET', $this->router->generate('article-edit', [
             'slug' => 'no_translation_slug',
             'locale' => 'en',
         ]));
 
-        // Based on controller logic: if (!$translation) { ... return $this->redirectToRoute('article-create'); }
         $this->assertResponseRedirects($this->router->generate('article-create'));
     }
 
@@ -384,7 +388,9 @@ class ArticleControllerTest extends AbstractApplicationTestCase
         /** @var Article $article2 */
         $article2 = $this->entityManager->getRepository(Article::class)->findOneBySlug('deletable-article-2');
 
+        /** @phpstan-ignore ternary.alwaysTrue */
         $id1 = $article1 ? $article1->getId() : null;
+        /** @phpstan-ignore ternary.alwaysTrue */
         $id2 = $article2 ? $article2->getId() : null;
 
         $this->client->request('POST', $this->router->generate('article-delete'), ['id' => [$id1 => 'on', $id2 => 'on']]);

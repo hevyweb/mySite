@@ -2,11 +2,10 @@
 
 namespace App\Entity;
 
-use App\Repository\CondolenceRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: CondolenceRepository::class)]
+#[ORM\Entity]
 class Condolence
 {
     #[ORM\Id]
@@ -15,7 +14,7 @@ class Condolence
     private ?int $id = null;
 
     #[ORM\Column(type: Types::TEXT)]
-    private ?string $description = null;
+    private string $description;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $name = null;
@@ -24,21 +23,21 @@ class Condolence
     private ?string $email = null;
 
     #[ORM\Column(name: 'creation_date', type: Types::DATETIME_IMMUTABLE)]
-    private ?\DateTimeImmutable $creationDate = null;
+    private \DateTimeImmutable $creationDate;
 
     #[ORM\Column(name: 'is_active', type: Types::BOOLEAN)]
-    private ?bool $isActive = false;
+    private bool $isActive = false;
 
     #[ORM\ManyToOne(inversedBy: 'condolences')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Grave $grave = null;
+    private Grave $grave;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getDescription(): ?string
+    public function getDescription(): string
     {
         return $this->description;
     }
@@ -74,7 +73,7 @@ class Condolence
         return $this;
     }
 
-    public function getCreationDate(): ?\DateTimeImmutable
+    public function getCreationDate(): \DateTimeImmutable
     {
         return $this->creationDate;
     }
@@ -86,7 +85,7 @@ class Condolence
         return $this;
     }
 
-    public function isActive(): ?bool
+    public function isActive(): bool
     {
         return $this->isActive;
     }
@@ -98,12 +97,12 @@ class Condolence
         return $this;
     }
 
-    public function getGrave(): ?Grave
+    public function getGrave(): Grave
     {
         return $this->grave;
     }
 
-    public function setGrave(?Grave $grave): static
+    public function setGrave(Grave $grave): static
     {
         $this->grave = $grave;
 

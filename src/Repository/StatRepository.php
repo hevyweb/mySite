@@ -6,13 +6,22 @@ use App\Entity\Stat;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
+/**
+ * @extends ServiceEntityRepository<Stat>
+ */
 class StatRepository extends ServiceEntityRepository
 {
+    /**
+     * @psalm-suppress PossiblyUnusedParam
+     */
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Stat::class);
     }
 
+    /**
+     * @psalm-suppress PossiblyUnusedParam
+     */
     public function findTodayVisit(string $path, string $visitorHash): ?Stat
     {
         $startOfDay = new \DateTimeImmutable('today 00:00:00');
@@ -30,6 +39,9 @@ class StatRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
+    /**
+     * @return array<Stat>
+     */
     public function findGraveStatistics(): array
     {
         return $this->createQueryBuilder('s')

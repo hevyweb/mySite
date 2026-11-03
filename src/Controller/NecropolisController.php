@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\DTO\GraveTab;
 use App\Entity\Condolence;
 use App\Entity\Grave;
 use App\Entity\PersonPhoto;
@@ -77,7 +76,6 @@ final class NecropolisController extends AbstractController
             'title' => $this->translator->trans('Add grave details', [], 'necropolis'),
             'form' => $form->createView(),
             'submit' => $this->translator->trans('Create'),
-            'tabs' => $this->buildTabsArray($request),
         ]);
     }
 
@@ -122,7 +120,6 @@ final class NecropolisController extends AbstractController
             'form' => $form->createView(),
             'grave' => $grave,
             'submit' => $this->translator->trans('Update'),
-            'tabs' => $this->buildTabsArray($request),
         ]);
     }
 
@@ -135,7 +132,7 @@ final class NecropolisController extends AbstractController
         return $this->redirectToRoute('necropolis-list');
     }
 
-    public function photos(Grave $grave, Request $request): Response
+    public function photos(Grave $grave): Response
     {
         $form = $this->createForm(GravePhotoType::class, new PersonPhoto(), [
             'action' => $this->generateUrl('necropolis-photos-create', ['id' => $grave->getId()]),
@@ -145,7 +142,6 @@ final class NecropolisController extends AbstractController
             'grave' => $grave,
             'form' => $form->createView(),
             'title' => $this->translator->trans('Image', [], 'necropolis'),
-            'tabs' => $this->buildTabsArray($request),
         ]);
     }
 
@@ -189,12 +185,11 @@ final class NecropolisController extends AbstractController
         );
     }
 
-    public function condolences(Request $request, Grave $grave): Response
+    public function condolences(Grave $grave): Response
     {
         return $this->render('necropolis/condolences.html.twig', [
             'grave' => $grave,
             'title' => $this->translator->trans('Condolences', [], 'necropolis'),
-            'tabs' => $this->buildTabsArray($request),
         ]
         );
     }
@@ -246,42 +241,6 @@ final class NecropolisController extends AbstractController
             'success' => false,
             'errors' => $errors,
         ], Response::HTTP_UNPROCESSABLE_ENTITY);
-    }
-
-    private function buildTabsArray(Request $request): array
-    {
-        $tabs = [];
-        if ($request->get('id')) {
-            $mainTab = new GraveTab();
-            $mainTab->label = $this->translator->trans('Grave details', [], 'necropolis');
-            $mainTab->url = $this->generateUrl('necropolis-edit', ['id' => $request->get('id')]);
-            $mainTab->active = 'necropolis-edit' === $request->attributes->get('_route');
-            $mainTab->icon = 'fa fa-pencil';
-            $tabs[] = $mainTab;
-
-            $photoTab = new GraveTab();
-            $photoTab->label = $this->translator->trans('Image', [], 'necropolis');
-            $photoTab->url = $this->generateUrl('necropolis-photos', ['id' => $request->get('id')]);
-            $photoTab->active = 'necropolis-photos' === $request->attributes->get('_route');
-            $photoTab->icon = 'fa fa-image';
-            $tabs[] = $photoTab;
-
-            $condolenceTab = new GraveTab();
-            $condolenceTab->label = $this->translator->trans('Condolences', [], 'necropolis');
-            $condolenceTab->url = $this->generateUrl('necropolis-condolences', ['id' => $request->get('id')]);
-            $condolenceTab->active = 'necropolis-condolences' === $request->attributes->get('_route');
-            $condolenceTab->icon = 'fa fa-heart';
-            $tabs[] = $condolenceTab;
-
-            $flowersTab = new GraveTab();
-            $flowersTab->label = $this->translator->trans('Flowers', [], 'necropolis');
-            $flowersTab->url = $this->generateUrl('necropolis-flowers', ['id' => $request->get('id')]);
-            $flowersTab->active = 'necropolis-flowers' === $request->attributes->get('_route');
-            $flowersTab->icon = 'fa fa-gift';
-            $tabs[] = $flowersTab;
-        }
-
-        return $tabs;
     }
 
     public function photosDelete(Request $request): Response

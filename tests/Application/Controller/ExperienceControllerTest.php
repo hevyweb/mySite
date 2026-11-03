@@ -14,6 +14,9 @@ class ExperienceControllerTest extends AbstractApplicationTestCase
 
     protected RouterInterface $router;
 
+    /**
+     * @var string[]
+     */
     protected array $uploadedFiles = [];
 
     #[\Override]
@@ -330,7 +333,7 @@ class ExperienceControllerTest extends AbstractApplicationTestCase
         $this->client->restart();
         $this->client->request('GET', $this->router->generate('experience-tree'));
         $this->assertEquals(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
-        $this->assertStringContainsString('My working experience', $this->client->getResponse()->getContent() ?? '');
+        $this->assertStringContainsString('My working experience', $this->client->getResponse()->getContent());
     }
 
     public function testDeleteExperienceSuccess(): void

@@ -17,52 +17,50 @@ class Stat
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $path = null;
+    private string $path;
 
     #[ORM\Column(length: 64)]
-    private ?string $visitorHash = null; // Daily unique user fingerprint
+    private string $visitorHash;
 
-    // --- Device & Environment ---
     #[ORM\Column(length: 50, nullable: true)]
-    private ?string $deviceType = null; // mobile, tablet, desktop, bot
+    private ?string $deviceType = null;
 
     #[ORM\Column(length: 100, nullable: true)]
-    private ?string $browser = null; // e.g., Chrome, Safari, Firefox
+    private ?string $browser = null;
 
     #[ORM\Column(length: 100, nullable: true)]
-    private ?string $os = null; // e.g., Windows, macOS, Android, iOS
+    private ?string $os = null;
 
     #[ORM\Column(length: 10, nullable: true)]
-    private ?string $language = null; // Primary language (e.g., 'en', 'uk')
+    private ?string $language = null;
 
     #[ORM\Column(length: 10, nullable: true)]
-    private ?string $country = null; // Country code (e.g., 'UA', 'US')
+    private ?string $country = null;
 
     #[ORM\Column(length: 100, nullable: true)]
-    private ?string $city = null; // Optional: Extracted via GeoIP database
+    private ?string $city = null;
 
     // --- Traffic Attribution ---
     #[ORM\Column(length: 500, nullable: true)]
-    private ?string $referer = null; // External or internal source URL
+    private ?string $referer = null;
 
     #[ORM\Column(length: 100, nullable: true)]
-    private ?string $utmSource = null; // e.g., google, newsletter, telegram
+    private ?string $utmSource = null;
 
     #[ORM\Column(length: 100, nullable: true)]
-    private ?string $utmMedium = null; // e.g., cpc, banner, email
+    private ?string $utmMedium = null;
 
     #[ORM\Column(length: 100, nullable: true)]
-    private ?string $utmCampaign = null; // e.g., spring_sale
+    private ?string $utmCampaign = null;
 
-    // --- Technical Request Details ---
     #[ORM\Column(length: 45, nullable: true)]
-    private ?string $ipAddress = null; // Stored anonymized if privacy is a concern
+    private ?string $ipAddress = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $userAgent = null; // Raw string (optional to store if parsed cleanly)
+    private ?string $userAgent = null;
 
     #[ORM\Column]
-    private ?\DateTimeImmutable $createdAt = null;
+    private \DateTimeImmutable $createdAt;
 
     #[ORM\Column]
     private int $hits = 1;
@@ -72,14 +70,12 @@ class Stat
         $this->createdAt = new \DateTimeImmutable();
     }
 
-    // --- Getters and Setters ---
-
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getPath(): ?string
+    public function getPath(): string
     {
         return $this->path;
     }
@@ -91,7 +87,7 @@ class Stat
         return $this;
     }
 
-    public function getVisitorHash(): ?string
+    public function getVisitorHash(): string
     {
         return $this->visitorHash;
     }
@@ -247,9 +243,16 @@ class Stat
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): \DateTimeImmutable
     {
-        return $this->created_at ?? $this->createdAt;
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
     }
 
     public function getHits(): int
