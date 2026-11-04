@@ -48,7 +48,7 @@ jobs:
         run: docker-compose -f "docker-compose.yml" exec -T fpm php bin/console doctrine:migrations:migrate
 
       - name: Run ${{ matrix.tool }}
-        run: docker-compose -f "docker-compose.yml" exec -T fpm composer ${{ matrix.command }}
+        run: docker-compose -f "docker-compose.yml" exec -T fpm ${{ matrix.command }}
 
       - name: Stop containers
         if: always()
