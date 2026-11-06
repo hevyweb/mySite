@@ -12,8 +12,9 @@ use Symfony\Component\Process\Process;
 
 class UnzipAssetsCommand extends Command
 {
-    public static $defaultName = 'app:unzip-assets';
+    public static string $defaultName = 'app:unzip-assets';
 
+    #[\Override]
     protected function configure()
     {
         $this
@@ -22,6 +23,7 @@ class UnzipAssetsCommand extends Command
             ->setHelp('This command allows you to unzip public/assets.zip to the public directory');
     }
 
+    #[\Override]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);

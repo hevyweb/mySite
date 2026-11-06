@@ -10,8 +10,9 @@ use Symfony\Component\Filesystem\Filesystem;
 
 class RemoveUnusedFilesCommand extends Command
 {
-    public static $defaultName = 'app:remove-unused-files';
+    public static string $defaultName = 'app:remove-unused-files';
 
+    #[\Override]
     protected function configure()
     {
         $this
@@ -20,6 +21,7 @@ class RemoveUnusedFilesCommand extends Command
             ->setHelp('This command allows you to remove all files that shouldn\'t exist on production');
     }
 
+    #[\Override]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);

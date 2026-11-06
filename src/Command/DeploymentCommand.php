@@ -10,8 +10,9 @@ use Symfony\Component\Process\Process;
 
 class DeploymentCommand extends Command
 {
-    protected static $defaultName = 'app:run-sequential-commands';
+    protected static string $defaultName = 'app:run-sequential-commands';
 
+    #[\Override]
     protected function configure()
     {
         $this
@@ -19,6 +20,7 @@ class DeploymentCommand extends Command
             ->setDescription('Runs deployment commands in sequence');
     }
 
+    #[\Override]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
@@ -36,7 +38,7 @@ class DeploymentCommand extends Command
             try {
                 $command = $this->getApplication()->find($commandLine);
                 if (self::SUCCESS !== $command->run($input, $output)) {
-                    throw new \Exception('Command execution failed. '.$command->getErrorOutput());
+                    throw new \Exception('Command execution failed. '.$command->getName());
                 }
                 $io->writeln('<info>'.$command->getName().' executed.</info>');
             } catch (\Exception $e) {
@@ -51,6 +53,9 @@ class DeploymentCommand extends Command
         return Command::SUCCESS;
     }
 
+    /**
+     * @return string[]
+     */
     private function getCommandList(): array
     {
         return [
