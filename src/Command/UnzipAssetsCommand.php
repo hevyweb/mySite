@@ -32,6 +32,7 @@ class UnzipAssetsCommand extends Command
 
         if (!$filesystem->exists($zipFile)) {
             $io->writeln("<error>The file $zipFile does not exist</error>");
+
             return Command::FAILURE;
         }
 
@@ -49,7 +50,8 @@ class UnzipAssetsCommand extends Command
 
             $io->writeln("<info>Unzipped $zipFile to $destination</info>");
         } catch (ProcessFailedException $e) {
-            $io->writeln("<error>Failed to unzip $zipFile: " . $e->getMessage() . "</error>");
+            $io->writeln("<error>Failed to unzip $zipFile: ".$e->getMessage().'</error>');
+
             return Command::FAILURE;
         }
 

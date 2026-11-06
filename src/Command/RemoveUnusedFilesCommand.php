@@ -57,7 +57,7 @@ class RemoveUnusedFilesCommand extends Command
                     $filesystem->remove($file);
                     $io->writeln("<info>Removed $file</info>");
                 } catch (\Exception $e) {
-                    $io->writeln("<error>Failed to remove $file: " . $e->getMessage() . "</error>");
+                    $io->writeln("<error>Failed to remove $file: ".$e->getMessage().'</error>');
                 }
             } else {
                 $io->writeln("<comment>$file does not exist</comment>");
