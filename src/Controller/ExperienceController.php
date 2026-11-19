@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Entity\Experience;
 use App\Form\ExperienceType;
 use App\Service\ArrayService;
-use App\Service\FileSystem\File;
+use App\Service\FileSystem\FileManagerInterface;
 use App\Traits\FlashMessageTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerAwareTrait;
@@ -27,7 +27,7 @@ class ExperienceController extends AbstractController
         private readonly EntityManagerInterface $entityManager,
         private readonly TranslatorInterface $translator,
         private readonly ParameterBagInterface $parameterBag,
-        private readonly File $fileService,
+        private readonly FileManagerInterface $fileManager,
         private readonly ArrayService $arrayService,
     ) {
     }
@@ -50,8 +50,8 @@ class ExperienceController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $file = $form->get('image')->getData();
             if ($file) {
-                $file = $this->fileService->saveFileTo($file, $this->parameterBag->get('images_experience'));
-                $experience->setImage($file->getFilename());
+                $file = $this->fileManager->save($file, $this->parameterBag->get('images_experience'));
+                $experience->setImage($file);
             }
             $this->entityManager->persist($experience);
             $this->entityManager->flush();
@@ -74,11 +74,11 @@ class ExperienceController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $file = $form->get('image')->getData();
             if ($file) {
-                $file = $this->fileService->saveFileTo($file, $this->parameterBag->get('images_experience'));
+                $fileName = $this->fileManager->save($file, $this->parameterBag->get('images_experience'));
                 if ($experience->getImage()) {
-                    $this->fileService->remove($experience->getImage(), $this->parameterBag->get('images_experience'));
+                    $this->fileManager->remove($experience->getImage(), $this->parameterBag->get('images_experience'));
                 }
-                $experience->setImage($file->getFilename());
+                $experience->setImage($fileName);
             }
             $this->entityManager->flush();
 
@@ -119,7 +119,7 @@ class ExperienceController extends AbstractController
             if (count($experiences)) {
                 foreach ($experiences as $experience) {
                     if ($experience->getImage()) {
-                        $this->fileService->remove($experience->getImage(), $this->parameterBag->get('images_experience'));
+                        $this->fileManager->remove($experience->getImage(), $this->parameterBag->get('images_experience'));
                     }
                     $this->entityManager->remove($experience);
                     $this->logger->debug('Experience "'.$experience->getName().'" removed.');

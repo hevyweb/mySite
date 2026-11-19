@@ -154,14 +154,14 @@ class StatsTracker
 
         if (preg_match('/edg/i', $ua)) {
             $browser = 'Edge';
+        } elseif (preg_match('/opr|opera/i', $ua)) { // Moved above Chrome
+            $browser = 'Opera';
         } elseif (preg_match('/chrome/i', $ua)) {
             $browser = 'Chrome';
         } elseif (preg_match('/firefox/i', $ua)) {
             $browser = 'Firefox';
         } elseif (preg_match('/safari/i', $ua)) {
             $browser = 'Safari';
-        } elseif (preg_match('/opr|opera/i', $ua)) {
-            $browser = 'Opera';
         }
 
         return [$browser, $os, $deviceType];

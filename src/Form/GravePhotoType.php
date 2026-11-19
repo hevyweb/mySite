@@ -55,6 +55,10 @@ class GravePhotoType extends AbstractType
                 'label' => $this->translator->trans('Shooting Date', [], 'necropolis'),
                 'required' => false,
                 'widget' => 'single_text',
+                'html5' => true,
+                'attr' => [
+                    'class' => 'js-datepicker form-control',
+                ],
             ]);
     }
 

@@ -9,6 +9,7 @@
         "ext-imagick": "*",
         "ext-intl": "*",
         "ext-json": "*",
+        "ext-zip": "*",
         "composer/package-versions-deprecated": "^1.11",
         "doctrine/annotations": "^1.0",
         "doctrine/doctrine-bundle": "^2.8",

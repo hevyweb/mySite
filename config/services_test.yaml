@@ -7,3 +7,11 @@ services:
 
     ReCaptcha\ReCaptcha:
         factory: ['App\Tests\Mock\ReCaptchaMockFactory', 'create']
+
+    App\Tests\Mock\ZipManagerMock: ~
+    
+    App\Service\FileSystem\ZipManagerInterface: '@App\Tests\Mock\ZipManagerMock'
+    
+    App\Tests\Mock\FilesystemMock: ~
+    
+    Symfony\Component\Filesystem\Filesystem: '@App\Tests\Mock\FilesystemMock'

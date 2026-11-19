@@ -9,7 +9,7 @@ use App\Form\ArticleTranslationType;
 use App\Form\ArticleType;
 use App\Service\ArrayService;
 use App\Service\Factory\FactoryInterface;
-use App\Service\FileSystem\FileManagementInterface;
+use App\Service\FileSystem\FileManagerInterface;
 use App\Traits\FlashMessageTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerAwareTrait;
@@ -41,7 +41,7 @@ class ArticleController extends AbstractController
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly TranslatorInterface $translator,
-        private readonly FileManagementInterface $fileManager,
+        private readonly FileManagerInterface $fileManager,
         private readonly ParameterBagInterface $parameterBag,
         private readonly ArrayService $arrayService,
         private readonly FactoryInterface $articleTranslationFactory,
@@ -210,11 +210,11 @@ class ArticleController extends AbstractController
     {
         $file = $form->get('translation')->get('image')->getData();
         if ($file) {
-            $file = $this->fileManager->save($file, $this->parameterBag->get('images_article'));
+            $fileName = $this->fileManager->save($file, $this->parameterBag->get('images_article'));
             if (!empty($articleTranslation->getImage())) {
-                $this->fileManager->delete($articleTranslation->getImage(), $this->parameterBag->get('images_article'));
+                $this->fileManager->remove($articleTranslation->getImage(), $this->parameterBag->get('images_article'));
             }
-            $articleTranslation->setImage($file);
+            $articleTranslation->setImage($fileName);
         }
     }
 
@@ -232,7 +232,7 @@ class ArticleController extends AbstractController
         foreach ($article->getArticleTranslations() as $articleTranslation) {
             try {
                 if ($articleTranslation->getImage()) {
-                    $this->fileManager->delete($articleTranslation->getImage(), $this->parameterBag->get('images_article'));
+                    $this->fileManager->remove($articleTranslation->getImage(), $this->parameterBag->get('images_article'));
                 }
             } catch (FileNotFoundException $exception) {
                 $this->logger->error($exception->getMessage());

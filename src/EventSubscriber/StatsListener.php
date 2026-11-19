@@ -4,7 +4,7 @@ namespace App\EventSubscriber;
 
 use App\Service\StatsTracker;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
-use Symfony\Component\HttpKernel\Event\TerminateEvent;
+use Symfony\Component\HttpKernel\Event\KernelEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 #[AsEventListener(event: KernelEvents::TERMINATE)]
@@ -14,7 +14,7 @@ readonly class StatsListener
     {
     }
 
-    public function __invoke(TerminateEvent $event): void
+    public function __invoke(KernelEvent $event): void
     {
         if (!$event->isMainRequest()) {
             return;

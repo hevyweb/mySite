@@ -19,14 +19,10 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 )]
 class GenerateUserCommand extends Command
 {
-    private EntityManagerInterface $entityManager;
-
-    private UserPasswordHasherInterface $passwordEncoder;
-
-    public function __construct(EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordEncoder)
-    {
-        $this->entityManager = $entityManager;
-        $this->passwordEncoder = $passwordEncoder;
+    public function __construct(
+        private EntityManagerInterface $entityManager, 
+        private UserPasswordHasherInterface $passwordEncoder,
+    ) {
         parent::__construct();
     }
 

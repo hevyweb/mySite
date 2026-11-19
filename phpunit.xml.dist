@@ -29,6 +29,11 @@
         </include>
         <exclude>
             <directory>src/DataFixtures</directory>
+            <directory>src/Type</directory>
+            <directory>src/Traits</directory>
+            <directory>src/Exception</directory>
+            <directory>src/Entity</directory>
+            <file>src/Kernel.php</file>
         </exclude>
     </source>
     <coverage ignoreDeprecatedCodeUnits="true">

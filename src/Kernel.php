@@ -16,14 +16,17 @@ class Kernel extends BaseKernel
 
     protected function configureContainer(ContainerConfigurator $container): void
     {
-        $container->import('../config/{packages}/*.yaml');
-        $container->import('../config/{packages}/'.$this->environment.'/*.yaml');
+        $dir = dirname(__DIR__);
+        $container->import($dir.'/config/{packages}/*.yaml');
+        $container->import($dir.'/config/{packages}/'.$this->environment.'/*.yaml');
 
-        if (is_file(dirname(__DIR__).'/config/services.yaml')) {
-            $container->import('../config/services.yaml');
-            $container->import('../config/{services}_'.$this->environment.'.yaml');
-        } elseif (is_file($path = dirname(__DIR__).'/config/services.php')) {
-            (require $path)($container->withPath($path), $this);
+        if (is_file($dir.'/config/services.yaml')) {
+            $container->import($dir.'/config/services.yaml');
+        }
+
+        $envServicesFile = $dir.'/config/services_'.$this->environment.'.yaml';
+        if (is_file($envServicesFile)) {
+            $container->import($envServicesFile);
         }
     }
 

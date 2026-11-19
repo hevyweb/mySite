@@ -2,20 +2,32 @@
 
 namespace App\Command;
 
+use App\Service\FileSystem\ZipManagerInterface;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Process\Exception\ProcessFailedException;
-use Symfony\Component\Process\Process;
 
+#[AsCommand(
+    name: 'app:unzip-assets',
+    description: 'Unzips public/assets.zip to the public directory',
+)]
 class UnzipAssetsCommand extends Command
 {
-    public static string $defaultName = 'app:unzip-assets';
+    const ZIP_FILE = 'public/assets.zip';
+    const DESTINATION = 'public';
+    
+    public static $defaultName = 'app:unzip-assets';
+    
+    public function __construct(
+        private readonly ZipManagerInterface $zipManager,
+    ) {
+        parent::__construct();
+    }
 
     #[\Override]
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName(self::$defaultName)
@@ -27,32 +39,13 @@ class UnzipAssetsCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $filesystem = new Filesystem();
-
-        $zipFile = 'public/assets.zip';
-        $destination = 'public';
-
-        if (!$filesystem->exists($zipFile)) {
-            $io->writeln("<error>The file $zipFile does not exist</error>");
-
-            return Command::FAILURE;
-        }
-
-        if ($filesystem->exists($destination)) {
-            $io->writeln("<info>The directory $destination already exists</info>");
-        }
 
         try {
-            $process = new Process(['unzip', $zipFile, '-d', $destination]);
-            $process->run();
+            $this->zipManager->unzip(self::ZIP_FILE, self::DESTINATION);
 
-            if (!$process->isSuccessful()) {
-                throw new ProcessFailedException($process);
-            }
-
-            $io->writeln("<info>Unzipped $zipFile to $destination</info>");
-        } catch (ProcessFailedException $e) {
-            $io->writeln("<error>Failed to unzip $zipFile: ".$e->getMessage().'</error>');
+            $io->writeln('<info>Unzipped '.self::ZIP_FILE.' to '.self::DESTINATION.'</info>');
+        } catch (\Exception $e) {
+            $io->writeln('<error>Failed to unzip '.self::ZIP_FILE.': '.$e->getMessage().'</error>');
 
             return Command::FAILURE;
         }

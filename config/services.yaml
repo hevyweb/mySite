@@ -60,3 +60,5 @@ services:
 
     App\Form\ConstraintValidator\UniqueTranslationValidator:
         public: true
+        
+    App\Service\FileSystem\ZipManagerInterface: '@App\Service\FileSystem\ZipManagerMock'

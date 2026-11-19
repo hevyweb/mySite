@@ -10,6 +10,7 @@ use App\Form\CondolenceType;
 use App\Form\GravePhotoType;
 use App\Form\GraveType;
 use App\Service\FileSystem\File;
+use App\Service\FileSystem\FileManagerInterface;
 use App\Service\ImageService;
 use App\Service\StatsParser;
 use Doctrine\ORM\EntityManagerInterface;
@@ -19,6 +20,7 @@ use Endroid\QrCode\ErrorCorrectionLevel;
 use Endroid\QrCode\QrCode;
 use Endroid\QrCode\RoundBlockSizeMode;
 use Endroid\QrCode\Writer\PngWriter;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -35,10 +37,11 @@ final class NecropolisController extends AbstractController
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly TranslatorInterface $translator,
-        private readonly File $fileService,
+        private readonly FileManagerInterface $fileManager,
         private readonly ParameterBagInterface $parameterBag,
         private readonly ImageService $imageService,
         private readonly StatsParser $statsParser,
+        private readonly LoggerInterface $logger,
     ) {
     }
 
@@ -62,8 +65,8 @@ final class NecropolisController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $file = $form->get('image')->getData();
             if ($file) {
-                $file = $this->fileService->saveFileTo($file, $this->parameterBag->get('images_necropolis'));
-                $grave->setImage($file->getFilename());
+                $fileName = $this->fileManager->save($file, $this->parameterBag->get('images_necropolis'));
+                $grave->setImage($fileName);
             }
             $grave->setCreatedAt(new \DateTimeImmutable());
             $this->entityManager->persist($grave);
@@ -79,10 +82,9 @@ final class NecropolisController extends AbstractController
         ]);
     }
 
-    public function grave(Request $request): Response
+    public function grave(Grave $grave): Response
     {
-        $grave = $this->entityManager->getRepository(Grave::class)->find($request->get('id'));
-        if ($grave && $grave->isPublished()) {
+        if ($grave->isPublished()) {
             $form = $this->createForm(CondolenceType::class);
 
             return $this->render('necropolis/view.html.twig', [
@@ -102,11 +104,11 @@ final class NecropolisController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $file = $form->get('image')->getData();
             if ($file) {
-                $file = $this->fileService->saveFileTo($file, $this->parameterBag->get('images_necropolis'));
+                $fileName = $this->fileManager->save($file, $this->parameterBag->get('images_necropolis'));
                 if ($grave->getImage()) {
-                    $this->fileService->remove($grave->getImage(), $this->parameterBag->get('images_necropolis'));
+                    $this->fileManager->remove($grave->getImage(), $this->parameterBag->get('images_necropolis'));
                 }
-                $grave->setImage($file->getFilename());
+                $grave->setImage($fileName);
             }
             $grave->setCreatedAt(new \DateTimeImmutable());
             $this->entityManager->persist($grave);
@@ -125,7 +127,7 @@ final class NecropolisController extends AbstractController
 
     public function delete(Grave $grave): Response
     {
-        $this->fileService->remove($grave->getImage(), $this->parameterBag->get('images_necropolis'));
+        $this->fileManager->remove($grave->getImage(), $this->parameterBag->get('images_necropolis'));
         $this->entityManager->remove($grave);
         $this->entityManager->flush();
 
@@ -154,16 +156,19 @@ final class NecropolisController extends AbstractController
             $file = $form->get('filename')->getData();
             if ($file) {
                 try {
-                    $file = $this->fileService->saveFileTo($file, $this->parameterBag->get('images_necropolis'));
-                    $photo->setFilename($file->getFilename());
+                    $fileName = $this->fileManager->save($file, $this->parameterBag->get('images_necropolis'));
+                    $photo->setFilename($fileName);
                     $thumbnailContent = $this->imageService->thumbnail(
-                        $this->parameterBag->get('images_necropolis').'/'.$file->getFilename(),
+                        $this->parameterBag->get('images_necropolis').'/'.$fileName,
                         self::THUMBNAIL_WIDTH,
                         self::THUMBNAIL_HEIGHT,
                     );
-                    $this->fileService->saveFileContents($thumbnailContent, $this->parameterBag->get('images_necropolis').'/thumbnails/', $file->getFilename());
+                    $this->fileManager->saveFileContents($thumbnailContent, $this->parameterBag->get('images_necropolis').'/thumbnails/', $fileName);
                 } catch (\Exception $e) {
-                    $this->fileService->remove($file->getFilename(), $this->parameterBag->get('images_necropolis'));
+                    if (!empty($fileName)) {
+                        $this->fileManager->remove($fileName, $this->parameterBag->get('images_necropolis'));
+                    }
+                    $this->logger->error($e->getMessage());
 
                     return $this->redirectToRoute('necropolis-photos', ['id' => $grave->getId()]);
                 }
@@ -183,6 +188,74 @@ final class NecropolisController extends AbstractController
             [],
             ['groups' => ['photo:read']]
         );
+    }
+
+    public function photosDelete(Request $request): Response
+    {
+        $id = $request->get('id');
+        $grave = $this->entityManager->getRepository(Grave::class)->find($id);
+        if (!$grave) {
+            $this->addFlash('error', 'Grave not found');
+
+            return $this->redirectToRoute('necropolis-list');
+        }
+
+        $photoId = $request->get('photoId');
+        $personPhoto = $this->entityManager->getRepository(PersonPhoto::class)->find($photoId);
+        if (!$personPhoto) {
+            $this->addFlash('error', 'Grave photo not found');
+
+            return $this->redirectToRoute('necropolis-photos', ['id' => $grave->getId()]);
+        }
+
+        $this->fileManager->remove($personPhoto->getFilename(), $this->parameterBag->get('images_necropolis').'/thumbnails/');
+        $this->fileManager->remove($personPhoto->getFilename(), $this->parameterBag->get('images_necropolis'));
+
+        $this->entityManager->remove($personPhoto);
+        $this->entityManager->flush();
+        $this->entityManager->clear();
+
+        return $this->redirectToRoute('necropolis-photos', ['id' => $grave->getId()]);
+    }
+
+    public function photosEdit(Request $request): Response
+    {
+        $id = $request->get('id');
+        $grave = $this->entityManager->getRepository(Grave::class)->find($id);
+        if (!$grave) {
+            $this->addFlash('error', 'Grave not found');
+
+            return $this->redirectToRoute('necropolis-list');
+        }
+
+        $photoId = $request->get('photoId');
+        $personPhoto = $this->entityManager->getRepository(PersonPhoto::class)->find($photoId);
+        if (!$personPhoto) {
+            $this->addFlash('error', 'Grave photo not found');
+
+            return $this->redirectToRoute('necropolis-photos', ['id' => $grave->getId()]);
+        }
+
+        if ($personPhoto->getGrave() !== $grave) {
+            $this->addFlash('error', 'Grave photo does not belong to this grave');
+
+            return $this->redirectToRoute('necropolis-photos', ['id' => $grave->getId()]);
+        }
+
+        $description = $request->get('description');
+        $shootingDate = $request->get('shootingDate');
+        if ($description) {
+            $personPhoto->setDescription($description);
+        }
+
+        if ($shootingDate) {
+            $personPhoto->setShootingDate(new \DateTime($shootingDate));
+        }
+
+        $this->entityManager->flush();
+        $this->entityManager->clear();
+
+        return $this->redirectToRoute('necropolis-photos', ['id' => $grave->getId()]);
     }
 
     public function condolences(Grave $grave): Response
@@ -241,74 +314,6 @@ final class NecropolisController extends AbstractController
             'success' => false,
             'errors' => $errors,
         ], Response::HTTP_UNPROCESSABLE_ENTITY);
-    }
-
-    public function photosDelete(Request $request): Response
-    {
-        $id = $request->get('id');
-        $grave = $this->entityManager->getRepository(Grave::class)->find($id);
-        if (!$grave) {
-            $this->addFlash('error', 'Grave not found');
-
-            return $this->redirectToRoute('necropolis-list');
-        }
-
-        $photoId = $request->get('photoId');
-        $personPhoto = $this->entityManager->getRepository(PersonPhoto::class)->find($photoId);
-        if (!$personPhoto) {
-            $this->addFlash('error', 'Grave photo not found');
-
-            return $this->redirectToRoute('necropolis-photos', ['id' => $grave->getId()]);
-        }
-
-        $this->fileService->remove($personPhoto->getFilename(), $this->parameterBag->get('images_necropolis').'/thumbnails/');
-        $this->fileService->remove($personPhoto->getFilename(), $this->parameterBag->get('images_necropolis'));
-
-        $this->entityManager->remove($personPhoto);
-        $this->entityManager->flush();
-        $this->entityManager->clear();
-
-        return $this->redirectToRoute('necropolis-photos', ['id' => $grave->getId()]);
-    }
-
-    public function photosEdit(Request $request): Response
-    {
-        $id = $request->get('id');
-        $grave = $this->entityManager->getRepository(Grave::class)->find($id);
-        if (!$grave) {
-            $this->addFlash('error', 'Grave not found');
-
-            return $this->redirectToRoute('necropolis-list');
-        }
-
-        $photoId = $request->get('photoId');
-        $personPhoto = $this->entityManager->getRepository(PersonPhoto::class)->find($photoId);
-        if (!$personPhoto) {
-            $this->addFlash('error', 'Grave photo not found');
-
-            return $this->redirectToRoute('necropolis-photos', ['id' => $grave->getId()]);
-        }
-
-        if ($personPhoto->getGrave() !== $grave) {
-            $this->addFlash('error', 'Grave photo does not belong to this grave');
-
-            return $this->redirectToRoute('necropolis-photos', ['id' => $grave->getId()]);
-        }
-
-        $description = $request->get('description');
-        $shootingDate = $request->get('shootingDate');
-        if ($description) {
-            $personPhoto->setDescription($description);
-        }
-
-        if ($shootingDate) {
-            $personPhoto->setShootingDate(new \DateTime($shootingDate));
-        }
-
-        $this->entityManager->flush();
-        $this->entityManager->clear();
-
-        return $this->redirectToRoute('necropolis-photos', ['id' => $grave->getId()]);
     }
 
     public function condolencesToggleStatus(Request $request): Response

@@ -2,34 +2,42 @@
 
 namespace App\Command;
 
+use App\Service\FileSystem\FileManagerInterface;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Filesystem\Filesystem;
 
+#[AsCommand(
+    name: 'app:remove-unused-files',
+    description: 'Removes all files that shouldn\'t exist on production',
+)]
 class RemoveUnusedFilesCommand extends Command
 {
-    public static string $defaultName = 'app:remove-unused-files';
+    public static $defaultName = 'app:remove-unused-files';
+    
+    public function __construct(
+        private readonly FileManagerInterface $fileManager,
+    ){
+        parent::__construct();
+    }
 
     #[\Override]
-    protected function configure()
+    protected function configure(): void
     {
         $this
             ->setName(self::$defaultName)
-            ->setDescription('Removes all files that shouldn\'t exist on production')
-            ->setHelp('This command allows you to remove all files that shouldn\'t exist on production');
+            ->setDescription('Removes all files that shouldn\'t exist on production');
     }
 
     #[\Override]
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $filesystem = new Filesystem();
 
         // Define a list of files or directories that should not exist on production
         $unusedFiles = [
-            // Example files or directorie
             '.github',
             'assets',
             'bin/csfixer',
@@ -54,16 +62,12 @@ class RemoveUnusedFilesCommand extends Command
         ];
 
         foreach ($unusedFiles as $file) {
-            if ($filesystem->exists($file)) {
-                try {
-                    $filesystem->remove($file);
-                    $io->writeln("<info>Removed $file</info>");
-                } catch (\Exception $e) {
-                    $io->writeln("<error>Failed to remove $file: ".$e->getMessage().'</error>');
-                }
-            } else {
-                $io->writeln("<comment>$file does not exist</comment>");
-            }
+            try {
+                //$this->fileManager->remove($file);
+                $io->writeln("<info>Removed $file</info>");
+            } catch (\Exception $e) {
+                $io->writeln("<error>Failed to remove $file: ".$e->getMessage().'</error>');
+            }            
         }
 
         return Command::SUCCESS;

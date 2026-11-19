@@ -217,7 +217,7 @@ class GraveType extends AbstractType
             ->add('image', FileType::class, [
                 'label' => $this->translator->trans('Image', [], 'necropolis'),
                 'mapped' => false,
-                'required' => null === $grave || empty($grave->getImage()),
+                'required' => null === $grave,
                 'constraints' => [
                     new File([
                         'mimeTypes' => [
