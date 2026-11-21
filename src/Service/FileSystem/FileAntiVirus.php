@@ -12,10 +12,10 @@ class FileAntiVirus implements FileAntiVirusInterface
      * @throws \ImagickException
      */
     #[\Override]
-    public function sanitize(string $fileName, string $destination): void
+    public function sanitize(string $fileName, string $destination): bool
     {
         if ('test' === $this->env) {
-            return;
+            return true;
         }
 
         $filePath = $destination.DIRECTORY_SEPARATOR.$fileName;
@@ -23,5 +23,7 @@ class FileAntiVirus implements FileAntiVirusInterface
         $imagick->setImageFormat('jpg');
         $imagick->stripImage();
         $imagick->writeImage($filePath);
+
+        return true;
     }
 }

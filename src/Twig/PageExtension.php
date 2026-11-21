@@ -12,9 +12,6 @@ use Twig\Error\SyntaxError;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
-/**
- * @template TValue
- */
 class PageExtension extends AbstractExtension
 {
     public function __construct(
@@ -34,7 +31,7 @@ class PageExtension extends AbstractExtension
     }
 
     /**
-     * @param array<string, TValue> $context
+     * @param array<string, mixed> $context
      *
      * @throws LoaderError
      * @throws RuntimeError
@@ -42,10 +39,9 @@ class PageExtension extends AbstractExtension
      */
     public function getPageContent(Environment $environment, array $context): string
     {
-        /**
-         * @var Request $request
-         */
-        $request = $context['app']->getRequest();
+        /** @var object{getRequest: callable(): Request} $app */
+        $app = $context['app'];
+        $request = $app->getRequest();
         $locale = $request->getLocale();
         $route = $request->attributes->get('_route');
 

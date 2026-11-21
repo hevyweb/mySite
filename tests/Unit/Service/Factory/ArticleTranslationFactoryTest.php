@@ -2,18 +2,18 @@
 
 namespace App\Tests\Unit\Service\Factory;
 
-use App\Entity\ArticleTranslation;
 use App\Entity\User;
 use App\Exception\IncorrectUserException;
 use App\Service\Factory\ArticleTranslationFactory;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 
 class ArticleTranslationFactoryTest extends TestCase
 {
-    private Security $security;
-    private Request $request;
+    private Security&MockObject $security;
+    private Request&MockObject $request;
     private ArticleTranslationFactory $factory;
 
     protected function setUp(): void
@@ -48,12 +48,11 @@ class ArticleTranslationFactoryTest extends TestCase
 
         $translation = $this->factory->build();
 
-        $this->assertInstanceOf(ArticleTranslation::class, $translation);
         $this->assertSame('uk', $translation->getLocale());
         $this->assertSame($user, $translation->getCreatedBy());
         $this->assertSame($user, $translation->getUpdatedBy());
         $this->assertInstanceOf(\DateTimeImmutable::class, $translation->getCreatedAt());
         $this->assertInstanceOf(\DateTime::class, $translation->getUpdatedAt());
-        $this->assertNotNull($translation->getArticle());
+        $this->assertNull($translation->getArticle()->getId());
     }
 }

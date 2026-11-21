@@ -4,27 +4,25 @@ namespace App\Tests\Unit\Service;
 
 use App\Entity\Message;
 use App\Event\NewMessagesEvent;
+use App\Repository\MessageRepository;
 use App\Service\CheckMessages;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class CheckMessagesTest extends TestCase
 {
-    private EntityManagerInterface $entityManager;
-    private EventDispatcherInterface $dispatcher;
+    private EntityManagerInterface&MockObject $entityManager;
+    private EventDispatcherInterface&MockObject $dispatcher;
     private CheckMessages $checkMessages;
-    private $messageRepository;
+    private MessageRepository&MockObject $messageRepository;
 
     protected function setUp(): void
     {
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->dispatcher = $this->createMock(EventDispatcherInterface::class);
-
-        // Mocking the custom repository method countNew() since it's not part of the default ObjectRepository interface
-        $this->messageRepository = $this->getMockBuilder(\stdClass::class)
-            ->addMethods(['countNew'])
-            ->getMock();
+        $this->messageRepository = $this->createMock(MessageRepository::class);
 
         $this->entityManager->method('getRepository')
             ->with(Message::class)

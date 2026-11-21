@@ -34,7 +34,7 @@ class StatRepositoryTest extends KernelTestCase
 
     public function testFindTodayVisitReturnsStatWhenMatchExists(): void
     {
-        $path = '/grave/test-path-' . uniqid();
+        $path = '/grave/test-path-'.uniqid();
         $visitorHash = 'visitor-hash-123';
 
         $stat = new Stat();
@@ -55,7 +55,7 @@ class StatRepositoryTest extends KernelTestCase
 
     public function testFindTodayVisitReturnsNullForOldVisit(): void
     {
-        $path = '/grave/old-path-' . uniqid();
+        $path = '/grave/old-path-'.uniqid();
         $visitorHash = 'visitor-hash-old';
 
         $stat = new Stat();
@@ -74,7 +74,7 @@ class StatRepositoryTest extends KernelTestCase
 
     public function testFindGraveStatisticsReturnsOnlyGravePathStats(): void
     {
-        $gravePath = '/grave/item-' . uniqid();
+        $gravePath = '/grave/item-'.uniqid();
         $otherPath = '/about-us';
 
         $graveStat = new Stat();

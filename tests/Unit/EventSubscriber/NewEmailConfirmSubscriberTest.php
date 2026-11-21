@@ -6,6 +6,7 @@ use App\Entity\EmailHistory;
 use App\Entity\User;
 use App\Event\NewEmailConfirmEvent;
 use App\EventSubscriber\NewEmailConfirmSubscriber;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\MailerInterface;
@@ -14,9 +15,9 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class NewEmailConfirmSubscriberTest extends TestCase
 {
-    private TemplatedEmail $templatedEmail;
-    private MailerInterface $mailer;
-    private TranslatorInterface $translator;
+    private TemplatedEmail&MockObject $templatedEmail;
+    private MailerInterface&MockObject $mailer;
+    private TranslatorInterface&MockObject $translator;
     private Address $from;
     private NewEmailConfirmSubscriber $subscriber;
 

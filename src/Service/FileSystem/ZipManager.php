@@ -2,8 +2,6 @@
 
 namespace App\Service\FileSystem;
 
-use ZipArchive;
-
 class ZipManager implements ZipManagerInterface
 {
     #[\Override]
@@ -13,8 +11,8 @@ class ZipManager implements ZipManagerInterface
             throw new \InvalidArgumentException(sprintf('Source path "%s" does not exist.', $sourcePath));
         }
 
-        $zip = new ZipArchive();
-        if (true !== $zip->open($destinationZipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE)) {
+        $zip = new \ZipArchive();
+        if (true !== $zip->open($destinationZipPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE)) {
             throw new \RuntimeException(sprintf('Could not create zip archive at "%s".', $destinationZipPath));
         }
 
@@ -52,7 +50,7 @@ class ZipManager implements ZipManagerInterface
             throw new \InvalidArgumentException(sprintf('Zip file "%s" does not exist.', $zipFilePath));
         }
 
-        $zip = new ZipArchive();
+        $zip = new \ZipArchive();
         if (true !== $zip->open($zipFilePath)) {
             throw new \RuntimeException(sprintf('Could not open zip archive at "%s".', $zipFilePath));
         }

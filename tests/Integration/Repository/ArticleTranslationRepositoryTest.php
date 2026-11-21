@@ -42,7 +42,7 @@ class ArticleTranslationRepositoryTest extends KernelTestCase
 
     public function testGetTranslationBySlugReturnsTranslationForValidSlugAndLocale(): void
     {
-        $uniqueSlug = 'unique-article-slug-' . uniqid();
+        $uniqueSlug = 'unique-article-slug-'.uniqid();
         $locale = 'en';
 
         $article = new Article();

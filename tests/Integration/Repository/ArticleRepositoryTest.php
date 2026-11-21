@@ -44,7 +44,7 @@ class ArticleRepositoryTest extends KernelTestCase
 
     public function testGetBlogArticlesReturnsPublishedArticlesForLocale(): void
     {
-        $uniqueSlug = 'test-blog-article-' . uniqid();
+        $uniqueSlug = 'test-blog-article-'.uniqid();
         $article = new Article();
         $article->setSlug($uniqueSlug);
 
@@ -69,7 +69,7 @@ class ArticleRepositoryTest extends KernelTestCase
 
         $articles = $this->articleRepository->getBlogArticles(100, 1, 'en');
 
-        $filtered = array_filter($articles, fn(Article $a) => $a->getSlug() === $uniqueSlug);
+        $filtered = array_filter($articles, fn (Article $a) => $a->getSlug() === $uniqueSlug);
 
         $this->assertCount(1, $filtered);
         $foundArticle = array_values($filtered)[0];
@@ -78,7 +78,7 @@ class ArticleRepositoryTest extends KernelTestCase
 
     public function testGetBlogArticlesExcludesDraftsAndWrongLocales(): void
     {
-        $draftSlug = 'draft-article-' . uniqid();
+        $draftSlug = 'draft-article-'.uniqid();
         $draftArticle = new Article();
         $draftArticle->setSlug($draftSlug);
         $draftTranslation = (new ArticleTranslation())
@@ -101,14 +101,14 @@ class ArticleRepositoryTest extends KernelTestCase
         $this->entityManager->clear();
 
         $articles = $this->articleRepository->getBlogArticles(100, 1, 'en');
-        $filtered = array_filter($articles, fn(Article $a) => $a->getSlug() === $draftSlug);
+        $filtered = array_filter($articles, fn (Article $a) => $a->getSlug() === $draftSlug);
 
         $this->assertCount(0, $filtered);
     }
 
     public function testGetTopArticlesOrdersByHitCount(): void
     {
-        $uniqueSlug = 'top-hits-' . uniqid();
+        $uniqueSlug = 'top-hits-'.uniqid();
         $highHitArticle = new Article();
         $highHitArticle->setSlug($uniqueSlug);
         $highHitTranslation = (new ArticleTranslation())
@@ -139,10 +139,10 @@ class ArticleRepositoryTest extends KernelTestCase
     public function testSearchAndGetCountWithSearchTermAndTagFilters(): void
     {
         $tag = new Tag();
-        $tag->setName('unique_php_tag_' . uniqid());
+        $tag->setName('unique_php_tag_'.uniqid());
         $this->entityManager->persist($tag);
 
-        $uniqueSlug = 'searched-article-' . uniqid();
+        $uniqueSlug = 'searched-article-'.uniqid();
         $article = new Article();
         $article->setSlug($uniqueSlug)
             ->addTag($tag);
@@ -185,17 +185,17 @@ class ArticleRepositoryTest extends KernelTestCase
     public function testGetCountReturnsAccurateCountForSearchCriteria(): void
     {
         $tag = new Tag();
-        $tag->setName('count_tag_' . uniqid());
+        $tag->setName('count_tag_'.uniqid());
         $this->entityManager->persist($tag);
 
-        for ($i = 1; $i <= 2; $i++) {
+        for ($i = 1; $i <= 2; ++$i) {
             $article = new Article();
-            $article->setSlug('count-article-' . $i . '-' . uniqid())
+            $article->setSlug('count-article-'.$i.'-'.uniqid())
                 ->addTag($tag);
 
             $translation = (new ArticleTranslation())
                 ->setLocale('en')
-                ->setTitle('Searchable Title ' . $i)
+                ->setTitle('Searchable Title '.$i)
                 ->setBody('Content')
                 ->setDraft(false)
                 ->setCreatedAt(new \DateTimeImmutable())
@@ -210,7 +210,7 @@ class ArticleRepositoryTest extends KernelTestCase
         }
 
         $otherArticle = new Article();
-        $otherArticle->setSlug('other-article-' . uniqid());
+        $otherArticle->setSlug('other-article-'.uniqid());
         $otherTranslation = (new ArticleTranslation())
             ->setLocale('en')
             ->setTitle('Other Title')
@@ -245,7 +245,7 @@ class ArticleRepositoryTest extends KernelTestCase
         $locale = 'fr';
 
         $article1 = new Article();
-        $article1->setSlug('fr-published-' . uniqid());
+        $article1->setSlug('fr-published-'.uniqid());
         $t1 = (new ArticleTranslation())
             ->setLocale($locale)
             ->setTitle('FR Published')
@@ -260,7 +260,7 @@ class ArticleRepositoryTest extends KernelTestCase
         $article1->addArticleTranslation($t1);
 
         $article2 = new Article();
-        $article2->setSlug('fr-draft-' . uniqid());
+        $article2->setSlug('fr-draft-'.uniqid());
         $t2 = (new ArticleTranslation())
             ->setLocale($locale)
             ->setTitle('FR Draft')

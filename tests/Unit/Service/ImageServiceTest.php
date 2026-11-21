@@ -40,7 +40,6 @@ class ImageServiceTest extends TestCase
         // Image is 200x100, target is 300x300 (smaller in both dimensions)
         $result = $service->thumbnail($this->tempImagePath, 300, 300);
 
-        $this->assertIsString($result);
         $this->assertNotEmpty($result);
     }
 
@@ -50,7 +49,6 @@ class ImageServiceTest extends TestCase
         // Image is 200x100 (2:1 ratio), target is 50x50 (1:1 ratio)
         $result = $service->thumbnail($this->tempImagePath, 50, 50, true);
 
-        $this->assertIsString($result);
         $this->assertNotEmpty($result);
     }
 
@@ -59,10 +57,12 @@ class ImageServiceTest extends TestCase
         $service = new ImageService('prod');
         $result = $service->thumbnail($this->tempImagePath, 50, 50, false);
 
-        $this->assertIsString($result);
         $this->assertNotEmpty($result);
     }
 
+    /**
+     * @param array{0: int, 1: int} $expected
+     */
     #[DataProvider('scaleDimensionsDataProvider')]
     public function testCalculateScaleDimensions(
         int $origWidth,

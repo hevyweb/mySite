@@ -5,6 +5,7 @@ namespace App\Tests\Unit\EventSubscriber;
 use App\Entity\User;
 use App\Event\RecoverPasswordEvent;
 use App\EventSubscriber\RecoverPasswordSubscriber;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\MailerInterface;
@@ -13,9 +14,9 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class RecoverPasswordSubscriberTest extends TestCase
 {
-    private TemplatedEmail $templatedEmail;
-    private MailerInterface $mailer;
-    private TranslatorInterface $translator;
+    private TemplatedEmail&MockObject $templatedEmail;
+    private MailerInterface&MockObject $mailer;
+    private TranslatorInterface&MockObject $translator;
     private Address $from;
     private RecoverPasswordSubscriber $subscriber;
 

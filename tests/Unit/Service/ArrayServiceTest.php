@@ -15,6 +15,9 @@ class ArrayServiceTest extends TestCase
         $this->arrayService = new ArrayService();
     }
 
+    /**
+     * @param list<int> $expected
+     */
     #[DataProvider('integerIdsDataProvider')]
     public function testGetIntegerIds(mixed $input, array $expected): void
     {

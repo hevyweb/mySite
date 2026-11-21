@@ -4,6 +4,7 @@ namespace App\Tests\Unit\EventSubscriber;
 
 use App\EventSubscriber\StatsListener;
 use App\Service\StatsTracker;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\KernelEvent;
@@ -12,8 +13,8 @@ use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 class StatsListenerTest extends TestCase
 {
-    private StatsTracker $statsTracker;
-    private HttpKernelInterface $kernel;
+    private StatsTracker&MockObject $statsTracker;
+    private HttpKernelInterface&MockObject $kernel;
     private StatsListener $listener;
 
     protected function setUp(): void

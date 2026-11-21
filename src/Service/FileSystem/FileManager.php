@@ -11,7 +11,6 @@ readonly class FileManager implements FileManagerInterface
     public function __construct(
         private Filesystem $filesystem,
     ) {
-        echo get_class($this->filesystem);
     }
 
     #[\Override]
@@ -46,25 +45,28 @@ readonly class FileManager implements FileManagerInterface
         $newPath = $newDestination.DIRECTORY_SEPARATOR.$this->generateUniqueFilename($ext, $newDestination);
 
         $this->filesystem->copy($oldPath, $newPath);
+
         return $newPath;
     }
-    
+
+    #[\Override]
     public function checkAndCreateFolder(string $dir): void
     {
         if (!$this->filesystem->exists($dir)) {
             $this->filesystem->mkdir($dir);
         }
     }
-    
+
     public function generateUniqueFilename(string $extension, string $dir): string
     {
         do {
-            $filename = uniqid() . '.' . $extension;
-        } while ($this->filesystem->exists($dir . DIRECTORY_SEPARATOR . $filename));
-        
+            $filename = uniqid().'.'.$extension;
+        } while ($this->filesystem->exists($dir.DIRECTORY_SEPARATOR.$filename));
+
         return $filename;
     }
 
+    #[\Override]
     public function saveFileContents(string $contents, string $destination, string $fileName): void
     {
         $this->filesystem->dumpFile($destination.DIRECTORY_SEPARATOR.$fileName, $contents);

@@ -38,7 +38,7 @@ class GenerateUserCommandTest extends KernelTestCase
 
     public function testExecuteCreatesUserSuccessfully(): void
     {
-        $uniqueUsername = 'generated-admin-' . uniqid();
+        $uniqueUsername = 'generated-admin-'.uniqid();
 
         $this->commandTester->execute([
             '--username' => $uniqueUsername,
@@ -61,12 +61,12 @@ class GenerateUserCommandTest extends KernelTestCase
 
     public function testExecuteFailsWhenUserAlreadyExists(): void
     {
-        $existingUsername = 'existing-user-' . uniqid();
+        $existingUsername = 'existing-user-'.uniqid();
 
         // Pre-insert a user with the same username
         $existingUser = new User();
         $existingUser->setUsername($existingUsername)
-            ->setEmail('existing-' . uniqid() . '@fake.com')
+            ->setEmail('existing-'.uniqid().'@fake.com')
             ->setFirstName('Test')
             ->setLastName('User')
             ->setPassword('dummyhash')

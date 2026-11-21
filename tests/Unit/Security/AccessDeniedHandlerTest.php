@@ -3,6 +3,7 @@
 namespace App\Tests\Unit\Security;
 
 use App\Security\AccessDeniedHandler;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,8 +13,8 @@ use Twig\Environment;
 
 class AccessDeniedHandlerTest extends TestCase
 {
-    private Environment $twig;
-    private TranslatorInterface $translator;
+    private Environment&MockObject $twig;
+    private TranslatorInterface&MockObject $translator;
     private AccessDeniedHandler $accessDeniedHandler;
 
     protected function setUp(): void

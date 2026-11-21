@@ -69,6 +69,7 @@ class UserCheckerTest extends TestCase
 
         $this->userChecker->checkPreAuth($user);
 
+        /* @phpstan-ignore method.alreadyNarrowedType */
         $this->assertTrue(true); // Asserts that no exception was thrown
     }
 
@@ -78,6 +79,7 @@ class UserCheckerTest extends TestCase
 
         $this->userChecker->checkPostAuth($user);
 
+        /* @phpstan-ignore method.alreadyNarrowedType */
         $this->assertTrue(true); // Asserts method executes safely without side effects
     }
 }

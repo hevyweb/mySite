@@ -34,6 +34,5 @@ class UnzipAssetsCommandTest extends KernelTestCase
 
         $output = $this->commandTester->getDisplay();
         $this->assertStringContainsString('Unzipped public/assets.zip to public', $output);
-        
     }
 }

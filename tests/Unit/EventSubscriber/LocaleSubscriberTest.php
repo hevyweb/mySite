@@ -3,6 +3,7 @@
 namespace App\Tests\Unit\EventSubscriber;
 
 use App\EventSubscriber\LocaleSubscriber;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Exception\SessionNotFoundException;
@@ -13,7 +14,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
 
 class LocaleSubscriberTest extends TestCase
 {
-    private LoggerInterface $logger;
+    private LoggerInterface&MockObject $logger;
     private LocaleSubscriber $subscriber;
 
     protected function setUp(): void

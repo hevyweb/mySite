@@ -18,7 +18,6 @@ class StringServiceTest extends TestCase
     public function testGenerateRandomStringDefaultLength(): void
     {
         $result = $this->stringService->generateRandomString();
-        $this->assertIsString($result);
         $this->assertSame(12, strlen($result));
     }
 
@@ -39,7 +38,6 @@ class StringServiceTest extends TestCase
     public function testGenerateRandomSlugDefaultLength(): void
     {
         $result = $this->stringService->generateRandomSlug();
-        $this->assertIsString($result);
         $this->assertSame(12, strlen($result));
     }
 

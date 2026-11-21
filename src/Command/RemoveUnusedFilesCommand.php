@@ -15,11 +15,11 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 class RemoveUnusedFilesCommand extends Command
 {
-    public static $defaultName = 'app:remove-unused-files';
-    
+    public const string NAME = 'app:remove-unused-files';
+
     public function __construct(
         private readonly FileManagerInterface $fileManager,
-    ){
+    ) {
         parent::__construct();
     }
 
@@ -27,7 +27,7 @@ class RemoveUnusedFilesCommand extends Command
     protected function configure(): void
     {
         $this
-            ->setName(self::$defaultName)
+            ->setName(self::NAME)
             ->setDescription('Removes all files that shouldn\'t exist on production');
     }
 
@@ -63,11 +63,11 @@ class RemoveUnusedFilesCommand extends Command
 
         foreach ($unusedFiles as $file) {
             try {
-                //$this->fileManager->remove($file);
+                $this->fileManager->remove($file);
                 $io->writeln("<info>Removed $file</info>");
             } catch (\Exception $e) {
                 $io->writeln("<error>Failed to remove $file: ".$e->getMessage().'</error>');
-            }            
+            }
         }
 
         return Command::SUCCESS;

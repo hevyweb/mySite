@@ -7,11 +7,13 @@ use App\Entity\Tag;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectRepository;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class TagDataTransformerTest extends TestCase
 {
-    private ObjectRepository $tagRepository;
+    /** @var ObjectRepository<Tag>&MockObject */
+    private ObjectRepository&MockObject $tagRepository;
     private TagDataTransformer $transformer;
 
     protected function setUp(): void

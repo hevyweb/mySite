@@ -42,7 +42,7 @@ class UserRepositoryTest extends KernelTestCase
         $this->assertNotEmpty($admins);
         $foundAdmin = false;
         foreach ($admins as $admin) {
-            if ($admin->getUsername() === UserFixtures::ADMIN_USER) {
+            if (UserFixtures::ADMIN_USER === $admin->getUsername()) {
                 $foundAdmin = true;
                 break;
             }
@@ -53,9 +53,9 @@ class UserRepositoryTest extends KernelTestCase
     public function testLoadUserByIdentifierReturnsUser(): void
     {
         $admin = $this->userRepository->findOneBy(['username' => UserFixtures::ADMIN_USER]);
+        /** @var User $loadedUser */
         $loadedUser = $this->userRepository->loadUserByIdentifier((string) $admin->getId());
 
-        $this->assertNotNull($loadedUser);
         $this->assertSame($admin->getId(), $loadedUser->getId());
     }
 

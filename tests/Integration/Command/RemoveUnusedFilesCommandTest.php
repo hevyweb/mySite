@@ -34,6 +34,5 @@ class RemoveUnusedFilesCommandTest extends KernelTestCase
 
         $output = $this->commandTester->getDisplay();
         $this->assertStringContainsString('Removed config/packages/test', $output);
-
     }
 }

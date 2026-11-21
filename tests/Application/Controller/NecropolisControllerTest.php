@@ -43,7 +43,7 @@ class NecropolisControllerTest extends AbstractApplicationTestCase
         $form['grave[firstName]'] = 'JohnCreated';
         $form['grave[lastName]'] = 'DoeCreated';
         $form['grave[maidenName]'] = 'SmithCreated';
-        $form['grave[gender]'] = 1; // MALE
+        $form['grave[gender]'] = '1'; // MALE
         $form['grave[birthDate]'] = '1950-05-10';
         $form['grave[deathDate]'] = '2020-01-15';
         $form['grave[birthPlace]'] = 'Birth City A';
@@ -54,10 +54,11 @@ class NecropolisControllerTest extends AbstractApplicationTestCase
         $form['grave[gravePlaceCoordinates]'] = '34.5678, 90.1234';
         $form['grave[epitaph]'] = 'Rest in Peace Test';
         $form['grave[biography]'] = 'This is a test biography description for creation.';
-        $form['grave[isPublished]'] = true;
+        $form['grave[isPublished]'] = '1';
 
         $dummyFile = __DIR__.'/Resource/test_test.jpg';
         $uploadedFile = new UploadedFile($dummyFile, 'test.jpg', 'image/jpeg', null, true);
+        /* @phpstan-ignore offsetAssign.valueType */
         $form['grave[image]'] = $uploadedFile;
 
         $this->client->submit($form);
@@ -103,7 +104,7 @@ class NecropolisControllerTest extends AbstractApplicationTestCase
         $form['grave[firstName]'] = 'JonathanUpdated';
         $form['grave[lastName]'] = 'DoeUpdated';
         $form['grave[maidenName]'] = 'JohnsonUpdated';
-        $form['grave[gender]'] = 2; // FEMALE
+        $form['grave[gender]'] = '2'; // FEMALE
         $form['grave[birthDate]'] = '1955-06-12';
         $form['grave[deathDate]'] = '2022-03-20';
         $form['grave[birthPlace]'] = 'New Birth City';
@@ -114,9 +115,11 @@ class NecropolisControllerTest extends AbstractApplicationTestCase
         $form['grave[gravePlaceCoordinates]'] = '55.5555, 66.6666';
         $form['grave[epitaph]'] = 'Updated Epitaph Text';
         $form['grave[biography]'] = 'Updated biography description content.';
-        $form['grave[isPublished]'] = false;
+        /* @phpstan-ignore method.nonObject */
+        $form['grave[isPublished]']->untick();
         $dummyFile = __DIR__.'/Resource/test_test.jpg';
         $uploadedFile = new UploadedFile($dummyFile, 'test.jpg', 'image/jpeg', null, true);
+        /* @phpstan-ignore offsetAssign.valueType */
         $form['grave[image]'] = $uploadedFile;
 
         $this->client->submit($form);
@@ -229,6 +232,7 @@ class NecropolisControllerTest extends AbstractApplicationTestCase
         $dummyFile = __DIR__.'/Resource/test_test.jpg';
         $uploadedFile = new UploadedFile($dummyFile, 'gallery_test.jpg', 'image/jpeg', null, true);
 
+        /* @phpstan-ignore offsetAssign.valueType */
         $form['grave_photo[filename]'] = $uploadedFile;
         $form['grave_photo[description]'] = 'Test gallery photo description';
         $form['grave_photo[shootingDate]'] = '2023-11-23';
@@ -274,7 +278,7 @@ class NecropolisControllerTest extends AbstractApplicationTestCase
         ]);
 
         $photo = $grave->getPersonPhotos()->first();
-        $this->assertNotNull($photo, 'Grave must have a photo to test editing.');
+        $this->assertNotFalse($photo, 'Grave must have a photo to test editing.');
 
         $this->client->request('POST', '/administrator/grave/'.$grave->getId().'/photos/'.$photo->getId().'/edit', [
             'description' => 'Updated gallery photo description',
@@ -302,7 +306,7 @@ class NecropolisControllerTest extends AbstractApplicationTestCase
         ]);
 
         $photo = $grave->getPersonPhotos()->first();
-        $this->assertNotNull($photo, 'Grave must have a photo to test deletion.');
+        $this->assertNotFalse($photo, 'Grave must have a photo to test deletion.');
         $photoId = $photo->getId();
 
         $this->client->request('GET', '/administrator/grave/'.$grave->getId().'/photos/'.$photoId.'/delete');

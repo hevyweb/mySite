@@ -6,6 +6,7 @@ use App\Entity\Page;
 use App\Twig\PageExtension;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectRepository;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Twig\Environment;
@@ -13,7 +14,7 @@ use Twig\TwigFunction;
 
 class PageExtensionTest extends TestCase
 {
-    private EntityManagerInterface $entityManager;
+    private EntityManagerInterface&MockObject $entityManager;
     private PageExtension $extension;
 
     protected function setUp(): void
@@ -52,6 +53,7 @@ class PageExtensionTest extends TestCase
         $context = ['app' => $app];
 
         $page = new Page();
+        /** @var ObjectRepository<Page>&MockObject $repository */
         $repository = $this->createMock(ObjectRepository::class);
         $repository->expects($this->once())
             ->method('findBy')

@@ -37,9 +37,9 @@ class FileAntiVirusTest extends TestCase
         $antiVirus = new FileAntiVirus('test');
 
         // Should return early without checking file existence or interacting with Imagick
-        $antiVirus->sanitize('non_existent.jpg', $this->tempDir);
+        $result = $antiVirus->sanitize('non_existent.jpg', $this->tempDir);
 
-        $this->assertTrue(true);
+        $this->assertTrue($result);
     }
 
     public function testSanitizeInProdEnvironmentProcessesImage(): void

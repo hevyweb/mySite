@@ -15,3 +15,7 @@ services:
     App\Tests\Mock\FilesystemMock: ~
     
     Symfony\Component\Filesystem\Filesystem: '@App\Tests\Mock\FilesystemMock'
+    
+    App\Tests\Mock\MailerMock: ~
+    
+    Symfony\Component\Mailer\MailerInterface: '@App\Tests\Mock\MailerMock'

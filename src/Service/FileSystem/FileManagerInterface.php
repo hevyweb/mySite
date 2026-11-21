@@ -13,6 +13,6 @@ interface FileManagerInterface
     public function remove(string $fileName, ?string $destination = null): void;
 
     public function checkAndCreateFolder(string $dir): void;
-    
+
     public function saveFileContents(string $contents, string $destination, string $fileName): void;
 }

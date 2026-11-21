@@ -9,7 +9,6 @@ use App\Entity\Stat;
 use App\Form\CondolenceType;
 use App\Form\GravePhotoType;
 use App\Form\GraveType;
-use App\Service\FileSystem\File;
 use App\Service\FileSystem\FileManagerInterface;
 use App\Service\ImageService;
 use App\Service\StatsParser;

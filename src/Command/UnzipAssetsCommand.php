@@ -15,11 +15,11 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 class UnzipAssetsCommand extends Command
 {
-    const ZIP_FILE = 'public/assets.zip';
-    const DESTINATION = 'public';
-    
-    public static $defaultName = 'app:unzip-assets';
-    
+    public const ZIP_FILE = 'public/assets.zip';
+    public const DESTINATION = 'public';
+
+    public const string NAME = 'app:unzip-assets';
+
     public function __construct(
         private readonly ZipManagerInterface $zipManager,
     ) {
@@ -30,7 +30,7 @@ class UnzipAssetsCommand extends Command
     protected function configure(): void
     {
         $this
-            ->setName(self::$defaultName)
+            ->setName(self::NAME)
             ->setDescription('Unzips public/assets.zip to the public directory')
             ->setHelp('This command allows you to unzip public/assets.zip to the public directory');
     }

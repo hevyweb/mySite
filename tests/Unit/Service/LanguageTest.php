@@ -3,12 +3,13 @@
 namespace App\Tests\Unit\Service;
 
 use App\Service\Language;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class LanguageTest extends TestCase
 {
-    private TranslatorInterface $translator;
+    private TranslatorInterface&MockObject $translator;
 
     protected function setUp(): void
     {

@@ -7,6 +7,7 @@ use App\Event\NewMessagesEvent;
 use App\EventSubscriber\NewMessagesSubscriber;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
@@ -16,13 +17,13 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class NewMessagesSubscriberTest extends TestCase
 {
-    private TemplatedEmail $templatedEmail;
-    private MailerInterface $mailer;
-    private TranslatorInterface $translator;
+    private TemplatedEmail&MockObject $templatedEmail;
+    private MailerInterface&MockObject $mailer;
+    private TranslatorInterface&MockObject $translator;
     private Address $from;
-    private EntityManagerInterface $entityManager;
-    private UserRepository $userRepository;
-    private LoggerInterface $logger;
+    private EntityManagerInterface&MockObject $entityManager;
+    private UserRepository&MockObject $userRepository;
+    private LoggerInterface&MockObject $logger;
     private NewMessagesSubscriber $subscriber;
 
     protected function setUp(): void

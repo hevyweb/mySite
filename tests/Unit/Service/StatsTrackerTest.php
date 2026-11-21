@@ -7,15 +7,16 @@ use App\Repository\StatRepository;
 use App\Service\StatsTracker;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 class StatsTrackerTest extends TestCase
 {
-    private EntityManagerInterface $entityManager;
-    private StatRepository $statsRepository;
-    private LoggerInterface $logger;
+    private EntityManagerInterface&MockObject $entityManager;
+    private StatRepository&MockObject $statsRepository;
+    private LoggerInterface&MockObject $logger;
     private StatsTracker $statsTracker;
 
     protected function setUp(): void

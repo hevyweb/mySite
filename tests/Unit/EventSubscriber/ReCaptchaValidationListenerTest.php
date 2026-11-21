@@ -3,6 +3,7 @@
 namespace App\Tests\Unit\EventSubscriber;
 
 use App\EventSubscriber\ReCaptchaValidationListener;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use ReCaptcha\ReCaptcha;
 use ReCaptcha\Response;
@@ -13,7 +14,7 @@ use Symfony\Component\Form\FormInterface;
 
 class ReCaptchaValidationListenerTest extends TestCase
 {
-    private ReCaptcha $reCaptchaMock;
+    private ReCaptcha&MockObject $reCaptchaMock;
     private ReCaptchaValidationListener $listener;
 
     protected function setUp(): void
