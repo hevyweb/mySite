@@ -84,11 +84,20 @@ class PageController extends AbstractController
         ]);
     }
 
-    public function delete(): Response
+    public function delete(Request $request): Response
     {
-        /*
-         * @TODO implement later
-         */
+        $ids = $request->get('id');
+        if (is_array($ids)) {
+            $ids = array_unique(array_map('intval', array_keys($ids)));
+            $pages = $this->entityManager->getRepository(Page::class)->findBy(['id' => $ids]);
+            if (count($pages)) {
+                foreach ($pages as $page) {
+                    $this->entityManager->remove($page);
+                }
+                $this->entityManager->flush();
+            }
+        }
+
         return $this->redirectToRoute('page-list');
     }
 }

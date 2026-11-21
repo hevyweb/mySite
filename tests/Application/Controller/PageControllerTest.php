@@ -72,9 +72,22 @@ class PageControllerTest extends AbstractApplicationTestCase
     public function testPageDeleteRedirects(): void
     {
         $this->logInAdmin();
-        // Since delete is not implemented yet, it just redirects back to list
-        $this->client->request('GET', $this->router->generate('page-delete'));
+        $crawler = $this->client->request('GET', $this->router->generate('page-list'));
+
+        $form = $crawler->filter('form')->form();
+
+        $field = $form['id[1]'];
+        /* @phpstan-ignore method.nonObject */
+        $field->tick();
+
+        $this->client->submit($form);
+
         $this->assertResponseRedirects($this->router->generate('page-list'));
+
+        /** @var EntityManagerInterface $em */
+        $em = $this->getContainer()->get(EntityManagerInterface::class);
+        $page = $em->getRepository(Page::class)->findOneBy(['title' => 'Initial Title']);
+        $this->assertNull($page);
     }
 
     public function testPageListAccessDeniedForRegularUser(): void
